@@ -346,7 +346,7 @@ export default function LandingPage() {
               <div>
                 <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-3">Legend tier · Exclusive offer</p>
                 <h2 className="text-3xl font-serif font-semibold leading-tight mb-4">
-                  The first 10 Legend members stay with us — free.
+                  The first 10 Signature subscribers stay with us — free.
                 </h2>
                 <p className="text-primary-foreground/80 leading-relaxed">
                   Two days at our property. Breakfast on the deck. An outdoor shower at sunrise. A movie night under the stars. And dinner with Ogun and Evie.
@@ -369,7 +369,7 @@ export default function LandingPage() {
                   <span>✓</span> Valid anytime within 1 year of purchase
                 </p>
                 <p className="flex items-center gap-2 text-primary-foreground/60 text-xs mt-1">
-                  Limited to the first 10 Legend purchasers. First come, first served.
+                  Limited to the first 10 Signature subscribers. First come, first served.
                 </p>
               </div>
               <Link href="/signup" className={cn(buttonVariants({ variant: 'secondary', size: 'lg' }), 'w-fit')}>
