@@ -1,4 +1,4 @@
-export type SubscriptionTier = 'free' | 'host' | 'signature' | 'legend'
+export type SubscriptionTier = 'free' | 'host' | 'signature' | 'legend' | 'legendary'
 
 export interface Profile {
   id: string

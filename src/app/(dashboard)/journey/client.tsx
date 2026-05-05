@@ -194,13 +194,13 @@ export default function JourneyClient({ isTrial = false }: { isTrial?: boolean }
         <div className="bg-primary/10 border border-primary/20 rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-foreground">Free preview — 1 use only</p>
-            <p className="text-xs text-muted-foreground mt-0.5">You have one free session on Journey Map. Upgrade to Host to keep full access.</p>
+            <p className="text-xs text-muted-foreground mt-0.5">You have one free session on Journey Map. Upgrade to Legendary to keep full access.</p>
           </div>
           <Link href="/pricing" className="text-xs font-medium text-primary underline underline-offset-2 shrink-0">Upgrade →</Link>
         </div>
       )}
       <div>
-        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 1.5</p>
+        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 3</p>
         <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Guest Journey Map</h1>
         <p className="text-muted-foreground leading-relaxed">
           Map every moment your guest experiences — from booking confirmation to what they discover after checkout. Get ridiculously granular. No touchpoint is too small.

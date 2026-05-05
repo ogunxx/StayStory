@@ -4,23 +4,17 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-const TIER_NEXT: Record<string, { tier: string; label: string; price: string }> = {
-  free: { tier: 'host', label: 'Host', price: '$12/mo' },
-  host: { tier: 'signature', label: 'Signature', price: '$29/mo' },
-  signature: { tier: 'legend', label: 'Legend', price: '$79/mo' },
-  legend: { tier: '', label: '', price: '' },
-}
-
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const tier = await getUserTier()
 
   const name = user?.user_metadata?.full_name?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there'
+  const isLegendary = hasAccess(tier, 'legendary')
 
-  // Monthly usage count for free users
+  // Monthly generator usage for free users
   let monthlyUsed = 0
-  if (!hasAccess(tier, 'host')) {
+  if (!isLegendary) {
     const startOfMonth = new Date()
     startOfMonth.setDate(1)
     startOfMonth.setHours(0, 0, 0, 0)
@@ -32,9 +26,7 @@ export default async function DashboardPage() {
     monthlyUsed = count ?? 0
   }
 
-  const remaining = Math.max(0, 3 - monthlyUsed)
-  const isFree = tier === 'free'
-  const next = TIER_NEXT[tier]
+  const remaining = Math.max(0, 1 - monthlyUsed)
 
   return (
     <div className="flex flex-col gap-10">
@@ -50,7 +42,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Free tier usage banner */}
-      {isFree && (
+      {!isLegendary && (
         <div className={cn(
           'rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4',
           remaining === 0 ? 'bg-destructive/10 border border-destructive/20' : 'bg-primary/10 border border-primary/20'
@@ -58,17 +50,17 @@ export default async function DashboardPage() {
           <div className="flex flex-col gap-1">
             <p className="text-sm font-semibold text-foreground">
               {remaining === 0
-                ? 'You\'ve used all 3 free generations this month'
-                : `${remaining} free generation${remaining === 1 ? '' : 's'} remaining this month`}
+                ? 'You\'ve used your 1 free generation this month'
+                : `${remaining} free generation remaining this month`}
             </p>
             <p className="text-xs text-muted-foreground">
               {remaining === 0
-                ? 'Upgrade to Host for unlimited generation — plus Journey Map, Seasonal Planner, and more.'
-                : 'Free plan includes 3 generations/month. Upgrade for unlimited.'}
+                ? 'Upgrade to Legendary for unlimited generation — plus every tool, unlimited, and 1 night free stay per year.'
+                : 'Free plan includes 1 generation/month. Upgrade to Legendary for unlimited.'}
             </p>
           </div>
           <Link href="/pricing" className={cn(buttonVariants({ size: 'sm' }), 'shrink-0')}>
-            Upgrade to Host →
+            Upgrade to Legendary →
           </Link>
         </div>
       )}
@@ -93,7 +85,7 @@ export default async function DashboardPage() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground font-mono">2</span>
-                {isFree && (
+                {!isLegendary && (
                   <span className={cn(
                     'text-xs px-2 py-0.5 rounded-full font-medium',
                     remaining === 0 ? 'bg-destructive/15 text-destructive' : 'bg-primary/15 text-primary'
@@ -101,7 +93,7 @@ export default async function DashboardPage() {
                     {remaining === 0 ? 'Limit reached' : `${remaining} left`}
                   </span>
                 )}
-                {!isFree && (
+                {isLegendary && (
                   <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">Unlimited</span>
                 )}
               </div>
@@ -109,18 +101,21 @@ export default async function DashboardPage() {
               <p className="text-sm text-muted-foreground leading-relaxed mt-2">Tell us about your guest. Get tiered gesture ideas, setup plan, shopping list, and messages.</p>
             </div>
             <Link
-              href={remaining === 0 && isFree ? '/pricing' : '/generator'}
+              href={remaining === 0 && !isLegendary ? '/pricing' : '/generator'}
               className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'mt-auto w-fit')}
             >
-              {remaining === 0 && isFree ? 'Upgrade to generate →' : 'Generate moment →'}
+              {remaining === 0 && !isLegendary ? 'Upgrade to generate →' : 'Generate moment →'}
             </Link>
           </div>
 
-          {/* Journey Map — host+ */}
-          {hasAccess(tier, 'host') ? (
+          {/* Journey Map */}
+          {isLegendary ? (
             <div className="bg-card border border-border rounded-2xl p-6 flex flex-col gap-4">
               <div>
-                <span className="text-xs text-muted-foreground font-mono">3</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-mono">3</span>
+                  <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">Unlimited</span>
+                </div>
                 <h2 className="font-serif font-semibold text-foreground mt-1">Journey Map</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed mt-2">Map every touchpoint — from booking to what they find in the car weeks later.</p>
               </div>
@@ -135,17 +130,20 @@ export default async function DashboardPage() {
                   <p className="text-sm text-muted-foreground leading-relaxed mt-2">Map every touchpoint across the guest experience — 14 moments across 5 phases.</p>
                   <p className="text-xs text-muted-foreground mt-2">Start Strong → Stick the Landing → Transform Pain Points</p>
                 </div>
-                <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full shrink-0">Host</span>
+                <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full shrink-0">Legendary</span>
               </div>
-              <Link href="/pricing" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'w-fit')}>Unlock — $12/mo →</Link>
+              <Link href="/journey" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'w-fit')}>Preview free →</Link>
             </div>
           )}
 
-          {/* Story Builder — signature+ */}
-          {hasAccess(tier, 'signature') ? (
+          {/* Story Builder */}
+          {isLegendary ? (
             <div className="bg-primary/10 rounded-2xl p-6 flex flex-col gap-4">
               <div>
-                <span className="text-xs text-muted-foreground font-mono">4</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-mono">4</span>
+                  <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">Unlimited</span>
+                </div>
                 <h2 className="font-serif font-semibold text-foreground mt-1">Guest Story Builder</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed mt-2">Turn what you did into a story — for your brand, listing, and the memory they carry home.</p>
               </div>
@@ -160,20 +158,20 @@ export default async function DashboardPage() {
                   <p className="text-sm text-muted-foreground leading-relaxed mt-2">Turn a moment into a narrative guests retell. Brand story, social caption, listing copy.</p>
                   <p className="text-xs text-muted-foreground italic mt-2">"They left a note on the guest book we didn't expect…"</p>
                 </div>
-                <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full shrink-0">Signature</span>
+                <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full shrink-0">Legendary</span>
               </div>
-              <Link href="/pricing" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'w-fit')}>Unlock — $29/mo →</Link>
+              <Link href="/story" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'w-fit')}>Preview free →</Link>
             </div>
           )}
 
         </div>
       </div>
 
-      {/* Guest Journey Playbook — legend+ */}
-      {hasAccess(tier, 'legend') ? (
+      {/* Guest Journey Playbook */}
+      {isLegendary ? (
         <div className="bg-primary text-primary-foreground rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-1">Legend</p>
+            <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-1">Legendary</p>
             <h2 className="font-serif font-semibold text-lg">Guest Journey Playbook</h2>
             <p className="text-sm text-primary-foreground/80 mt-1">Your full property playbook — positioning, archetypes, touchpoint priorities, monthly rhythm.</p>
           </div>
@@ -184,27 +182,24 @@ export default async function DashboardPage() {
       ) : (
         <div className="bg-primary/5 border border-border rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Legend</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Legendary</p>
             <h2 className="font-serif font-semibold text-lg text-foreground">Guest Journey Playbook</h2>
             <p className="text-sm text-muted-foreground mt-1">Executive summary, 3 guest archetypes, touchpoint priorities, monthly hosting rhythm — all in one doc.</p>
           </div>
-          <Link href="/pricing" className={cn(buttonVariants({ size: 'sm' }), 'shrink-0')}>Unlock — $79/mo →</Link>
+          <Link href="/legend" className={cn(buttonVariants({ size: 'sm' }), 'shrink-0')}>Preview free →</Link>
         </div>
       )}
 
-      {/* Upgrade nudge for non-legend paid users */}
-      {next.tier && !isFree && (
+      {/* Legendary upgrade nudge for free users */}
+      {!isLegendary && (
         <div className="bg-secondary rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Next level</p>
-            <p className="text-sm font-semibold text-foreground">Upgrade to {next.label} ({next.price})</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {next.tier === 'signature' && 'Unlock Guest Story Builder, Brand Voice, Listing Copy rewriter, and Social Caption generator.'}
-              {next.tier === 'legend' && 'Unlock your full Guest Journey Playbook, property positioning, and done-with-you experience design.'}
-            </p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Upgrade</p>
+            <p className="text-sm font-semibold text-foreground">Go Legendary — $499/mo</p>
+            <p className="text-xs text-muted-foreground mt-1">Every tool unlimited, your custom playbook, and 1 complimentary night at Laurel & Lore per year.</p>
           </div>
           <Link href="/pricing" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'shrink-0')}>
-            See {next.label} →
+            See Legendary →
           </Link>
         </div>
       )}

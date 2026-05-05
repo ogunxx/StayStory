@@ -10,7 +10,7 @@ export default async function JourneyPage() {
   if (!user) redirect('/login')
 
   const tier = await getUserTier()
-  if (hasAccess(tier, 'host')) {
+  if (hasAccess(tier, 'legendary')) {
     return <JourneyClient />
   }
 
@@ -28,5 +28,5 @@ export default async function JourneyPage() {
     return <JourneyClient isTrial />
   }
 
-  return <TierGate requiredTier="host" featureName="Journey Map" />
+  return <TierGate requiredTier="legendary" featureName="Journey Map" />
 }

@@ -10,7 +10,7 @@ export default async function StoryPage() {
   if (!user) redirect('/login')
 
   const tier = await getUserTier()
-  if (hasAccess(tier, 'signature')) {
+  if (hasAccess(tier, 'legendary')) {
     return <StoryClient />
   }
 
@@ -28,5 +28,5 @@ export default async function StoryPage() {
     return <StoryClient isTrial />
   }
 
-  return <TierGate requiredTier="signature" featureName="Guest Story Builder" />
+  return <TierGate requiredTier="legendary" featureName="Guest Story Builder" />
 }

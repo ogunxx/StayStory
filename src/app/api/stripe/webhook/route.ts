@@ -7,10 +7,17 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const TIER_MAP: Record<string, string> = {
-  price_1TSJDMIOCUJyk0u8w3b6nCa1: 'host',
-  price_1TSJD2IOCUJyk0u8eJU7QOSd: 'signature',
-  price_1TSJDkIOCUJyk0u82KyQ0j97: 'legend',
+function getTierFromPriceId(priceId: string): string {
+  const map: Record<string, string> = {
+    // Legacy price IDs — treated as legendary for access purposes
+    price_1TSJDMIOCUJyk0u8w3b6nCa1: 'host',
+    price_1TSJD2IOCUJyk0u8eJU7QOSd: 'signature',
+    price_1TSJDkIOCUJyk0u82KyQ0j97: 'legend',
+  }
+  if (process.env.STRIPE_LEGENDARY_PRICE_ID && priceId === process.env.STRIPE_LEGENDARY_PRICE_ID) {
+    return 'legendary'
+  }
+  return map[priceId] || 'free'
 }
 
 export async function POST(request: Request) {
@@ -47,7 +54,7 @@ export async function POST(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sub = event.data.object as any
     const priceId = sub.items.data[0]?.price.id
-    const tier = TIER_MAP[priceId] || 'free'
+    const tier = getTierFromPriceId(priceId)
 
     const { data: profile } = await supabaseAdmin
       .from('profiles')

@@ -6,23 +6,26 @@ import { cn } from '@/lib/utils'
 
 const TIER_LABELS: Record<string, string> = {
   free: 'Free',
-  host: 'Host',
-  signature: 'Signature',
-  legend: 'Legend',
+  host: 'Legendary',
+  signature: 'Legendary',
+  legend: 'Legendary',
+  legendary: 'Legendary',
 }
 
 const TIER_COLORS: Record<string, string> = {
   free: 'bg-muted text-muted-foreground',
-  host: 'bg-primary/10 text-primary',
-  signature: 'bg-accent text-accent-foreground',
+  host: 'bg-primary text-primary-foreground',
+  signature: 'bg-primary text-primary-foreground',
   legend: 'bg-primary text-primary-foreground',
+  legendary: 'bg-primary text-primary-foreground',
 }
 
 const TIER_FEATURES: Record<string, string[]> = {
-  free: ['3 generator uses/month', 'Foundation Audit', 'Journey Map (read-only)'],
-  host: ['Unlimited generation', 'Foundation Audit', 'Journey Map', 'Seasonal Planner'],
-  signature: ['Everything in Host', 'Guest Story Builder', 'Listing Copy & Captions', 'Brand Voice'],
-  legend: ['Everything in Signature', 'Guest Journey Playbook', 'Property Audit Call', 'Done-with-you design'],
+  free: ['1 generator use/month', 'Foundation Audit', '1 free preview of each tool'],
+  host: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '1 complimentary night at Laurel & Lore per year'],
+  signature: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '1 complimentary night at Laurel & Lore per year'],
+  legend: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '1 complimentary night at Laurel & Lore per year'],
+  legendary: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '1 complimentary night at Laurel & Lore per year'],
 }
 
 function formatDate(iso: string | null) {
@@ -90,7 +93,7 @@ export default function AccountClient({ email, profile, suggestions, stories, au
               Upgrade plan →
             </Link>
           )}
-          {isPaid && tier !== 'legend' && (
+          {isPaid && tier !== 'legendary' && (
             <Link href="/pricing" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
               Upgrade plan
             </Link>

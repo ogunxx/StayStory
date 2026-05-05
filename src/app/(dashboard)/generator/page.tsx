@@ -109,7 +109,7 @@ export default function GeneratorPage() {
   return (
     <div className="flex flex-col gap-10 max-w-2xl">
       <div>
-        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 3</p>
+        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 2</p>
         <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Hospitality Generator</h1>
         <p className="text-muted-foreground leading-relaxed">
           Tell us about your guest. The more specific you are, the more powerful the output. Every detail unlocks a more personal moment.
@@ -249,12 +249,12 @@ export default function GeneratorPage() {
 
         {limitReached && (
           <div className="bg-primary/10 border border-primary/20 rounded-xl p-5 flex flex-col gap-3">
-            <p className="text-sm font-semibold text-foreground">You've used your 3 free generations this month</p>
+            <p className="text-sm font-semibold text-foreground">You've used your 1 free generation this month</p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Upgrade to Host to unlock unlimited generation, the Journey Map, Seasonal Planner, and more — starting at $12/mo.
+              Upgrade to Legendary for unlimited generation, every tool, and 1 complimentary night at Laurel & Lore per year — $499/mo.
             </p>
             <Link href="/pricing" className={cn(buttonVariants({ size: 'sm' }), 'w-fit')}>
-              Upgrade to unlock unlimited →
+              Upgrade to Legendary →
             </Link>
           </div>
         )}

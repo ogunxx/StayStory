@@ -4,7 +4,7 @@ import { getUserTier, hasAccess } from '@/lib/get-tier'
 import { NextResponse } from 'next/server'
 import type { GeneratorFormData } from '@/types'
 
-const FREE_MONTHLY_LIMIT = 3
+const FREE_MONTHLY_LIMIT = 1
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
   const tier = await getUserTier()
 
-  if (!hasAccess(tier, 'host')) {
+  if (!hasAccess(tier, 'legendary')) {
     const startOfMonth = new Date()
     startOfMonth.setDate(1)
     startOfMonth.setHours(0, 0, 0, 0)

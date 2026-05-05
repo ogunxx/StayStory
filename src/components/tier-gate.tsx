@@ -3,22 +3,24 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const TIER_LABELS: Record<string, string> = {
-  host: 'Host ($12/mo)',
-  signature: 'Signature ($29/mo)',
-  legend: 'Legend ($79/mo)',
+  host: 'Legendary ($499/mo)',
+  signature: 'Legendary ($499/mo)',
+  legend: 'Legendary ($499/mo)',
+  legendary: 'Legendary ($499/mo)',
 }
 
 const TIER_DESCRIPTIONS: Record<string, string> = {
-  host: 'Unlock unlimited generation, shopping lists, message templates, and the Journey Map.',
-  signature: 'Unlock the Guest Story Builder, Brand Voice, Listing Copy, and Social Captions.',
-  legend: 'Unlock your custom Guest Journey Playbook, Property Audit Call, and done-with-you experience design.',
+  host: 'Unlock every tool unlimited, plus 1 complimentary night at Laurel & Lore per year.',
+  signature: 'Unlock every tool unlimited, plus 1 complimentary night at Laurel & Lore per year.',
+  legend: 'Unlock every tool unlimited, plus 1 complimentary night at Laurel & Lore per year.',
+  legendary: 'Unlock every tool unlimited, plus 1 complimentary night at Laurel & Lore per year.',
 }
 
 export function TierGate({
   requiredTier,
   featureName,
 }: {
-  requiredTier: 'host' | 'signature' | 'legend'
+  requiredTier: 'host' | 'signature' | 'legend' | 'legendary'
   featureName: string
 }) {
   return (
@@ -40,7 +42,7 @@ export function TierGate({
             href="/pricing"
             className={cn(buttonVariants({ size: 'lg' }), 'px-8')}
           >
-            Upgrade to {TIER_LABELS[requiredTier].split(' ')[0]}
+            Upgrade to Legendary
           </Link>
           <Link
             href="/dashboard"

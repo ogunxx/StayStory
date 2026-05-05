@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
   apiVersion: '2026-04-22.dahlia',
 })
 
@@ -11,43 +11,22 @@ export const PLANS = {
     priceId: null,
     features: [
       'Foundation Audit',
-      '3 generator uses/month',
-      'Basic shopping lists',
+      '1 generator use/month',
+      '1 preview of Journey Map, Story Builder & Playbook',
+      'Guest message auto-fill',
     ],
   },
-  host: {
-    name: 'Host',
-    price: 12,
-    priceId: process.env.STRIPE_HOST_PRICE_ID,
+  legendary: {
+    name: 'Legendary',
+    price: 499,
+    priceId: process.env.STRIPE_LEGENDARY_PRICE_ID,
     features: [
-      'Unlimited generator',
-      'Shopping lists',
-      'All message templates',
-      'Seasonal experience ideas',
-      'Touchpoint journey map',
-    ],
-  },
-  signature: {
-    name: 'Signature',
-    price: 29,
-    priceId: process.env.STRIPE_SIGNATURE_PRICE_ID,
-    features: [
-      'Everything in Host',
+      'All five tools — unlimited',
+      'Custom Guest Journey Playbook',
       'Guest Story Builder',
-      'Brand voice & listing copy',
-      'Experience map',
-      'Social captions',
-    ],
-  },
-  legend: {
-    name: 'Legend',
-    price: 79,
-    priceId: process.env.STRIPE_LEGEND_PRICE_ID,
-    features: [
-      'Everything in Signature',
-      'Done-with-you experience design',
-      'Property audit call',
-      'Custom guest journey playbook',
+      'Journey Map',
+      'Foundation Audit',
+      '1 complimentary night at Laurel & Lore per year',
       'Priority support',
     ],
   },

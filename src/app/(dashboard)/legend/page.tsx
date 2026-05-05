@@ -10,8 +10,8 @@ export default async function LegendPage() {
   if (!user) redirect('/login')
 
   const tier = await getUserTier()
-  if (hasAccess(tier, 'legend')) {
-    return <LegendClient />
+  if (hasAccess(tier, 'legendary')) {
+    return <LegendClient userEmail={user.email} />
   }
 
   const { data: profile } = await supabase
@@ -28,5 +28,5 @@ export default async function LegendPage() {
     return <LegendClient isTrial />
   }
 
-  return <TierGate requiredTier="legend" featureName="Guest Journey Playbook" />
+  return <TierGate requiredTier="legendary" featureName="Guest Journey Playbook" />
 }

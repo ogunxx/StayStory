@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { PLANS } from '@/lib/stripe'
 
 const PLAN_DETAILS = [
   {
@@ -12,60 +11,31 @@ const PLAN_DETAILS = [
     desc: 'Get started with the basics.',
     features: [
       'Foundation Audit',
-      '3 generator uses/month',
-      'Airbnb & VRBO calendar sync',
-      'Guest message auto-fill',
+      '1 generator use/month',
       '1 free preview of Journey Map, Story Builder & Playbook',
+      'Guest message auto-fill',
     ],
     cta: 'Current plan',
     disabled: true,
+    highlight: false,
   },
   {
-    key: 'host' as const,
-    name: 'Host',
-    price: '$12/mo',
-    desc: 'For hosts ready to go deeper.',
+    key: 'legendary' as const,
+    name: 'Legendary',
+    price: '$499/mo',
+    desc: 'Every tool, unlimited. Plus your complimentary annual stay.',
     features: [
-      'Unlimited generator',
-      'Shopping lists & message templates',
+      'All five tools — unlimited',
+      'Custom Guest Journey Playbook',
+      'Guest Story Builder',
       'Journey Map (unlimited)',
-      'Airbnb & VRBO calendar sync',
-      'Guest message auto-fill',
+      'Foundation Audit (unlimited)',
+      '1 complimentary night at Laurel & Lore per year',
+      'Priority support from Ogun & Evie',
     ],
-    cta: 'Upgrade to Host',
-    disabled: false,
-  },
-  {
-    key: 'signature' as const,
-    name: 'Signature',
-    price: '$29/mo',
-    desc: 'For hosts building a brand.',
-    features: [
-      'Everything in Host',
-      'Guest Story Builder (unlimited)',
-      'Listing copy & social captions',
-      'Airbnb & VRBO calendar sync',
-      'Guest message auto-fill',
-    ],
-    cta: 'Upgrade to Signature',
+    cta: 'Upgrade to Legendary',
     disabled: false,
     highlight: true,
-  },
-  {
-    key: 'legend' as const,
-    name: 'Legend',
-    price: '$79/mo',
-    desc: 'Done-with-you experience design.',
-    features: [
-      'Everything in Signature',
-      'Guest Journey Playbook (unlimited)',
-      'Property audit call',
-      'Done-with-you experience design',
-      'Airbnb & VRBO calendar sync',
-      'Guest message auto-fill',
-    ],
-    cta: 'Upgrade to Legend',
-    disabled: false,
   },
 ]
 
@@ -94,15 +64,15 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="flex flex-col gap-10 max-w-4xl">
+    <div className="flex flex-col gap-10 max-w-2xl">
       <div>
         <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Upgrade your plan</h1>
-        <p className="text-muted-foreground">Unlock more tools as you grow. Cancel anytime.</p>
+        <p className="text-muted-foreground">Start free. Upgrade to Legendary when you're ready. Cancel anytime.</p>
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid sm:grid-cols-2 gap-5">
         {PLAN_DETAILS.map((plan) => (
           <div
             key={plan.key}
@@ -133,6 +103,13 @@ export default function PricingPage() {
             </Button>
           </div>
         ))}
+      </div>
+
+      <div className="bg-accent rounded-2xl p-6 flex flex-col gap-3">
+        <p className="font-serif font-semibold text-foreground">What's included in Legendary</p>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Legendary isn't just access to tools. It's the full experience — every modality, unlimited use, a custom playbook built for your specific property, and one night per year at Laurel & Lore to experience the hospitality system firsthand with Ogun and Evie.
+        </p>
       </div>
 
       <p className="text-xs text-muted-foreground">

@@ -34,24 +34,154 @@ function ImageSlot({ src, alt, className, overlay, objectFit = 'cover' }: { src:
 
 const REVIEWS = [
   {
-    quote: "We absolutely loved the outdoor shower — we ended up using it every single morning. It made the whole stay feel like a retreat, not a rental. We've already booked our return trip.",
-    author: 'Jessica & Mark',
-    detail: 'Couples stay · 5★',
+    quote: "We had such a lovely time here, I would really recommend! This host had thought of everything to make our stay really comfortable. We especially liked the fire pit and campfire story book!",
+    author: 'Jo',
+    detail: '5 years on Airbnb · July 2024 · 5★',
   },
   {
-    quote: "I loved that everything was already thought of before we arrived. The little touches made us feel genuinely seen — not like guests, like people they actually cared about.",
-    author: 'Renata S.',
-    detail: 'Solo traveler · 5★',
+    quote: "Everything was great! The whole experience was well worth the price and time. Thank you so much for letting us have our reunion at your place! Highly recommend this place and host!",
+    author: 'Cristie',
+    detail: 'Hartson, Arkansas · July 2024 · 5★',
   },
   {
-    quote: "The movie nights on the deck were something we still talk about months later. We loved every second of this place. It's rare to leave somewhere and immediately want to come back.",
-    author: 'David & Claire',
-    detail: 'Anniversary stay · 5★',
+    quote: "The RV is modern, fully stocked, and spacious enough for families. Ivelisse even has detailed instructional videos for absolutely everything and we found them very helpful. My wife and I loved the RV and my children can't wait to come back and stay longer.",
+    author: 'Roberto',
+    detail: 'Vineland, New Jersey · May 2024 · 5★',
   },
   {
-    quote: "We love this place so much — this was our third visit. The wellness space, the morning light, the way it smells when you walk in. It's home, but better. Every single time.",
-    author: 'Thomas F.',
-    detail: 'Repeat guest · 5★',
+    quote: "Perfect quiet getaway in a private natural setting.",
+    author: 'Jennifer',
+    detail: 'Hilton Head Island, SC · March 2026 · 5★',
+  },
+  {
+    quote: "First time staying in an RV but it worked great with our two dogs.",
+    author: 'Thea',
+    detail: '11 years on Airbnb · February 2026 · 5★',
+  },
+  {
+    quote: "Cute place, have everything you need to be comfortable during your stay. Host was super nice and very attentive.",
+    author: 'Christian & Oriana',
+    detail: 'Braselton, Georgia · November 2025 · 5★',
+  },
+  {
+    quote: "Loved the experience of staying in an RV. The surroundings were beautiful and peaceful. We were able to travel Savannah and enjoy the sites and come back and just relax. It was like being at home. Very comfortable and cozy.",
+    author: 'Kimberly',
+    detail: 'Warner Robins, Georgia · July 2025 · 5★',
+  },
+  {
+    quote: "We had a great stay! The place was very clean, well-organized, and exactly as described in the listing. The area is private and peaceful — perfect for a relaxing getaway. I would definitely recommend this place to others and would love to come back again!",
+    author: 'Anvesh',
+    detail: 'Tampa, Florida · July 2025 · 5★',
+  },
+  {
+    quote: "Super cute RV. The little details made it super homey. The fresh ground coffee maker was a hit in the AMs!! The cold Topo Chico in the fridge after the drive was so good. Might seem like something small but the dish soap and complementary body wash was a lovely touch.",
+    author: 'Carolina',
+    detail: 'Hollywood, Florida · June 2025 · 5★',
+  },
+  {
+    quote: "My family had such an incredible stay! It was our first time staying in an RV and we enjoyed it a lot more than we anticipated. The place was very clean and had such thoughtful touches throughout the space. Our toddler loved the books, games, and campfire! We can't say enough good things about this place.",
+    author: 'Victoria',
+    detail: '10 years on Airbnb · April 2025 · 5★',
+  },
+  {
+    quote: "Fantastic place! The details put into the place including the welcome sign with my name, whole bean coffee with Keurig grinder, and sparkling water with chilled glasses upon arrival were amazing! We are already planning on coming back. Convenient to Savannah but with safety and privacy. Love the outdoor seating and the fireplace inside.",
+    author: 'Heather',
+    detail: 'Douglasville, Georgia · April 2025 · 5★',
+  },
+  {
+    quote: "What a great find! The perfect spot for travelers with furry friends. It was cozy, clean and so many special touches. We even watched a movie theater style with the extremely comfortable furniture while having the fireplace on. We stayed with our kids and 2 dogs and it was perfect — the host was extremely responsive to any inquiries we had.",
+    author: 'James',
+    detail: 'Ft. Myers, FL · January 2025 · 5★',
+  },
+  {
+    quote: "This was perfect for our weekend getaway. Situated outside of the ruckus of the city, we were able to enjoy quiet, peaceful evenings and mornings with the birds chirping and sound of wind in the trees. Ivelisse and her husband were beyond responsive and friendly. This is an amazing place to stay if you are looking for a little slice of heaven.",
+    author: 'Alison',
+    detail: 'Quebec, Canada · October 2024 · 5★',
+  },
+  {
+    quote: "This worked out great for my family. The host accommodated a last minute booking with no problem. Extremely clean, comfortable beds and clean bathroom — the surrounding area was very peaceful and quiet. The YouTube videos made it extremely easy to find and gave plenty of information. Extremely pleased.",
+    author: 'Keith',
+    detail: 'Martin, Tennessee · July 2024 · 5★',
+  },
+  {
+    quote: "The perfect stop near Savannah and I-95. Ivelisse was a great host and the space was perfect. Everything was as described and it was super clean. Would definitely stay again!",
+    author: 'Robert',
+    detail: 'Port St. Lucie, Florida · July 2024 · 5★',
+  },
+  {
+    quote: "The camper is well maintained and lots of nice touches from the host — guides laid out to area attractions, nice coffee maker and sparkling water left in the fridge on arrival. It's a great value and exactly like the pictures.",
+    author: 'Verified Guest',
+    detail: 'June 2024 · Stayed with kids · 5★',
+  },
+  {
+    quote: "The RV was perfect for our 2 night stay. It looked just like the photos, was very clean and comfortable. It was great for our dog with a lot of grassy area to walk in. The host was very nice and took the time to answer some of our questions. It was a very private and quiet setting.",
+    author: 'Rhonda',
+    detail: 'Overland Park, Kansas · June 2024 · 5★',
+  },
+  {
+    quote: "Ivelisse is amazing! This place was very well kept and an enjoyable time. She was very kind to our family and hospitable. Her children welcomed my children, sharing their toys and playing with them the entire time. My children adored them and had a fantastic time!",
+    author: 'Gina',
+    detail: 'York, Pennsylvania · May 2024 · 5★',
+  },
+  {
+    quote: "We really enjoyed our stay. It was cozy and comfortable. The location was peaceful as well. Perfect spot to relax and easy to get to the city if necessary.",
+    author: 'Sonya',
+    detail: '8 years on Airbnb · April 2025 · 5★',
+  },
+  {
+    quote: "Lovely trailer. Very clean and comfortable. Great internet and streaming services. Good location — close to our family we were visiting and convenient to Savannah. Very peaceful. Friendly family. Would definitely stay again.",
+    author: 'Julie',
+    detail: 'Falls City, Nebraska · March 2025 · 5★',
+  },
+  {
+    quote: "Ivelisse and her husband made it such an easy and comfortable experience for us. Their place truly felt like home — everything we needed and then some. It felt like we were in the middle of secluded wilderness and yet only 30 minutes from downtown Savannah. Perfect in every way and we will be back again.",
+    author: 'Sonia',
+    detail: 'Miami, Florida · March 2025 · 5★',
+  },
+  {
+    quote: "The Airbnb was exactly as listed. I definitely felt comfortable and safe. It's a real cozy intimate mobile home. It was amazing. I definitely want to use this Airbnb again since I have family in the vicinity.",
+    author: 'Christine',
+    detail: 'Fort Mill, South Carolina · November 2024 · 5★',
+  },
+  {
+    quote: "The absolute best place to stay. It is so cozy! The hosts are super nice and very helpful. When we make our way back to Georgia, we will definitely book with them again.",
+    author: 'Taylor',
+    detail: 'Hutchinson, Kansas · August 2024 · 5★',
+  },
+  {
+    quote: "We were there when Hurricane Helene was passing by. The hosts were extremely proactive being sure we were okay and cared for. Throughout our stay they were so attentive that it made us feel very nurtured and safe. Besides all that, the place was completely comfortable and everything any traveler might ever need was right there at hand. They had thought of every thing!",
+    author: 'Katie',
+    detail: 'Asheville, North Carolina · October 2024 · 5★',
+  },
+  {
+    quote: "Perfect accommodation — they do everything perfectly. Extremely clean. We will definitely return. Thank you.",
+    author: 'Allison',
+    detail: 'Fort Lauderdale, Florida · December 2025 · 5★',
+  },
+  {
+    quote: "The RV was perfect for us. Very clean and plenty of amenities. It was very quiet and peaceful. Will definitely consider booking again if we ever are in the area again.",
+    author: 'Synthia',
+    detail: '2 years on Airbnb · April 2025 · 5★',
+  },
+  {
+    quote: "Place was the perfect night stay! Much better than a hotel! Especially having the separate room for our kids! And the host was very accommodating! Definitely recommend!",
+    author: 'Nicole',
+    detail: 'Arcadia, Florida · April 2025 · 5★',
+  },
+  {
+    quote: "Ivelisse's place was fantastic. We thoroughly enjoyed our stay and the hosts have really thought of pretty much everything you could need. We loved our RV vacay.",
+    author: 'Kelley & Dan',
+    detail: 'Charlotte, North Carolina · January 2025 · 5★',
+  },
+  {
+    quote: "Value, clean, comfortable, quiet — great choice for a getaway. She was VERY informative with excellent instructional videos and directions. Very satisfied guest here.",
+    author: 'Jamie',
+    detail: '6 years on Airbnb · December 2024 · 5★',
+  },
+  {
+    quote: "It was a great cozy place to stay with my kids while we were visiting family. The space was just right and it was very quiet and peaceful.",
+    author: 'Sandra',
+    detail: 'Kansas City, Missouri · July 2024 · 5★',
   },
 ]
 
@@ -141,7 +271,7 @@ export default function LandingPage() {
                 <h3 className="text-2xl font-serif font-semibold text-foreground">Ivelisse "Evie" Cananoglu</h3>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                Before sustainability was a hashtag, Evie was already living it. In the early 2000s — when nobody was talking about green cleaning practices — she was building a business around them, serving clients who understood that how you clean a space says something about how you value it.
+                Before sustainability was a hashtag, Evie was already exploring what it meant to live and work more consciously. In the early 2000s — when few businesses were making green cleaning their focus — she began shaping her work around those ideas, serving clients who understood that how you care for a space reflects how you value it.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Evie has always been ahead of the conversation. She doesn't follow trends in hospitality. She creates the experience, then watches the trends catch up. Her eye for detail, her sense of environment, and her belief that every space should feel intentionally cared for — that DNA is in every feature StayStory builds.
@@ -153,7 +283,8 @@ export default function LandingPage() {
             <ImageSlot
               src={IMAGES.evie}
               alt="Ivelisse 'Evie' Cananoglu — co-founder"
-              className="rounded-2xl h-80 sm:h-96"
+              className="rounded-2xl h-80 sm:h-[500px] bg-muted"
+              objectFit="contain"
             />
           </div>
 
@@ -242,9 +373,7 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <p className="text-center text-xs text-muted-foreground mt-6">
-            Share your actual Airbnb review text with us to replace these examples.
-          </p>
+
         </div>
       </section>
 
@@ -286,10 +415,10 @@ export default function LandingPage() {
             {
               n: '2', title: 'Create the moment', sub: 'Hospitality Generator',
               desc: 'Paste a guest\'s message and it auto-fills the form. Then get tiered gesture ideas, setup plan, shopping list, and three message templates — specific to that person.',
-              bg: 'bg-accent', teacher: 'Unreasonable Hospitality',
+              bg: 'bg-accent', teacher: 'Experience Design',
             },
             {
-              n: '3', title: 'Map every touchpoint', sub: 'Guest Journey Map',
+              n: '3', title: 'Map every touchpoint', sub: 'The Stay Experience',
               desc: 'From the booking confirmation to what they find in their car weeks later — map all 14 moments of a stay and get Low-Hanging, Achievable, and Audacious ideas for each one.',
               bg: 'bg-primary/10', teacher: 'Guest Journey Design',
             },
@@ -324,7 +453,7 @@ export default function LandingPage() {
               },
               {
                 title: 'Guest Message Auto-fill',
-                desc: 'Paste any guest message and Claude extracts their name, occasion, emotional state, interests, and notes — and fills the form automatically.',
+                desc: 'Paste any guest message and it automatically extracts their name, occasion, emotional state, interests, and notes — and fills the form for you.',
               },
             ].map((f) => (
               <div key={f.title} className="flex flex-col gap-2">
@@ -338,18 +467,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Legend special offer ─────────────────────────────────────── */}
+      {/* ─── Legendary stay offer ─────────────────────────────────────── */}
       <section className="py-20 px-6 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto">
           <div className="grid sm:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <div>
-                <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-3">Legend tier · Exclusive offer</p>
+                <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-3">Legendary membership · Annual benefit</p>
                 <h2 className="text-3xl font-serif font-semibold leading-tight mb-4">
-                  The first 10 Legend members stay with us — free.
+                  Every Legendary member stays with us — free. Once a year.
                 </h2>
                 <p className="text-primary-foreground/80 leading-relaxed">
-                  Two days at our property. Breakfast on the deck. An outdoor shower at sunrise. A movie night under the stars. And dinner with Ogun and Evie.
+                  One night at our property. Breakfast on the deck. An outdoor shower at sunrise. A movie night under the stars. And dinner with Ogun and Evie.
                 </p>
               </div>
               <p className="text-primary-foreground/80 leading-relaxed">
@@ -357,7 +486,7 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col gap-2 text-sm">
                 <p className="flex items-center gap-2 text-primary-foreground/90">
-                  <span>✓</span> 2 nights at Laurel & Lore — complimentary
+                  <span>✓</span> 1 night at Laurel & Lore — complimentary
                 </p>
                 <p className="flex items-center gap-2 text-primary-foreground/90">
                   <span>✓</span> Private dinner with Ogun & Evie
@@ -366,14 +495,11 @@ export default function LandingPage() {
                   <span>✓</span> Hands-on walkthrough of the full system
                 </p>
                 <p className="flex items-center gap-2 text-primary-foreground/90">
-                  <span>✓</span> Valid anytime within 1 year of purchase
-                </p>
-                <p className="flex items-center gap-2 text-primary-foreground/60 text-xs mt-1">
-                  Limited to the first 10 Legend purchasers. First come, first served.
+                  <span>✓</span> Renewed every year with your membership
                 </p>
               </div>
               <Link href="/signup" className={cn(buttonVariants({ variant: 'secondary', size: 'lg' }), 'w-fit')}>
-                Claim your Legend spot →
+                Become Legendary →
               </Link>
             </div>
             <ImageSlot
@@ -406,42 +532,26 @@ export default function LandingPage() {
 
       {/* ─── Pricing ─────────────────────────────────────────────────── */}
       <section className="py-24 px-6 bg-card">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-serif font-semibold text-center mb-4 text-foreground">Simple pricing.</h2>
-          <p className="text-center text-muted-foreground mb-14">Start free. Upgrade when you're ready. Cancel anytime.</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <p className="text-center text-muted-foreground mb-14">Start free. Upgrade to Legendary when you're ready. Cancel anytime.</p>
+          <div className="grid sm:grid-cols-2 gap-5">
             {[
               {
                 name: 'Free', price: '$0',
-                features: ['Foundation Audit', '3 generator uses/mo', 'Calendar sync', 'Message auto-fill', '1 preview of each tool'],
+                features: ['Foundation Audit', '1 generator use/month', 'Guest message auto-fill', '1 free preview of each tool'],
                 highlight: false,
               },
               {
-                name: 'Host', price: '$12/mo',
-                features: ['Unlimited generator', 'Journey Map', 'Calendar sync', 'Message auto-fill', 'Shopping lists & templates'],
-                highlight: false,
-              },
-              {
-                name: 'Signature', price: '$29/mo',
-                features: ['Everything in Host', 'Guest Story Builder', 'Listing copy & captions', 'Calendar sync', 'Message auto-fill'],
+                name: 'Legendary', price: '$499/mo',
+                features: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '★ 1 night free stay at Laurel & Lore per year'],
                 highlight: true,
-              },
-              {
-                name: 'Legend', price: '$79/mo',
-                features: ['Everything in Signature', 'Guest Journey Playbook', 'Property audit call', 'Done-with-you design', '★ 2-night stay offer (first 10)'],
-                highlight: false,
-                badge: 'First 10 get a free stay',
               },
             ].map((tier) => (
               <div
                 key={tier.name}
-                className={`rounded-2xl p-6 flex flex-col gap-4 border relative ${tier.highlight ? 'border-primary bg-primary/5' : 'border-border bg-background'}`}
+                className={`rounded-2xl p-6 flex flex-col gap-4 border ${tier.highlight ? 'border-primary bg-primary/5' : 'border-border bg-background'}`}
               >
-                {'badge' in tier && tier.badge && (
-                  <div className="absolute -top-3 left-4 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-medium">
-                    {tier.badge}
-                  </div>
-                )}
                 <div>
                   <p className="font-serif font-semibold text-foreground">{tier.name}</p>
                   <p className="text-2xl font-semibold text-foreground mt-1">{tier.price}</p>
@@ -454,7 +564,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <Link href="/signup" className={cn(buttonVariants({ variant: tier.highlight ? 'default' : 'outline', size: 'sm' }))}>
-                  Get started
+                  {tier.highlight ? 'Become Legendary →' : 'Start free'}
                 </Link>
               </div>
             ))}
