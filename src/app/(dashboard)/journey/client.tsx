@@ -140,7 +140,39 @@ const KEY_MOMENT_LABELS: Record<string, { label: string; color: string }> = {
   overlooked: { label: 'Overlooked Moment', color: 'bg-accent text-accent-foreground border-accent' },
 }
 
-export default function JourneyClient({ isTrial = false }: { isTrial?: boolean }) {
+const SAMPLE_IDEAS = {
+  pre_arrival: {
+    low: 'Send a warm, personal message 5 days before arrival referencing something specific they mentioned — their reason for visiting, the occasion, anything. It takes 3 minutes and tells them you\'re already thinking about them.',
+    achievable: 'Put together a simple "Your Stay" guide: top 3 local spots, the best time to use the outdoor shower (golden hour), how the fire works, a short personal note. Deliver it digitally 3 days before they arrive.',
+    audacious: 'Record a 90-second walk-through video of the property — the deck at sunset, where everything is, what you\'ve already set up for them. Send it the morning of arrival. Nothing turns anticipation into excitement faster.',
+  },
+}
+
+function PreviewLockedSection() {
+  return (
+    <div className="relative">
+      <div className="flex flex-col gap-3 pointer-events-none select-none opacity-40">
+        {['Day-of arrival message', 'Parking & finding the property', 'Entry moment — door, key, lock', 'First impression walking in', 'Where does the guest put their bag?', 'First morning', 'Mid-stay check-in', 'Your property\'s signature moment', 'Checkout experience', 'Farewell moment', 'Follow-up message (2–3 days after)', 'Something discovered after they leave'].map((label) => (
+          <div key={label} className="border border-border rounded-xl p-4 flex items-center justify-between">
+            <span className="font-medium text-foreground text-sm">{label}</span>
+            <span className="text-muted-foreground text-xs">🔒</span>
+          </div>
+        ))}
+      </div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-background/60 backdrop-blur-[2px] rounded-2xl">
+        <div className="text-center px-6">
+          <p className="text-lg font-serif font-semibold text-foreground mb-2">12 more touchpoints — all locked</p>
+          <p className="text-sm text-muted-foreground max-w-xs">Every moment from arrival through what they find weeks later. Generate ideas for each one, specific to your property.</p>
+        </div>
+        <Link href="/pricing" className="bg-primary text-primary-foreground px-6 py-3 rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors">
+          Unlock all 14 touchpoints — Legendary →
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+export default function JourneyClient({ isTrial = false, isPreview = false }: { isTrial?: boolean; isPreview?: boolean }) {
   const [states, setStates] = useState<Record<string, TouchpointState>>(() =>
     Object.fromEntries(
       TOUCHPOINTS.map((t) => [t.id, { current: '', ideas: null, loading: false, expanded: false }])
@@ -187,6 +219,91 @@ export default function JourneyClient({ isTrial = false }: { isTrial?: boolean }
     phase,
     items: TOUCHPOINTS.filter((t) => t.phase === phase),
   }))
+
+  if (isPreview) {
+    return (
+      <div className="flex flex-col gap-10 max-w-2xl">
+        <div className="bg-primary text-primary-foreground rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold">Your free preview is complete</p>
+            <p className="text-xs text-primary-foreground/70 mt-0.5">Upgrade to Legendary to map all 14 touchpoints — and generate ideas for each, specific to your property.</p>
+          </div>
+          <Link href="/pricing" className="bg-primary-foreground text-primary px-4 py-2 rounded-lg text-xs font-semibold shrink-0 hover:bg-primary-foreground/90 transition-colors">
+            Upgrade to Legendary →
+          </Link>
+        </div>
+
+        <div>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 3</p>
+          <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Guest Journey Map</h1>
+          <p className="text-muted-foreground leading-relaxed">
+            Map every moment your guest experiences — from booking confirmation to what they discover after checkout. Here's a sample of what the tool generates.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {Object.entries(KEY_MOMENT_LABELS).map(([, { label, color }]) => (
+            <div key={label} className={`text-xs px-3 py-2 rounded-lg border ${color} text-center font-medium`}>{label}</div>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground border-b border-border pb-2">Before Arrival</h2>
+
+          {/* One sample touchpoint fully open */}
+          <div className="border border-primary/30 bg-primary/5 rounded-xl overflow-hidden">
+            <div className="w-full flex items-center justify-between p-4 text-left">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <span className="font-medium text-foreground text-sm">Pre-arrival message (3–7 days out)</span>
+                <Badge variant="outline" className={`text-xs shrink-0 ${KEY_MOMENT_LABELS.start.color}`}>
+                  {KEY_MOMENT_LABELS.start.label}
+                </Badge>
+              </div>
+              <span className="text-xs text-primary font-medium ml-3 shrink-0">Sample output</span>
+            </div>
+            <div className="px-4 pb-5 flex flex-col gap-4 border-t border-border bg-card/50">
+              <p className="text-sm text-muted-foreground italic mt-4">"This is your first chance to make them feel seen before they step through the door."</p>
+              <div className="flex flex-col gap-3 mt-1">
+                {[
+                  { label: 'Low-Hanging', value: SAMPLE_IDEAS.pre_arrival.low, bg: 'bg-secondary' },
+                  { label: 'Achievable', value: SAMPLE_IDEAS.pre_arrival.achievable, bg: 'bg-accent' },
+                  { label: 'Audacious', value: SAMPLE_IDEAS.pre_arrival.audacious, bg: 'bg-primary/10' },
+                ].map((idea) => (
+                  <div key={idea.label} className={`${idea.bg} rounded-lg p-4`}>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">{idea.label}</p>
+                    <p className="text-sm text-foreground leading-relaxed">{idea.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Booking confirmation — locked */}
+          <div className="border border-border rounded-xl p-4 flex items-center justify-between opacity-50 pointer-events-none select-none">
+            <span className="font-medium text-foreground text-sm">Booking confirmation message</span>
+            <span className="text-muted-foreground text-xs">🔒</span>
+          </div>
+          <div className="border border-border rounded-xl p-4 flex items-center justify-between opacity-50 pointer-events-none select-none">
+            <span className="font-medium text-foreground text-sm">Day-of arrival message</span>
+            <span className="text-muted-foreground text-xs">🔒</span>
+          </div>
+        </div>
+
+        <PreviewLockedSection />
+
+        <div className="bg-primary text-primary-foreground rounded-2xl p-8 flex flex-col gap-4 text-center items-center">
+          <p className="text-xs uppercase tracking-widest text-primary-foreground/60">Legendary</p>
+          <h2 className="text-2xl font-serif font-semibold">Map every moment. Improve every one.</h2>
+          <p className="text-primary-foreground/80 text-sm max-w-sm leading-relaxed">
+            14 touchpoints. 5 phases. For each one: low-hanging, achievable, and audacious ideas — generated specifically for your property and guests.
+          </p>
+          <Link href="/pricing" className="bg-primary-foreground text-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/90 transition-colors">
+            Unlock Journey Map — $499/mo →
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-10 max-w-2xl">

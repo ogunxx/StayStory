@@ -15,7 +15,15 @@ interface StoryResult {
   listing_improvements: string
 }
 
-export default function StoryClient({ isTrial = false }: { isTrial?: boolean }) {
+const SAMPLE_STORY = {
+  narrative: `Sarah and Marcus arrived on a Friday evening, five years into a marriage that had quietly become a marathon of mortgages, toddler schedules, and back-to-back work trips. They didn't need a vacation. They needed to remember who they were before all of it.\n\nThe deck was set when they walked in — local wine, two glasses, the fire already going. No instructions, no welcome packet. Just the unmistakable feeling that someone had thought about them specifically. Marcus found the handwritten note on the counter. Three lines. He didn't read it aloud. He didn't need to.\n\nOn Sunday morning they sat outside until noon. Neither of them checked their phones.`,
+  host_perspective: `I saw their booking message and noticed Marcus mentioned it was their first trip alone in three years. I didn't do anything extravagant — a bottle of local wine from the town fifteen minutes away, the deck fire ready to go, a note that said I hoped they'd leave remembering why they chose each other. That's all it took. The review they left three days later was the best I've ever received.`,
+  social_caption: `Five years together. First trip alone in three. They sat on the deck until noon on Sunday and didn't check their phones once.\n\nThat's the whole point. ✦`,
+  pre_arrival_message: `Hi Sarah & Marcus — so excited to welcome you this weekend.\n\nA few things I've set up for you: the outdoor shower is best at golden hour (trust me on this one). The deck fire takes about 10 minutes — lighter's on the side table. And there's something cold waiting in the fridge.\n\nCan't wait to host you. Safe travels. — [Your name]`,
+  listing_improvements: `Consider adding to your listing description:\n\n"Guests tell us the deck at sunset is the moment they didn't know they needed. Set aside your first evening for it — just that."\n\nAlso: your review mentions the handwritten note more than any other detail. Make that explicit in your hosting approach — guests want to feel seen, and one personal line does more than any amenity.`,
+}
+
+export default function StoryClient({ isTrial = false, isPreview = false }: { isTrial?: boolean; isPreview?: boolean }) {
   const [form, setForm] = useState({
     guestName: '',
     whyVisiting: '',
@@ -52,6 +60,79 @@ export default function StoryClient({ isTrial = false }: { isTrial?: boolean }) 
     } finally {
       setLoading(false)
     }
+  }
+
+  if (isPreview) {
+    return (
+      <div className="flex flex-col gap-10 max-w-2xl">
+        <div className="bg-primary text-primary-foreground rounded-xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold">Your free preview is complete</p>
+            <p className="text-xs text-primary-foreground/70 mt-0.5">Here's an example of what Story Builder produces — for every guest you host.</p>
+          </div>
+          <Link href="/pricing" className="bg-primary-foreground text-primary px-4 py-2 rounded-lg text-xs font-semibold shrink-0 hover:bg-primary-foreground/90 transition-colors">
+            Upgrade to Legendary →
+          </Link>
+        </div>
+
+        <div>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 4</p>
+          <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Guest Story Builder</h1>
+          <p className="text-muted-foreground leading-relaxed">
+            Every guest has a story. This is what it looks like when you tell it well. The example below was built from a single guest: Sarah & Marcus, 5-year anniversary, first trip alone in three years.
+          </p>
+        </div>
+
+        <div className="relative">
+          <div className="flex flex-col gap-4">
+            <div className="bg-secondary rounded-xl p-6">
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">The story — guest's perspective</p>
+              <p className="text-foreground leading-relaxed whitespace-pre-line">{SAMPLE_STORY.narrative}</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-6">
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Host's perspective</p>
+              <p className="text-foreground leading-relaxed italic">{SAMPLE_STORY.host_perspective}</p>
+            </div>
+            <div className="bg-accent rounded-xl p-6">
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Social caption</p>
+              <p className="text-foreground leading-relaxed whitespace-pre-line">{SAMPLE_STORY.social_caption}</p>
+            </div>
+            <div className="flex flex-col gap-4" style={{ filter: 'blur(4px)', pointerEvents: 'none', userSelect: 'none' }}>
+              <div className="bg-card border border-border rounded-xl p-6">
+                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Pre-arrival message</p>
+                <p className="text-foreground leading-relaxed whitespace-pre-line">{SAMPLE_STORY.pre_arrival_message}</p>
+              </div>
+              <div className="bg-primary/10 rounded-xl p-6">
+                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Listing copy improvements</p>
+                <p className="text-foreground leading-relaxed whitespace-pre-line">{SAMPLE_STORY.listing_improvements}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Lock overlay on last 2 sections */}
+          <div className="absolute bottom-0 left-0 right-0 h-80 flex flex-col items-center justify-end pb-8 bg-gradient-to-t from-background via-background/90 to-transparent">
+            <div className="text-center px-6 mb-5">
+              <p className="text-lg font-serif font-semibold text-foreground mb-1">Pre-arrival message + listing copy — locked</p>
+              <p className="text-sm text-muted-foreground max-w-sm">Upgrade to Legendary to generate every section for every guest you host — unlimited.</p>
+            </div>
+            <Link href="/pricing" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
+              Unlock Story Builder — $499/mo →
+            </Link>
+          </div>
+        </div>
+
+        <div className="bg-primary text-primary-foreground rounded-2xl p-8 flex flex-col gap-4 text-center items-center">
+          <p className="text-xs uppercase tracking-widest text-primary-foreground/60">Legendary</p>
+          <h2 className="text-2xl font-serif font-semibold">Every guest leaves a story. Start telling them.</h2>
+          <p className="text-primary-foreground/80 text-sm max-w-sm leading-relaxed">
+            Guest narrative, host perspective, social caption, pre-arrival message, and listing improvements — all from a 5-field form. Unlimited, for every guest.
+          </p>
+          <Link href="/pricing" className="bg-primary-foreground text-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/90 transition-colors">
+            Become Legendary →
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (

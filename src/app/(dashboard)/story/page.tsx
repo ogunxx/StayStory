@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
-import { TierGate } from '@/components/tier-gate'
 import StoryClient from './client'
 
 export default async function StoryPage() {
@@ -28,5 +27,5 @@ export default async function StoryPage() {
     return <StoryClient isTrial />
   }
 
-  return <TierGate requiredTier="legendary" featureName="Guest Story Builder" />
+  return <StoryClient isPreview />
 }

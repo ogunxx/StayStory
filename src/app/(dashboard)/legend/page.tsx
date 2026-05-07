@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
-import { TierGate } from '@/components/tier-gate'
 import LegendClient from './client'
 
 export default async function LegendPage() {
@@ -28,5 +27,5 @@ export default async function LegendPage() {
     return <LegendClient isTrial />
   }
 
-  return <TierGate requiredTier="legendary" featureName="Guest Journey Playbook" />
+  return <LegendClient isPreview />
 }

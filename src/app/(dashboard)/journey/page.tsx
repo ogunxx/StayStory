@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
-import { TierGate } from '@/components/tier-gate'
 import JourneyClient from './client'
 
 export default async function JourneyPage() {
@@ -28,5 +27,5 @@ export default async function JourneyPage() {
     return <JourneyClient isTrial />
   }
 
-  return <TierGate requiredTier="legendary" featureName="Journey Map" />
+  return <JourneyClient isPreview />
 }
