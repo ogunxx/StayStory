@@ -35,7 +35,7 @@ PAPER_STARTING_BALANCE = float(os.getenv("PAPER_BALANCE", "3000"))
 
 # ─── Coinbase API ─────────────────────────────────────────────────────────────
 CB_API_KEY    = os.getenv("CB_API_KEY", "")
-CB_API_SECRET = os.getenv("CB_API_SECRET", "")
+CB_API_SECRET = os.getenv("CB_API_SECRET", "").replace("\\n", "\n")
 
 # ─── Loop ─────────────────────────────────────────────────────────────────────
 POLL_INTERVAL = 60  # seconds between main-loop iterations
