@@ -1,10 +1,11 @@
 """
 Fetches OHLCV candle data from Coinbase Advanced Trade API.
-Returns clean pandas DataFrames with a UTC DatetimeIndex.
+- Historical / backtest data: public endpoint (no auth, no 401s)
+- Live account data: authenticated endpoint
 """
 
 import time
-import datetime
+import requests
 import pandas as pd
 from coinbase.rest import RESTClient
 import config as cfg
@@ -21,6 +22,8 @@ _SECONDS = {
     "ONE_DAY":        86400,
 }
 
+_PUBLIC_BASE = "https://api.coinbase.com/api/v3/brokerage/market/products"
+
 
 def _build_client() -> RESTClient:
     if not cfg.CB_API_KEY or not cfg.CB_API_SECRET:
@@ -30,69 +33,69 @@ def _build_client() -> RESTClient:
     return RESTClient(api_key=cfg.CB_API_KEY, api_secret=cfg.CB_API_SECRET)
 
 
-def _candles_to_df(candles) -> pd.DataFrame:
+def _candles_to_df(candles: list) -> pd.DataFrame:
     rows = []
     for c in candles:
         rows.append({
-            "timestamp": int(c.start),
-            "open":   float(c.open),
-            "high":   float(c.high),
-            "low":    float(c.low),
-            "close":  float(c.close),
-            "volume": float(c.volume),
+            "timestamp": int(c["start"]) if isinstance(c, dict) else int(c.start),
+            "open":   float(c["open"])   if isinstance(c, dict) else float(c.open),
+            "high":   float(c["high"])   if isinstance(c, dict) else float(c.high),
+            "low":    float(c["low"])    if isinstance(c, dict) else float(c.low),
+            "close":  float(c["close"])  if isinstance(c, dict) else float(c.close),
+            "volume": float(c["volume"]) if isinstance(c, dict) else float(c.volume),
         })
     df = pd.DataFrame(rows)
+    if df.empty:
+        return df
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="s", utc=True)
-    df = df.set_index("timestamp").sort_index()
-    return df
+    return df.set_index("timestamp").sort_index()
+
+
+def _fetch_public_candles(product_id: str, granularity: str,
+                          start: int, end: int, limit: int) -> pd.DataFrame:
+    """
+    Fetch candles from the unauthenticated public endpoint.
+    Retries up to 4 times with exponential backoff.
+    """
+    url = f"{_PUBLIC_BASE}/{product_id}/candles"
+    params = {
+        "start":       str(start),
+        "end":         str(end),
+        "granularity": granularity,
+        "limit":       limit,
+    }
+    delay = 2
+    for attempt in range(4):
+        try:
+            resp = requests.get(url, params=params, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()
+            candles = data.get("candles", [])
+            return _candles_to_df(candles)
+        except Exception:
+            if attempt == 3:
+                raise
+            time.sleep(delay)
+            delay *= 2
+    return pd.DataFrame()
 
 
 class DataFetcher:
     def __init__(self):
         self._client = _build_client()
 
-    def _fetch_with_retry(self, product_id, granularity, start, end, limit, retries=4):
-        delay = 2
-        for attempt in range(retries):
-            try:
-                resp = self._client.get_candles(
-                    product_id=product_id,
-                    start=str(start),
-                    end=str(end),
-                    granularity=granularity,
-                    limit=limit,
-                )
-                return _candles_to_df(resp.candles)
-            except Exception:
-                if attempt == retries - 1:
-                    raise
-                time.sleep(delay)
-                delay *= 2
-                self._client = _build_client()  # fresh client + fresh JWT
-        return pd.DataFrame()
-
     def fetch_candles(self, product_id: str, granularity: str, limit: int = 300) -> pd.DataFrame:
-        """
-        Fetch the most recent `limit` closed candles (max 300 per Coinbase request).
-        """
+        """Live candles for the paper-trading loop — uses public endpoint."""
         now      = int(time.time())
         interval = _SECONDS[granularity]
-        start    = now - interval * (limit + 1)  # +1 so the live candle is always trimmed
-
-        resp = self._client.get_candles(
-            product_id=product_id,
-            start=str(start),
-            end=str(now),
-            granularity=granularity,
-            limit=limit + 1,
-        )
-        df = _candles_to_df(resp.candles)
-        return df.iloc[:-1]  # drop the still-forming candle
+        start    = now - interval * (limit + 1)
+        df = _fetch_public_candles(product_id, granularity, start, now, limit + 1)
+        return df.iloc[:-1] if len(df) > 1 else df
 
     def fetch_historical(self, product_id: str, granularity: str, days: int) -> pd.DataFrame:
         """
-        Fetch `days` worth of historical candles, paginating as needed.
-        Coinbase caps each request at 300 candles.
+        Fetch `days` worth of candles for backtesting.
+        Paginates through the public endpoint — no authentication required.
         """
         interval       = _SECONDS[granularity]
         candles_needed = int(days * 86400 / interval)
@@ -104,11 +107,11 @@ class DataFetcher:
         while candles_needed > 0:
             n     = min(chunk_size, candles_needed)
             start = end - interval * n
-            chunk = self._fetch_with_retry(product_id, granularity, start, end, n)
+            chunk = _fetch_public_candles(product_id, granularity, start, end, n)
             if chunk.empty:
                 break
             frames.append(chunk)
-            end          = start - 1
+            end           = start - 1
             candles_needed -= n
             time.sleep(0.3)
 
