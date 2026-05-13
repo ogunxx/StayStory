@@ -51,6 +51,26 @@ class DataFetcher:
     def __init__(self):
         self._client = _build_client()
 
+    def _fetch_with_retry(self, product_id, granularity, start, end, limit, retries=4):
+        delay = 2
+        for attempt in range(retries):
+            try:
+                resp = self._client.get_candles(
+                    product_id=product_id,
+                    start=str(start),
+                    end=str(end),
+                    granularity=granularity,
+                    limit=limit,
+                )
+                return _candles_to_df(resp.candles)
+            except Exception:
+                if attempt == retries - 1:
+                    raise
+                time.sleep(delay)
+                delay *= 2
+                self._client = _build_client()  # fresh client + fresh JWT
+        return pd.DataFrame()
+
     def fetch_candles(self, product_id: str, granularity: str, limit: int = 300) -> pd.DataFrame:
         """
         Fetch the most recent `limit` closed candles (max 300 per Coinbase request).
@@ -74,30 +94,23 @@ class DataFetcher:
         Fetch `days` worth of historical candles, paginating as needed.
         Coinbase caps each request at 300 candles.
         """
-        interval     = _SECONDS[granularity]
+        interval       = _SECONDS[granularity]
         candles_needed = int(days * 86400 / interval)
-        chunk_size   = 300
-        now          = int(time.time())
-        end          = now
-        frames       = []
+        chunk_size     = 300
+        now            = int(time.time())
+        end            = now
+        frames         = []
 
         while candles_needed > 0:
             n     = min(chunk_size, candles_needed)
             start = end - interval * n
-            resp  = self._client.get_candles(
-                product_id=product_id,
-                start=str(start),
-                end=str(end),
-                granularity=granularity,
-                limit=n,
-            )
-            chunk = _candles_to_df(resp.candles)
+            chunk = self._fetch_with_retry(product_id, granularity, start, end, n)
             if chunk.empty:
                 break
             frames.append(chunk)
             end          = start - 1
             candles_needed -= n
-            time.sleep(0.2)  # stay well under rate limits
+            time.sleep(0.3)
 
         if not frames:
             return pd.DataFrame(columns=["open", "high", "low", "close", "volume"])
