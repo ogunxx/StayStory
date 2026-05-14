@@ -186,6 +186,7 @@ class PaperTrader:
 
     def _save_trade(self, trade: ClosedTrade):
         path = "trades/paper_trades.jsonl"
+        os.makedirs("trades", exist_ok=True)
         with open(path, "a") as f:
             f.write(json.dumps(asdict(trade)) + "\n")
 
