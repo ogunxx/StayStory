@@ -25,6 +25,7 @@ from data_fetcher import DataFetcher
 from paper_trader import PaperTrader
 from risk_manager import RiskManager
 import backtester as bt
+import backtester_box as bt_box
 
 colorama_init(autoreset=True)
 
@@ -247,27 +248,44 @@ def run_paper():
         time.sleep(cfg.POLL_INTERVAL)
 
 
-# ─── Backtest (trend strategy) ────────────────────────────────────────────────
+# ─── Backtest ─────────────────────────────────────────────────────────────────
 
-def run_backtest(pairs: list, days: int):
+def run_backtest(pairs: list, days: int, strategy: str = "trend"):
     _header()
-    _log(f"Mode: {Style.BRIGHT}BACKTEST  [TREND strategy]", Fore.CYAN)
-    _log(f"Pairs: {', '.join(pairs)}  |  Lookback: {days} days")
 
-    fetcher = DataFetcher()
+    if strategy == "box":
+        _log(f"Mode: {Style.BRIGHT}BACKTEST  [BOX strategy]", Fore.CYAN)
+        _log(f"Pairs: {', '.join(pairs)}  |  Lookback: {days} days")
+        _log("Fetching 3 timeframes (1D / 15M / 5M) — this takes a minute …", Fore.YELLOW)
+        fetcher = DataFetcher()
+        for pair in pairs:
+            _log(f"[{pair}] Fetching {days}d daily candles …")
+            df_daily = fetcher.fetch_historical(pair, "ONE_DAY", days=days + 2)
+            _log(f"[{pair}] Fetching {days}d of 15-minute candles …")
+            df_15m   = fetcher.fetch_historical(pair, "FIFTEEN_MINUTE", days=days)
+            _log(f"[{pair}] Fetching {days}d of 5-minute candles …")
+            df_5m    = fetcher.fetch_historical(pair, "FIVE_MINUTE", days=days)
+            if df_daily.empty or df_15m.empty or df_5m.empty:
+                _log(f"Insufficient data for {pair}, skipping.", Fore.YELLOW)
+                continue
+            _log(f"[{pair}] Running simulation …")
+            result = bt_box.run_box_backtest(df_daily, df_15m, df_5m, pair)
+            bt_box.print_box_report(result)
 
-    for pair in pairs:
-        _log(f"Fetching {days}d of {cfg.TF_LOW} candles for {pair} …")
-        df_entry = fetcher.fetch_historical(pair, cfg.TF_LOW,  days=days)
-        _log(f"Fetching {days}d of {cfg.TF_HIGH} candles for {pair} …")
-        df_trend = fetcher.fetch_historical(pair, cfg.TF_HIGH, days=days)
-
-        if df_entry.empty:
-            _log(f"No data for {pair}, skipping.", Fore.YELLOW)
-            continue
-
-        result = bt.run_backtest(df_entry, df_trend, pair)
-        bt.print_report(result)
+    else:
+        _log(f"Mode: {Style.BRIGHT}BACKTEST  [TREND strategy]", Fore.CYAN)
+        _log(f"Pairs: {', '.join(pairs)}  |  Lookback: {days} days")
+        fetcher = DataFetcher()
+        for pair in pairs:
+            _log(f"Fetching {days}d of {cfg.TF_LOW} candles for {pair} …")
+            df_entry = fetcher.fetch_historical(pair, cfg.TF_LOW,  days=days)
+            _log(f"Fetching {days}d of {cfg.TF_HIGH} candles for {pair} …")
+            df_trend = fetcher.fetch_historical(pair, cfg.TF_HIGH, days=days)
+            if df_entry.empty:
+                _log(f"No data for {pair}, skipping.", Fore.YELLOW)
+                continue
+            result = bt.run_backtest(df_entry, df_trend, pair)
+            bt.print_report(result)
 
 
 # ─── Session summary ──────────────────────────────────────────────────────────
@@ -298,9 +316,10 @@ def main():
 
     sub.add_parser("paper", help="Start paper trading loop (both strategies)")
 
-    bt_parser = sub.add_parser("backtest", help="Backtest the TREND strategy on historical data")
-    bt_parser.add_argument("--pair", nargs="+", default=cfg.PAIRS)
-    bt_parser.add_argument("--days", type=int,  default=60)
+    bt_parser = sub.add_parser("backtest", help="Backtest a strategy on historical data")
+    bt_parser.add_argument("--pair",     nargs="+", default=cfg.PAIRS)
+    bt_parser.add_argument("--days",     type=int,  default=120)
+    bt_parser.add_argument("--strategy", choices=["trend", "box", "both"], default="trend")
 
     live_parser = sub.add_parser("live", help="Start LIVE trading (real money)")
     live_parser.add_argument("--confirm", action="store_true")
@@ -311,7 +330,11 @@ def main():
         run_paper()
 
     elif args.mode == "backtest":
-        run_backtest(args.pair, args.days)
+        if args.strategy == "both":
+            run_backtest(args.pair, args.days, "trend")
+            run_backtest(args.pair, args.days, "box")
+        else:
+            run_backtest(args.pair, args.days, args.strategy)
 
     elif args.mode == "live":
         if not args.confirm:
