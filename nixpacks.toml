@@ -1,0 +1,7 @@
+providers = ["python"]
+
+[phases.install]
+cmds = ["pip install -r crypto-trading-bot/requirements.txt"]
+
+[start]
+cmd = "cd crypto-trading-bot && python3 main.py paper"
