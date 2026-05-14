@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["python311"]
+
+[phases.install]
+cmds = ["pip install -r crypto-trading-bot/requirements.txt"]
+
+[start]
+cmd = "cd crypto-trading-bot && python main.py paper"
