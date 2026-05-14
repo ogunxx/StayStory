@@ -13,9 +13,13 @@ Two strategies run simultaneously in paper mode:
 """
 
 import argparse
+import json
+import os
+import threading
 import time
 import sys
 import datetime
+from dataclasses import asdict
 from colorama import Fore, Style, init as colorama_init
 
 import config as cfg
@@ -26,11 +30,12 @@ from paper_trader import PaperTrader
 from risk_manager import RiskManager
 import backtester as bt
 import backtester_box as bt_box
+import dashboard
 
 colorama_init(autoreset=True)
 
 
-# ─── Logging helpers ──────────────────────────────────────────────────────────
+# ─── Logging helpers ─────────────────────────────────────────────────────────────
 
 def _now_utc() -> datetime.datetime:
     return datetime.datetime.now(datetime.timezone.utc)
@@ -39,7 +44,7 @@ def _now_utc() -> datetime.datetime:
 def _header():
     print(f"\n{Style.BRIGHT}{'─'*60}")
     print(f"  Crypto EA  |  {_now_utc().strftime('%Y-%m-%d %H:%M UTC')}")
-    print(f"{'─'*60}{Style.RESET_ALL}")
+    print(f"{─'*60}{Style.RESET_ALL}")
 
 
 def _log(msg: str, color=Fore.WHITE):
@@ -88,7 +93,27 @@ def _log_trade_close(trade):
     )
 
 
-# ─── Paper trading loop ───────────────────────────────────────────────────────
+# ─── Status writer ─────────────────────────────────────────────────────────────
+
+def _write_status(paper: PaperTrader, risk_s: dict, prices: dict):
+    status = paper.status(prices)
+    positions = [asdict(p) for p in paper.open_positions()]
+    payload = {
+        **status,
+        "timestamp":              _now_utc().strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "halted":                 risk_s["halted"],
+        "daily_drawdown":         risk_s["daily_drawdown"],
+        "open_positions_detail":  positions,
+        "prices":                 prices,
+    }
+    try:
+        with open("status.json", "w") as f:
+            json.dump(payload, f)
+    except Exception:
+        pass
+
+
+# ─── Paper trading loop ──────────────────────────────────────────────────────────
 
 def run_paper():
     _header()
@@ -97,6 +122,11 @@ def run_paper():
     _log(f"Balance: ${cfg.PAPER_STARTING_BALANCE:,.2f}")
     _log(f"Strategy 1 [TREND] — {cfg.TF_HIGH} trend + {cfg.TF_LOW} entries")
     _log(f"Strategy 2 [BOX]   — prev-day H/L breakout + 15M confirm + 5M retest")
+
+    t = threading.Thread(target=dashboard.start_dashboard, daemon=True)
+    t.start()
+    port = int(os.getenv("PORT", 8080))
+    _log(f"Dashboard running on http://0.0.0.0:{port}", Fore.CYAN)
 
     fetcher = DataFetcher()
     paper   = PaperTrader(cfg.PAPER_STARTING_BALANCE)
@@ -131,7 +161,7 @@ def run_paper():
                         _log(f"Daily level fetch error {pair}: {e}", Fore.YELLOW)
                 last_daily_date = today_utc
 
-            # ── Per-pair signal loop ──────────────────────────────────────────
+            # ── Per-pair signal loop ──────────────────────────────────────────────
             for pair in cfg.PAIRS:
                 try:
                     df_entry = fetcher.fetch_candles(pair, cfg.TF_LOW,  limit=100)
@@ -149,7 +179,7 @@ def run_paper():
                 if risk.is_halted():
                     continue
 
-                # ── Strategy 1: TREND ─────────────────────────────────────────
+                # ── Strategy 1: TREND ──────────────────────────────────────────────────
                 latest_entry_ts = df_entry.index[-2]
                 if last_entry_candle[pair] != latest_entry_ts:
                     last_entry_candle[pair] = latest_entry_ts
@@ -170,7 +200,7 @@ def run_paper():
                                 if pos_id:
                                     _log_trend_signal(pair, signal, trend)
 
-                # ── Strategy 2: BOX ───────────────────────────────────────────
+                # ── Strategy 2: BOX ───────────────────────────────────────────────────
                 prev_high, prev_low = prev_day_levels.get(pair, (0.0, 0.0))
                 if prev_high == 0:
                     continue
@@ -217,14 +247,14 @@ def run_paper():
                 except Exception as e:
                     _log(f"[BOX] error {pair}: {e}", Fore.YELLOW)
 
-            # ── Update positions (SL/TP check) ────────────────────────────────
+            # ── Update positions (SL/TP check) ──────────────────────────────────
             if prices:
                 closed = paper.update_positions(prices)
                 for t in closed:
                     _log_trade_close(t)
                     risk.record_closed_trade(t.pnl)
 
-            # ── Status line ───────────────────────────────────────────────────
+            # ── Status line ─────────────────────────────────────────────────────────────
             status = paper.status(prices)
             risk_s = risk.status()
             halted = f"  {Fore.RED}⛔ HALTED{Style.RESET_ALL}" if risk_s["halted"] else ""
@@ -237,6 +267,7 @@ def run_paper():
                 f"DailyDD={risk_s['daily_drawdown']}%"
                 + halted
             )
+            _write_status(paper, risk_s, prices)
 
         except KeyboardInterrupt:
             _log("\nStopping paper trading.", Fore.YELLOW)
@@ -248,7 +279,7 @@ def run_paper():
         time.sleep(cfg.POLL_INTERVAL)
 
 
-# ─── Backtest ─────────────────────────────────────────────────────────────────
+# ─── Backtest ────────────────────────────────────────────────────────────────────
 
 def run_backtest(pairs: list, days: int, strategy: str = "trend"):
     _header()
@@ -288,14 +319,14 @@ def run_backtest(pairs: list, days: int, strategy: str = "trend"):
             bt.print_report(result)
 
 
-# ─── Session summary ──────────────────────────────────────────────────────────
+# ─── Session summary ────────────────────────────────────────────────────────────────
 
 def _print_session_summary(paper: PaperTrader, prices: dict):
     trades = paper.trade_history()
     total  = paper.portfolio_value(prices)
     print(f"\n{'─'*60}")
     print(f"  SESSION SUMMARY")
-    print(f"{'─'*60}")
+    print(f"{─'*60}")
     print(f"  Final portfolio value : ${total:,.2f}")
     print(f"  Total trades          : {len(trades)}")
     if trades:
@@ -305,10 +336,10 @@ def _print_session_summary(paper: PaperTrader, prices: dict):
         box_t   = [t for t in trades if "[BOX]"   in t.exit_reason or "[BOX]"   in getattr(t, "reason", "")]
         print(f"  Win rate              : {len(wins)/len(trades)*100:.1f}%")
         print(f"  Net P&L               : ${pnl:+,.2f}")
-    print(f"{'─'*60}\n")
+    print(f"{─'*60}\n")
 
 
-# ─── CLI ──────────────────────────────────────────────────────────────────────
+# ─── CLI ──────────────────────────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(description="Crypto EA — dual-strategy trading bot")
