@@ -4,10 +4,12 @@ import { stripe } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 function getTierFromPriceId(priceId: string): string {
   const map: Record<string, string> = {
@@ -41,7 +43,7 @@ export async function POST(request: Request) {
     const tier = session.metadata?.tier
 
     if (userId && tier) {
-      await supabaseAdmin
+      await getSupabaseAdmin()
         .from('profiles')
         .update({
           tier,
@@ -58,14 +60,14 @@ export async function POST(request: Request) {
     const priceId = sub.items.data[0]?.price.id
     const tier = getTierFromPriceId(priceId)
 
-    const { data: profile } = await supabaseAdmin
+    const { data: profile } = await getSupabaseAdmin()
       .from('profiles')
       .select('id')
       .eq('stripe_subscription_id', sub.id)
       .single()
 
     if (profile) {
-      await supabaseAdmin.from('profiles').update({ tier }).eq('id', profile.id)
+      await getSupabaseAdmin().from('profiles').update({ tier }).eq('id', profile.id)
     }
   }
 
@@ -73,14 +75,14 @@ export async function POST(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sub = event.data.object as any
 
-    const { data: profile } = await supabaseAdmin
+    const { data: profile } = await getSupabaseAdmin()
       .from('profiles')
       .select('id')
       .eq('stripe_subscription_id', sub.id)
       .single()
 
     if (profile) {
-      await supabaseAdmin
+      await getSupabaseAdmin()
         .from('profiles')
         .update({ tier: 'free', stripe_subscription_id: null })
         .eq('id', profile.id)
