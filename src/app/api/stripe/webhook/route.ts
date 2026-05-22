@@ -14,10 +14,12 @@ function getTierFromPriceId(priceId: string): string {
     price_1TSJD2IOCUJyk0u8eJU7QOSd: 'signature',
     price_1TSJDkIOCUJyk0u82KyQ0j97: 'legend',
   }
-  if (process.env.STRIPE_LEGENDARY_PRICE_ID && priceId === process.env.STRIPE_LEGENDARY_PRICE_ID) {
+  if (process.env.STRIPE_LEGEND_PRICE_ID && priceId === process.env.STRIPE_LEGEND_PRICE_ID) {
     return 'legendary'
   }
-  return map[priceId] || 'free'
+  // Normalize legacy tier values to 'legendary'
+  const legacy = map[priceId]
+  return legacy ? 'legendary' : 'free'
 }
 
 export async function POST(request: Request) {
