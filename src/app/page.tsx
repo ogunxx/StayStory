@@ -2,10 +2,26 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ReviewsSection } from './reviews-section'
+import { createClient } from '@/lib/supabase/server'
 
-const AIRBNB_RATING = process.env.NEXT_PUBLIC_AIRBNB_RATING ?? '4.99'
-const AIRBNB_REVIEWS = process.env.NEXT_PUBLIC_AIRBNB_REVIEW_COUNT ?? '134'
 const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
+
+async function getAirbnbStats() {
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('site_config')
+      .select('key, value')
+      .in('key', ['airbnb_rating', 'airbnb_review_count'])
+    const map = Object.fromEntries((data ?? []).map(r => [r.key, r.value]))
+    return {
+      rating: map['airbnb_rating'] ?? '4.99',
+      reviews: map['airbnb_review_count'] ?? '136',
+    }
+  } catch {
+    return { rating: '4.99', reviews: '136' }
+  }
+}
 
 // ─── Update these with real image URLs from laurelandlore.com ───────────────
 const IMAGES = {
@@ -190,7 +206,8 @@ const REVIEWS = [
   },
 ]
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const { rating, reviews } = await getAirbnbStats()
   return (
     <div className="flex flex-col min-h-screen bg-background">
 
@@ -211,7 +228,7 @@ export default function LandingPage() {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-xs font-medium text-primary bg-accent px-3 py-1.5 rounded-full mb-8 hover:bg-accent/80 transition-colors"
         >
-          {AIRBNB_RATING}★ · {AIRBNB_REVIEWS} reviews · See the property that built this ↗
+          {rating}★ · {reviews} reviews · See the property that built this ↗
         </a>
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-semibold leading-tight text-foreground mb-6">
           Your guests don't just want a place to stay.<br />
@@ -303,7 +320,7 @@ export default function LandingPage() {
             <div className="order-1 sm:order-2 flex flex-col gap-5">
               <h3 className="text-2xl font-serif font-semibold text-foreground">Together, they built something rare.</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Ogun and Evie are a married couple who brought their worlds together — his hospitality craft, her legacy of intentional care — and applied it to their Airbnb property. The result: <strong className="text-foreground">{AIRBNB_RATING}★ across {AIRBNB_REVIEWS} reviews.</strong>
+                Ogun and Evie are a married couple who brought their worlds together — his hospitality craft, her legacy of intentional care — and applied it to their Airbnb property. The result: <a href={AIRBNB_URL} target="_blank" rel="noopener noreferrer" className="font-bold text-foreground hover:underline">{rating}★ across {reviews} reviews.</a>
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Guests use one word more than any other when they describe their stay: <strong className="text-foreground italic">love.</strong> We don't think that's a coincidence. We think it's a system. And we built StayStory so every host can run it.
@@ -350,7 +367,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <ReviewsSection reviews={REVIEWS} rating={AIRBNB_RATING} reviewCount={AIRBNB_REVIEWS} airbnbUrl={AIRBNB_URL} />
+      <ReviewsSection reviews={REVIEWS} rating={rating} reviewCount={reviews} airbnbUrl={AIRBNB_URL} />
 
       {/* ─── Transformation ──────────────────────────────────────────── */}
       <section className="py-16 px-6 border-b border-border">
