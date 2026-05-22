@@ -1,6 +1,9 @@
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,6 +52,34 @@ export async function POST(request: Request) {
           stripe_subscription_id: session.subscription as string,
         })
         .eq('id', userId)
+
+      const customerEmail = session.customer_details?.email ?? session.customer_email
+      if (customerEmail && process.env.RESEND_API_KEY) {
+        await resend.emails.send({
+          from: 'StayStory <hello@staystory.co>',
+          to: customerEmail,
+          replyTo: 'hello@staystory.co',
+          subject: 'Welcome to Legendary — you\'re in.',
+          html: `
+            <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:40px 24px;color:#1a1a1a">
+              <p style="font-size:20px;font-weight:600;margin:0 0 24px">Welcome to StayStory Legendary.</p>
+              <p style="font-size:15px;line-height:1.7;margin:0 0 16px">
+                Your subscription is active. Every tool is now unlimited — the Hospitality Generator, Journey Map, Guest Story Builder, Foundation Audit, and your full Guest Journey Playbook.
+              </p>
+              <p style="font-size:15px;line-height:1.7;margin:0 0 32px">
+                This is where great hosting begins. Head to your dashboard and start building the stay your guests will talk about.
+              </p>
+              <a href="https://staystory.co/dashboard" style="background:#1a1a1a;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;display:inline-block">
+                Go to your dashboard →
+              </a>
+              <p style="font-size:13px;color:#666;margin:40px 0 0;line-height:1.6">
+                Questions? Reply to this email or reach us at <a href="mailto:hello@staystory.co" style="color:#1a1a1a">hello@staystory.co</a>.<br>
+                You're billed $17/mo. Cancel anytime from your account settings.
+              </p>
+            </div>
+          `,
+        }).catch((err) => console.error('[resend] confirmation email failed:', err))
+      }
     }
   }
 
