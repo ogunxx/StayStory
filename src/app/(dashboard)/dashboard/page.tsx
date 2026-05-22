@@ -55,7 +55,7 @@ export default async function DashboardPage() {
             </p>
             <p className="text-xs text-muted-foreground">
               {remaining === 0
-                ? 'Upgrade to Legendary for unlimited generation — plus every tool, unlimited, and 1 night free stay per year.'
+                ? 'Upgrade to Legendary for unlimited generation — every tool, no limits.'
                 : 'Free plan includes 1 generation/month. Upgrade to Legendary for unlimited.'}
             </p>
           </div>
@@ -195,8 +195,8 @@ export default async function DashboardPage() {
         <div className="bg-secondary rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Upgrade</p>
-            <p className="text-sm font-semibold text-foreground">Go Legendary — $499/mo</p>
-            <p className="text-xs text-muted-foreground mt-1">Every tool unlimited, your custom playbook, and 1 complimentary night at Laurel & Lore per year.</p>
+            <p className="text-sm font-semibold text-foreground">Go Legendary — $17/mo</p>
+            <p className="text-xs text-muted-foreground mt-1">Every tool unlimited, your custom playbook, and priority support — $17/mo.</p>
           </div>
           <Link href="/pricing" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'shrink-0')}>
             See Legendary →

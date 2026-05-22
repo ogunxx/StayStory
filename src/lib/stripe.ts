@@ -18,7 +18,7 @@ export const PLANS = {
   },
   legendary: {
     name: 'Legendary',
-    price: 499,
+    price: 17,
     priceId: process.env.STRIPE_LEGENDARY_PRICE_ID,
     features: [
       'All five tools — unlimited',
@@ -26,7 +26,6 @@ export const PLANS = {
       'Guest Story Builder',
       'Journey Map',
       'Foundation Audit',
-      '1 complimentary night at Laurel & Lore per year',
       'Priority support',
     ],
   },

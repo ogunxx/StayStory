@@ -116,7 +116,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
               <p className="text-sm text-muted-foreground max-w-sm">Upgrade to Legendary to generate every section for every guest you host — unlimited.</p>
             </div>
             <Link href="/pricing" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
-              Unlock Story Builder — $499/mo →
+              Unlock Story Builder — $17/mo →
             </Link>
           </div>
         </div>

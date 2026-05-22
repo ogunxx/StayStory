@@ -55,12 +55,6 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
   const [error, setError] = useState<string | null>(null)
   const [playbook, setPlaybook] = useState<PlaybookResult | null>(null)
 
-  const [stayOpen, setStayOpen] = useState(false)
-  const [stayForm, setStayForm] = useState({ dates: '', notes: '' })
-  const [stayLoading, setStayLoading] = useState(false)
-  const [staySubmitted, setStaySubmitted] = useState(false)
-  const [stayError, setStayError] = useState<string | null>(null)
-
   function update(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
@@ -84,26 +78,6 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
-    }
-  }
-
-  async function handleStayRequest(e: React.FormEvent) {
-    e.preventDefault()
-    setStayLoading(true)
-    setStayError(null)
-    try {
-      const res = await fetch('/api/legend/stay-request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(stayForm),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
-      setStaySubmitted(true)
-    } catch (err) {
-      setStayError(err instanceof Error ? err.message : 'Something went wrong')
-    } finally {
-      setStayLoading(false)
     }
   }
 
@@ -181,7 +155,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
               <p className="text-sm text-muted-foreground max-w-sm">Your full archetype set, monthly hosting rhythm, and Your One Thing — all generated for your specific property.</p>
             </div>
             <Link href="/pricing" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
-              Unlock your full playbook — $499/mo →
+              Unlock your full playbook — $17/mo →
             </Link>
           </div>
         </div>
@@ -217,7 +191,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
         <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-2">Level 5 · Legendary Member</p>
         <h1 className="text-3xl font-serif font-semibold mb-3">Your full hospitality experience</h1>
         <p className="text-primary-foreground/80 leading-relaxed">
-          Every tool, unlimited. Your custom guest journey playbook. And one complimentary night at Laurel & Lore — so you can experience the full system from the inside.
+          Every tool, unlimited. Your custom guest journey playbook — built for your property, your guests, your hosting style.
         </p>
       </div>
 
@@ -226,7 +200,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
         {[
           { n: '1', title: 'All Five Tools — Unlimited', desc: 'Foundation Audit, Hospitality Generator, Journey Map, Guest Story Builder, and your custom Guest Journey Playbook. No limits, no resets.' },
           { n: '2', title: 'Custom Guest Journey Playbook', desc: 'Your complete hosting intelligence document — guest archetypes, touchpoint priorities, signature experience, and monthly rhythm.' },
-          { n: '3', title: '1 Night Free Stay per Year', desc: 'Every Legendary member gets one complimentary night at Laurel & Lore annually — to experience the hospitality system firsthand, with Ogun and Evie.' },
+          { n: '3', title: 'Priority Support', desc: 'Direct access to Ogun & Evie for questions, new guest situations, and anything that comes up. Real answers from people who\'ve lived it.' },
         ].map((item) => (
           <div key={item.n} className="bg-card border border-border rounded-xl p-5 flex flex-col gap-3">
             <span className="text-xs font-mono text-muted-foreground">{item.n}</span>
@@ -236,81 +210,10 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
         ))}
       </div>
 
-      {/* Schedule complimentary stay */}
-      {!isTrial && (
-        <div className="border border-primary/30 bg-primary/5 rounded-2xl overflow-hidden">
-          <div className="p-7 flex flex-col gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Legendary member benefit · Every year</p>
-              <h3 className="text-xl font-serif font-semibold text-foreground">Your complimentary night at Laurel & Lore</h3>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              All Legendary members get one complimentary night at Laurel & Lore per year — Ogun and Evie's property. Experience the full hospitality system from the inside. Breakfast on the deck, outdoor shower at sunrise, a movie night under the stars. Ask us anything. Leave with a blueprint for your own property.
-            </p>
-            <div className="grid sm:grid-cols-2 gap-2 text-xs text-foreground">
-              {[
-                '1 night at Laurel & Lore — complimentary',
-                'Private dinner with Ogun & Evie',
-                'Hands-on walkthrough of the full system',
-                'Renewed annually with your membership',
-              ].map(f => (
-                <p key={f} className="flex items-start gap-1.5"><span className="text-primary mt-0.5 shrink-0">✓</span>{f}</p>
-              ))}
-            </div>
-
-            {staySubmitted ? (
-              <div className="bg-primary/10 border border-primary/20 rounded-xl p-5 flex flex-col gap-2">
-                <p className="text-sm font-semibold text-foreground">Request received — thank you.</p>
-                <p className="text-sm text-muted-foreground">Ogun and Evie will confirm your dates by email within 48 hours. We can't wait to host you.</p>
-              </div>
-            ) : !stayOpen ? (
-              <button
-                onClick={() => setStayOpen(true)}
-                className="text-sm font-medium text-primary hover:underline w-fit"
-              >
-                Schedule my complimentary stay →
-              </button>
-            ) : (
-              <form onSubmit={handleStayRequest} className="flex flex-col gap-4 border-t border-primary/20 pt-5 mt-1">
-                <div className="flex flex-col gap-1.5">
-                  <Label>Preferred dates or time of year</Label>
-                  <Input
-                    value={stayForm.dates}
-                    onChange={e => setStayForm(p => ({ ...p, dates: e.target.value }))}
-                    placeholder="e.g. Spring 2027 — any weekend, or June 5–7"
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">We'll check our Airbnb and VRBO calendar and confirm your dates within 48 hours.</p>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label>Anything you'd like us to know <span className="text-muted-foreground text-xs">(optional)</span></Label>
-                  <Textarea
-                    value={stayForm.notes}
-                    onChange={e => setStayForm(p => ({ ...p, notes: e.target.value }))}
-                    placeholder="Questions, topics to cover, dietary needs, anything personal..."
-                    rows={3}
-                  />
-                </div>
-                {stayError && <p className="text-sm text-destructive">{stayError}</p>}
-                <div className="flex gap-3">
-                  <Button type="submit" disabled={stayLoading || !stayForm.dates.trim()} size="sm">
-                    {stayLoading ? 'Sending…' : 'Send request →'}
-                  </Button>
-                  <button type="button" onClick={() => setStayOpen(false)} className="text-sm text-muted-foreground hover:text-foreground">
-                    Cancel
-                  </button>
-                </div>
-                <p className="text-xs text-muted-foreground">We'll reach out to <strong>{userEmail ?? 'you'}</strong> to confirm availability.</p>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Playbook builder */}
       <div className="flex flex-col gap-8">
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">{isTrial ? 'Your playbook' : 'Step 2'}</p>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Your custom playbook</p>
           <h2 className="text-2xl font-serif font-semibold text-foreground mb-2">Generate your custom playbook</h2>
           <p className="text-muted-foreground text-sm leading-relaxed">
             Your complete hosting intelligence document — guest archetypes, touchpoint priorities, signature experience design, and monthly rhythm. Built for your specific property.

@@ -2,19 +2,7 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-const TIER_LABELS: Record<string, string> = {
-  host: 'Legendary ($499/mo)',
-  signature: 'Legendary ($499/mo)',
-  legend: 'Legendary ($499/mo)',
-  legendary: 'Legendary ($499/mo)',
-}
-
-const TIER_DESCRIPTIONS: Record<string, string> = {
-  host: 'Unlock every tool unlimited, plus 1 complimentary night at Laurel & Lore per year.',
-  signature: 'Unlock every tool unlimited, plus 1 complimentary night at Laurel & Lore per year.',
-  legend: 'Unlock every tool unlimited, plus 1 complimentary night at Laurel & Lore per year.',
-  legendary: 'Unlock every tool unlimited, plus 1 complimentary night at Laurel & Lore per year.',
-}
+const TIER_DESCRIPTION = 'Unlock every tool — unlimited. No resets, no limits.'
 
 export function TierGate({
   requiredTier,
@@ -31,10 +19,10 @@ export function TierGate({
         </div>
         <div>
           <h2 className="text-2xl font-serif font-semibold text-foreground mb-2">
-            {featureName} is a {TIER_LABELS[requiredTier]} feature
+            {featureName} is a Legendary ($17/mo) feature
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            {TIER_DESCRIPTIONS[requiredTier]}
+            {TIER_DESCRIPTION}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

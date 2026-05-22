@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { isDisposableEmail } from '@/lib/disposable-domains'
 import { Button } from '@/components/ui/button'
@@ -16,7 +15,6 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
 
   async function handleSignup(e: React.FormEvent) {
@@ -28,6 +26,19 @@ export default function SignupPage() {
       setError('Please use a permanent email address. Disposable email addresses are not allowed.')
       setLoading(false)
       return
+    }
+
+    // IP-based duplicate account check
+    try {
+      const check = await fetch('/api/auth/check-signup', { method: 'POST' })
+      const checkData = await check.json()
+      if (!checkData.allowed) {
+        setError(checkData.error ?? 'An account already exists from this device.')
+        setLoading(false)
+        return
+      }
+    } catch {
+      // If check fails, allow signup to proceed
     }
 
     const { error } = await supabase.auth.signUp({
@@ -44,6 +55,10 @@ export default function SignupPage() {
       setLoading(false)
       return
     }
+
+    // Record IP after successful signup (fire and forget)
+    fetch('/api/auth/record-signup', { method: 'POST' }).catch(() => {})
+
     setDone(true)
   }
 

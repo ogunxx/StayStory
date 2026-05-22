@@ -1,6 +1,11 @@
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { ReviewsSection } from './reviews-section'
+
+const AIRBNB_RATING = process.env.NEXT_PUBLIC_AIRBNB_RATING ?? '4.99'
+const AIRBNB_REVIEWS = process.env.NEXT_PUBLIC_AIRBNB_REVIEW_COUNT ?? '134'
+const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
 
 // ─── Update these with real image URLs from laurelandlore.com ───────────────
 const IMAGES = {
@@ -44,7 +49,7 @@ const REVIEWS = [
     detail: 'Hartson, Arkansas · July 2024 · 5★',
   },
   {
-    quote: "The RV is modern, fully stocked, and spacious enough for families. Ivelisse even has detailed instructional videos for absolutely everything and we found them very helpful. My wife and I loved the RV and my children can't wait to come back and stay longer.",
+    quote: "The RV is modern, fully stocked, and spacious enough for families. Evie even has detailed instructional videos for absolutely everything and we found them very helpful. My wife and I loved the RV and my children can't wait to come back and stay longer.",
     author: 'Roberto',
     detail: 'Vineland, New Jersey · May 2024 · 5★',
   },
@@ -94,7 +99,7 @@ const REVIEWS = [
     detail: 'Ft. Myers, FL · January 2025 · 5★',
   },
   {
-    quote: "This was perfect for our weekend getaway. Situated outside of the ruckus of the city, we were able to enjoy quiet, peaceful evenings and mornings with the birds chirping and sound of wind in the trees. Ivelisse and her husband were beyond responsive and friendly. This is an amazing place to stay if you are looking for a little slice of heaven.",
+    quote: "This was perfect for our weekend getaway. Situated outside of the ruckus of the city, we were able to enjoy quiet, peaceful evenings and mornings with the birds chirping and sound of wind in the trees. Evie and her husband were beyond responsive and friendly. This is an amazing place to stay if you are looking for a little slice of heaven.",
     author: 'Alison',
     detail: 'Quebec, Canada · October 2024 · 5★',
   },
@@ -104,7 +109,7 @@ const REVIEWS = [
     detail: 'Martin, Tennessee · July 2024 · 5★',
   },
   {
-    quote: "The perfect stop near Savannah and I-95. Ivelisse was a great host and the space was perfect. Everything was as described and it was super clean. Would definitely stay again!",
+    quote: "The perfect stop near Savannah and I-95. Evie was a great host and the space was perfect. Everything was as described and it was super clean. Would definitely stay again!",
     author: 'Robert',
     detail: 'Port St. Lucie, Florida · July 2024 · 5★',
   },
@@ -119,7 +124,7 @@ const REVIEWS = [
     detail: 'Overland Park, Kansas · June 2024 · 5★',
   },
   {
-    quote: "Ivelisse is amazing! This place was very well kept and an enjoyable time. She was very kind to our family and hospitable. Her children welcomed my children, sharing their toys and playing with them the entire time. My children adored them and had a fantastic time!",
+    quote: "Evie is amazing! This place was very well kept and an enjoyable time. She was very kind to our family and hospitable. Her children welcomed my children, sharing their toys and playing with them the entire time. My children adored them and had a fantastic time!",
     author: 'Gina',
     detail: 'York, Pennsylvania · May 2024 · 5★',
   },
@@ -134,7 +139,7 @@ const REVIEWS = [
     detail: 'Falls City, Nebraska · March 2025 · 5★',
   },
   {
-    quote: "Ivelisse and her husband made it such an easy and comfortable experience for us. Their place truly felt like home — everything we needed and then some. It felt like we were in the middle of secluded wilderness and yet only 30 minutes from downtown Savannah. Perfect in every way and we will be back again.",
+    quote: "Evie and her husband made it such an easy and comfortable experience for us. Their place truly felt like home — everything we needed and then some. It felt like we were in the middle of secluded wilderness and yet only 30 minutes from downtown Savannah. Perfect in every way and we will be back again.",
     author: 'Sonia',
     detail: 'Miami, Florida · March 2025 · 5★',
   },
@@ -169,7 +174,7 @@ const REVIEWS = [
     detail: 'Arcadia, Florida · April 2025 · 5★',
   },
   {
-    quote: "Ivelisse's place was fantastic. We thoroughly enjoyed our stay and the hosts have really thought of pretty much everything you could need. We loved our RV vacay.",
+    quote: "Evie's place was fantastic. We thoroughly enjoyed our stay and the hosts have really thought of pretty much everything you could need. We loved our RV vacay.",
     author: 'Kelley & Dan',
     detail: 'Charlotte, North Carolina · January 2025 · 5★',
   },
@@ -201,12 +206,12 @@ export default function LandingPage() {
       {/* ─── Hero ────────────────────────────────────────────────────── */}
       <section className="flex flex-col items-center text-center px-6 pt-16 pb-20 max-w-3xl mx-auto">
         <a
-          href="https://www.airbnb.com.mt/rooms/775430494188891274"
+          href={AIRBNB_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-xs font-medium text-primary bg-accent px-3 py-1.5 rounded-full mb-8 hover:bg-accent/80 transition-colors"
         >
-          4.99★ · 134 reviews · See the property that built this ↗
+          {AIRBNB_RATING}★ · {AIRBNB_REVIEWS} reviews · See the property that built this ↗
         </a>
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-semibold leading-tight text-foreground mb-6">
           Your guests don't just want a place to stay.<br />
@@ -243,13 +248,13 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 gap-10 items-center mb-20">
             <ImageSlot
               src={IMAGES.ogun}
-              alt="Ogun Cananoglu — founder"
+              alt="Ogun — co-founder"
               className="rounded-2xl h-80 sm:h-96 order-2 sm:order-1"
             />
             <div className="order-1 sm:order-2 flex flex-col gap-5">
               <div>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Co-founder</p>
-                <h3 className="text-2xl font-serif font-semibold text-foreground">Ogun Cananoglu</h3>
+                <h3 className="text-2xl font-serif font-semibold text-foreground">Ogun</h3>
               </div>
               <p className="text-muted-foreground leading-relaxed">
                 Hospitality wasn't a career choice for Ogun. It was a calling. His entire education and professional life has been spent in hospitality and catering — learning the craft from the inside out, from banquet kitchens to executive roles.
@@ -268,7 +273,7 @@ export default function LandingPage() {
             <div className="flex flex-col gap-5">
               <div>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Co-founder</p>
-                <h3 className="text-2xl font-serif font-semibold text-foreground">Ivelisse "Evie" Cananoglu</h3>
+                <h3 className="text-2xl font-serif font-semibold text-foreground">Evie</h3>
               </div>
               <p className="text-muted-foreground leading-relaxed">
                 Before sustainability was a hashtag, Evie was already exploring what it meant to live and work more consciously. In the early 2000s — when few businesses were making green cleaning their focus — she began shaping her work around those ideas, serving clients who understood that how you care for a space reflects how you value it.
@@ -282,7 +287,7 @@ export default function LandingPage() {
             </div>
             <ImageSlot
               src={IMAGES.evie}
-              alt="Ivelisse 'Evie' Cananoglu — co-founder"
+              alt="Evie — co-founder"
               className="rounded-2xl h-80 sm:h-[500px] bg-muted"
               objectFit="contain"
             />
@@ -292,19 +297,19 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 gap-10 items-center">
             <ImageSlot
               src={IMAGES.together}
-              alt="Ogun and Evie Cananoglu — together at the property"
+              alt="Ogun and Evie at Laurel &amp; Lore"
               className="rounded-2xl h-80 sm:h-96 order-2 sm:order-1"
             />
             <div className="order-1 sm:order-2 flex flex-col gap-5">
               <h3 className="text-2xl font-serif font-semibold text-foreground">Together, they built something rare.</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Ogun and Evie are a married couple who brought their worlds together — his hospitality craft, her legacy of intentional care — and applied it to their Airbnb property. The result: <strong className="text-foreground">4.99★ across 134 reviews.</strong>
+                Ogun and Evie are a married couple who brought their worlds together — his hospitality craft, her legacy of intentional care — and applied it to their Airbnb property. The result: <strong className="text-foreground">{AIRBNB_RATING}★ across {AIRBNB_REVIEWS} reviews.</strong>
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Guests use one word more than any other when they describe their stay: <strong className="text-foreground italic">love.</strong> We don't think that's a coincidence. We think it's a system. And we built StayStory so every host can run it.
               </p>
               <a
-                href="https://www.airbnb.com.mt/rooms/775430494188891274"
+                href={AIRBNB_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-medium text-primary hover:underline w-fit"
@@ -345,37 +350,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Reviews ─────────────────────────────────────────────────── */}
-      <section className="bg-card border-y border-border py-20 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
-            <div>
-              <p className="text-sm text-muted-foreground uppercase tracking-widest mb-2">What guests say</p>
-              <h2 className="text-3xl font-serif font-semibold text-foreground">The word they use most is <em>love.</em></h2>
-            </div>
-            <a
-              href="https://www.airbnb.com.mt/rooms/775430494188891274"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-primary hover:underline shrink-0 pb-1"
-            >
-              4.99★ · 134 reviews on Airbnb ↗
-            </a>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-5">
-            {REVIEWS.map((r) => (
-              <div key={r.author} className="bg-background rounded-2xl p-6 flex flex-col gap-4 border border-border">
-                <p className="text-sm text-foreground leading-relaxed italic flex-1">"{r.quote}"</p>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{r.author}</p>
-                  <p className="text-xs text-muted-foreground">{r.detail}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
+      <ReviewsSection reviews={REVIEWS} rating={AIRBNB_RATING} reviewCount={AIRBNB_REVIEWS} airbnbUrl={AIRBNB_URL} />
 
       {/* ─── Transformation ──────────────────────────────────────────── */}
       <section className="py-16 px-6 border-b border-border">
@@ -467,36 +442,32 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Legendary stay offer ─────────────────────────────────────── */}
+      {/* ─── Legendary CTA ───────────────────────────────────────────── */}
       <section className="py-20 px-6 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto">
           <div className="grid sm:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <div>
-                <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-3">Legendary membership · Annual benefit</p>
+                <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-3">Legendary — $17/mo</p>
                 <h2 className="text-3xl font-serif font-semibold leading-tight mb-4">
-                  Every Legendary member stays with us — free. Once a year.
+                  Stop guessing what your guests feel. Start knowing.
                 </h2>
                 <p className="text-primary-foreground/80 leading-relaxed">
-                  One night at our property. Breakfast on the deck. An outdoor shower at sunrise. A movie night under the stars. And dinner with Ogun and Evie.
+                  Every tool, unlimited. A custom playbook built for your property. Direct access to Ogun and Evie. Built by hosts who've run the system themselves.
                 </p>
               </div>
-              <p className="text-primary-foreground/80 leading-relaxed">
-                This isn't a marketing gimmick. It's an invitation to experience the entire hospitality system from the inside — in the place where it was built. Ask us anything. See everything. Leave with a blueprint for your own property.
-              </p>
               <div className="flex flex-col gap-2 text-sm">
-                <p className="flex items-center gap-2 text-primary-foreground/90">
-                  <span>✓</span> 1 night at Laurel & Lore — complimentary
-                </p>
-                <p className="flex items-center gap-2 text-primary-foreground/90">
-                  <span>✓</span> Private dinner with Ogun & Evie
-                </p>
-                <p className="flex items-center gap-2 text-primary-foreground/90">
-                  <span>✓</span> Hands-on walkthrough of the full system
-                </p>
-                <p className="flex items-center gap-2 text-primary-foreground/90">
-                  <span>✓</span> Renewed every year with your membership
-                </p>
+                {[
+                  'All five tools — no limits, no resets',
+                  'Custom Guest Journey Playbook for your property',
+                  'Guest Story Builder — unlimited',
+                  'Journey Map — all 14 touchpoints',
+                  'Priority support from Ogun & Evie',
+                ].map(f => (
+                  <p key={f} className="flex items-center gap-2 text-primary-foreground/90">
+                    <span>✓</span> {f}
+                  </p>
+                ))}
               </div>
               <Link href="/signup" className={cn(buttonVariants({ variant: 'secondary', size: 'lg' }), 'w-fit')}>
                 Become Legendary →
@@ -504,7 +475,7 @@ export default function LandingPage() {
             </div>
             <ImageSlot
               src={IMAGES.together}
-              alt="Ogun and Evie Cananoglu at Laurel & Lore"
+              alt="Ogun and Evie at Laurel & Lore"
               className="rounded-2xl h-96 hidden sm:block"
             />
           </div>
@@ -543,8 +514,8 @@ export default function LandingPage() {
                 highlight: false,
               },
               {
-                name: 'Legendary', price: '$499/mo',
-                features: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '★ 1 night free stay at Laurel & Lore per year'],
+                name: 'Legendary', price: '$17/mo',
+                features: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
                 highlight: true,
               },
             ].map((tier) => (
@@ -594,7 +565,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="py-8 px-6 text-center text-xs text-muted-foreground border-t border-border">
-        © {new Date().getFullYear()} StayStory · Built by Ogun & Evie Cananoglu ·{' '}
+        © {new Date().getFullYear()} StayStory · Built by Ogun & Evie ·{' '}
         <a href="https://laurelandlore.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
           laurelandlore.com
         </a>

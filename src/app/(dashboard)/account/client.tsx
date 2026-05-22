@@ -22,10 +22,10 @@ const TIER_COLORS: Record<string, string> = {
 
 const TIER_FEATURES: Record<string, string[]> = {
   free: ['1 generator use/month', 'Foundation Audit', '1 free preview of each tool'],
-  host: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '1 complimentary night at Laurel & Lore per year'],
-  signature: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '1 complimentary night at Laurel & Lore per year'],
-  legend: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '1 complimentary night at Laurel & Lore per year'],
-  legendary: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', '1 complimentary night at Laurel & Lore per year'],
+  host: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
+  signature: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
+  legend: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
+  legendary: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
 }
 
 function formatDate(iso: string | null) {

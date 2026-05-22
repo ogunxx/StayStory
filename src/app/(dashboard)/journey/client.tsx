@@ -298,7 +298,7 @@ export default function JourneyClient({ isTrial = false, isPreview = false }: { 
             14 touchpoints. 5 phases. For each one: low-hanging, achievable, and audacious ideas — generated specifically for your property and guests.
           </p>
           <Link href="/pricing" className="bg-primary-foreground text-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/90 transition-colors">
-            Unlock Journey Map — $499/mo →
+            Unlock Journey Map — $17/mo →
           </Link>
         </div>
       </div>

@@ -22,16 +22,15 @@ const PLAN_DETAILS = [
   {
     key: 'legendary' as const,
     name: 'Legendary',
-    price: '$499/mo',
-    desc: 'Every tool, unlimited. Plus your complimentary annual stay.',
+    price: '$17/mo',
+    desc: 'Every tool, unlimited. No limits, no resets.',
     features: [
       'All five tools — unlimited',
       'Custom Guest Journey Playbook',
       'Guest Story Builder',
-      'Journey Map (unlimited)',
+      'Journey Map (all 14 touchpoints)',
       'Foundation Audit (unlimited)',
-      '1 complimentary night at Laurel & Lore per year',
-      'Priority support from Ogun & Evie',
+      'Priority support',
     ],
     cta: 'Upgrade to Legendary',
     disabled: false,
@@ -103,13 +102,6 @@ export default function PricingPage() {
             </Button>
           </div>
         ))}
-      </div>
-
-      <div className="bg-accent rounded-2xl p-6 flex flex-col gap-3">
-        <p className="font-serif font-semibold text-foreground">What's included in Legendary</p>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Legendary isn't just access to tools. It's the full experience — every modality, unlimited use, a custom playbook built for your specific property, and one night per year at Laurel & Lore to experience the hospitality system firsthand with Ogun and Evie.
-        </p>
       </div>
 
       <p className="text-xs text-muted-foreground">

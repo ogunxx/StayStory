@@ -251,7 +251,7 @@ export default function GeneratorPage() {
           <div className="bg-primary/10 border border-primary/20 rounded-xl p-5 flex flex-col gap-3">
             <p className="text-sm font-semibold text-foreground">You've used your 1 free generation this month</p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Upgrade to Legendary for unlimited generation, every tool, and 1 complimentary night at Laurel & Lore per year — $499/mo.
+              Upgrade to Legendary for unlimited generation and every tool — $17/mo.
             </p>
             <Link href="/pricing" className={cn(buttonVariants({ size: 'sm' }), 'w-fit')}>
               Upgrade to Legendary →
