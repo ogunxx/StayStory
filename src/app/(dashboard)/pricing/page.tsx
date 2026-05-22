@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { LEGENDARY_PRICE } from '@/lib/config'
 
 const PLAN_DETAILS = [
   {
@@ -22,7 +23,7 @@ const PLAN_DETAILS = [
   {
     key: 'legendary' as const,
     name: 'Legendary',
-    price: '$17/mo',
+    price: LEGENDARY_PRICE,
     desc: 'Every tool, unlimited. No limits, no resets.',
     features: [
       'All five tools — unlimited',

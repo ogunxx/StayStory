@@ -3,6 +3,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ReviewsSection } from './reviews-section'
 import { createClient } from '@/lib/supabase/server'
+import { LEGENDARY_PRICE } from '@/lib/config'
 
 const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
 
@@ -465,7 +466,7 @@ export default async function LandingPage() {
           <div className="grid sm:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6">
               <div>
-                <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-3">Legendary — $17/mo</p>
+                <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-3">Legendary — {LEGENDARY_PRICE}</p>
                 <h2 className="text-3xl font-serif font-semibold leading-tight mb-4">
                   Stop guessing what your guests feel. Start knowing.
                 </h2>
@@ -531,7 +532,7 @@ export default async function LandingPage() {
                 highlight: false,
               },
               {
-                name: 'Legendary', price: '$17/mo',
+                name: 'Legendary', price: LEGENDARY_PRICE,
                 features: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
                 highlight: true,
               },

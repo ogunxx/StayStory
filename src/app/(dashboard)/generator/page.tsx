@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import type { GeneratorFormData, SuggestionContent } from '@/types'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { LEGENDARY_PRICE } from '@/lib/config'
 
 const BUDGET_OPTIONS: { value: GeneratorFormData['budget']; label: string; desc: string }[] = [
   { value: 'zero', label: '$0', desc: 'Time & intention only' },
@@ -251,7 +252,7 @@ export default function GeneratorPage() {
           <div className="bg-primary/10 border border-primary/20 rounded-xl p-5 flex flex-col gap-3">
             <p className="text-sm font-semibold text-foreground">You've used your 1 free generation this month</p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Upgrade to Legendary for unlimited generation and every tool — $17/mo.
+              Upgrade to Legendary for unlimited generation and every tool — {LEGENDARY_PRICE}.
             </p>
             <Link href="/pricing" className={cn(buttonVariants({ size: 'sm' }), 'w-fit')}>
               Upgrade to Legendary →

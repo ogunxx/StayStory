@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
+import { LEGENDARY_PRICE } from '@/lib/config'
 
 interface StoryResult {
   narrative: string
@@ -116,7 +117,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
               <p className="text-sm text-muted-foreground max-w-sm">Upgrade to Legendary to generate every section for every guest you host — unlimited.</p>
             </div>
             <Link href="/pricing" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
-              Unlock Story Builder — $17/mo →
+              Unlock Story Builder — {LEGENDARY_PRICE} →
             </Link>
           </div>
         </div>

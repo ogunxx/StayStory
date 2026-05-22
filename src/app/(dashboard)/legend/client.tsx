@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { LEGENDARY_PRICE } from '@/lib/config'
 
 interface PlaybookResult {
   executive_summary: string
@@ -155,7 +156,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
               <p className="text-sm text-muted-foreground max-w-sm">Your full archetype set, monthly hosting rhythm, and Your One Thing — all generated for your specific property.</p>
             </div>
             <Link href="/pricing" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
-              Unlock your full playbook — $17/mo →
+              Unlock your full playbook — {LEGENDARY_PRICE} →
             </Link>
           </div>
         </div>

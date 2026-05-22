@@ -3,6 +3,7 @@ import { getUserTier, hasAccess } from '@/lib/get-tier'
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { LEGENDARY_PRICE } from '@/lib/config'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -195,8 +196,8 @@ export default async function DashboardPage() {
         <div className="bg-secondary rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Upgrade</p>
-            <p className="text-sm font-semibold text-foreground">Go Legendary — $17/mo</p>
-            <p className="text-xs text-muted-foreground mt-1">Every tool unlimited, your custom playbook, and priority support — $17/mo.</p>
+            <p className="text-sm font-semibold text-foreground">Go Legendary — {LEGENDARY_PRICE}</p>
+            <p className="text-xs text-muted-foreground mt-1">Every tool unlimited, your custom playbook, and priority support — {LEGENDARY_PRICE}.</p>
           </div>
           <Link href="/pricing" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'shrink-0')}>
             See Legendary →

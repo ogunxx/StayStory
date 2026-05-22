@@ -8,6 +8,7 @@ import { isDisposableEmail } from '@/lib/disposable-domains'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { LEGENDARY_PRICE } from '@/lib/config'
 
 function SignupForm() {
   const searchParams = useSearchParams()
@@ -96,7 +97,7 @@ function SignupForm() {
 
         {isLegendary ? (
           <div className="mt-2 mb-6 bg-primary/10 border border-primary/20 rounded-xl px-4 py-3">
-            <p className="text-sm font-semibold text-foreground">Starting with Legendary — $17/mo</p>
+            <p className="text-sm font-semibold text-foreground">Starting with Legendary — {LEGENDARY_PRICE}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
               Create your account, verify your email, then complete payment. All five tools, unlimited.
             </p>
