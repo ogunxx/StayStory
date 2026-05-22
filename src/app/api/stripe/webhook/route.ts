@@ -106,7 +106,7 @@ export async function POST(request: Request) {
 
     const { data: profile } = await supabaseAdmin
       .from('profiles')
-      .select('id')
+      .select('id, email')
       .eq('stripe_subscription_id', sub.id)
       .single()
 
@@ -115,6 +115,33 @@ export async function POST(request: Request) {
         .from('profiles')
         .update({ tier: 'free', stripe_subscription_id: null })
         .eq('id', profile.id)
+
+      const customerEmail = sub.customer_email ?? profile.email
+      if (customerEmail && process.env.RESEND_API_KEY) {
+        await resend.emails.send({
+          from: 'StayStory <hello@staystory.co>',
+          to: customerEmail,
+          replyTo: 'hello@staystory.co',
+          subject: 'Your Legendary subscription has been cancelled.',
+          html: `
+            <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:40px 24px;color:#1a1a1a">
+              <p style="font-size:20px;font-weight:600;margin:0 0 24px">We're sorry to see you go.</p>
+              <p style="font-size:15px;line-height:1.7;margin:0 0 16px">
+                Your Legendary subscription has been cancelled. Your access continues until the end of your current billing period — after that your account will move to the free plan.
+              </p>
+              <p style="font-size:15px;line-height:1.7;margin:0 0 32px">
+                If you cancelled by mistake or change your mind, you can resubscribe anytime from your account page. Everything you've built — your audits, stories, and playbooks — will still be there waiting for you.
+              </p>
+              <a href="https://staystory.co/pricing" style="background:#1a1a1a;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;display:inline-block">
+                Resubscribe →
+              </a>
+              <p style="font-size:13px;color:#666;margin:40px 0 0;line-height:1.6">
+                Have feedback or need help? Reply to this email or reach us at <a href="mailto:hello@staystory.co" style="color:#1a1a1a">hello@staystory.co</a>.
+              </p>
+            </div>
+          `,
+        }).catch((err) => console.error('[resend] cancellation email failed:', err))
+      }
     }
   }
 
