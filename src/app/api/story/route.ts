@@ -48,6 +48,16 @@ Return a JSON object only:
     const end = jsonStr.lastIndexOf('}')
     const story = JSON.parse(start !== -1 ? jsonStr.slice(start, end + 1) : jsonStr)
 
+    await supabase.from('guest_stories').insert({
+      user_id: user.id,
+      guest_id: null,
+      narrative: story.narrative,
+      host_perspective: story.host_perspective,
+      social_caption: story.social_caption,
+      pre_arrival_message: story.pre_arrival_message,
+      listing_improvements: story.listing_improvements,
+    })
+
     return NextResponse.json({ story })
   } catch (err) {
     console.error('Story generation error:', err)

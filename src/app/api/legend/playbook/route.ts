@@ -82,6 +82,12 @@ Create a comprehensive custom guest journey playbook. Return JSON only:
     const end = text.lastIndexOf('}')
     const playbook = JSON.parse(start !== -1 ? text.slice(start, end + 1) : text)
 
+    await supabase.from('playbooks').insert({
+      user_id: user.id,
+      property_name: form.propertyName || null,
+      executive_summary: playbook.executive_summary || null,
+    })
+
     return NextResponse.json({ playbook })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)

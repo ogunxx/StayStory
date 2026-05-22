@@ -55,6 +55,8 @@ Return JSON only:
     const end = text.lastIndexOf('}')
     const ideas = JSON.parse(start !== -1 ? text.slice(start, end + 1) : text)
 
+    await supabase.from('journey_sessions').insert({ user_id: user.id, touchpoint, ideas })
+
     return NextResponse.json({ ideas })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)

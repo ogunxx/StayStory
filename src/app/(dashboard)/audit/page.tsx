@@ -94,6 +94,12 @@ export default function AuditPage() {
     const strengths = labelMap.filter(([k]) => (audit[k] as Rating | null) !== null && (audit[k] as Rating) >= 4).map(([, l]) => l)
 
     setResults({ score, fixes, strengths })
+
+    fetch('/api/audit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ score, responses: audit }),
+    }).catch(() => {})
   }
 
   const categories = [
