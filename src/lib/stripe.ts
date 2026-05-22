@@ -19,7 +19,7 @@ export const PLANS = {
   legendary: {
     name: 'Legendary',
     price: 17,
-    priceId: process.env.STRIPE_LEGENDARY_PRICE_ID,
+    priceId: process.env.STRIPE_LEGEND_PRICE_ID,
     features: [
       'All five tools — unlimited',
       'Custom Guest Journey Playbook',

@@ -10,5 +10,7 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  return NextResponse.redirect(`${origin}/dashboard`)
+  const plan = searchParams.get('plan')
+  const next = plan === 'legendary' ? '/pricing' : '/dashboard'
+  return NextResponse.redirect(`${origin}${next}`)
 }

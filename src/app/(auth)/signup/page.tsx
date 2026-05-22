@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { isDisposableEmail } from '@/lib/disposable-domains'
@@ -8,7 +9,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-export default function SignupPage() {
+function SignupForm() {
+  const searchParams = useSearchParams()
+  const isLegendary = searchParams.get('plan') === 'legendary'
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -28,7 +32,6 @@ export default function SignupPage() {
       return
     }
 
-    // IP-based duplicate account check
     try {
       const check = await fetch('/api/auth/check-signup', { method: 'POST' })
       const checkData = await check.json()
@@ -41,12 +44,16 @@ export default function SignupPage() {
       // If check fails, allow signup to proceed
     }
 
+    const callbackUrl = isLegendary
+      ? `${window.location.origin}/api/auth/callback?plan=legendary`
+      : `${window.location.origin}/api/auth/callback`
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { full_name: name },
-        emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+        emailRedirectTo: callbackUrl,
       },
     })
 
@@ -56,9 +63,7 @@ export default function SignupPage() {
       return
     }
 
-    // Record IP after successful signup (fire and forget)
     fetch('/api/auth/record-signup', { method: 'POST' }).catch(() => {})
-
     setDone(true)
   }
 
@@ -72,6 +77,11 @@ export default function SignupPage() {
         <p className="text-muted-foreground max-w-sm">
           We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account.
         </p>
+        {isLegendary && (
+          <p className="text-sm text-primary mt-4 max-w-sm">
+            After verifying, you'll be taken straight to checkout to complete your Legendary subscription.
+          </p>
+        )}
       </div>
     )
   }
@@ -83,7 +93,18 @@ export default function SignupPage() {
       </Link>
       <div className="w-full max-w-sm">
         <h1 className="text-2xl font-serif font-semibold mb-1 text-foreground">Create your account</h1>
-        <p className="text-sm text-muted-foreground mb-8">Free to start. No card needed.</p>
+
+        {isLegendary ? (
+          <div className="mt-2 mb-6 bg-primary/10 border border-primary/20 rounded-xl px-4 py-3">
+            <p className="text-sm font-semibold text-foreground">Starting with Legendary — $17/mo</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Create your account, verify your email, then complete payment. All five tools, unlimited.
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground mb-8">Free to start. No card needed.</p>
+        )}
+
         <form onSubmit={handleSignup} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="name">Your name</Label>
@@ -121,10 +142,20 @@ export default function SignupPage() {
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Creating account…' : 'Create free account'}
+            {loading ? 'Creating account…' : isLegendary ? 'Create account & continue to payment →' : 'Create free account'}
           </Button>
         </form>
-        <p className="text-sm text-muted-foreground text-center mt-6">
+
+        {!isLegendary && (
+          <p className="text-xs text-muted-foreground text-center mt-4">
+            Want Legendary from the start?{' '}
+            <Link href="/signup?plan=legendary" className="text-primary hover:underline">
+              Sign up as Legendary →
+            </Link>
+          </p>
+        )}
+
+        <p className="text-sm text-muted-foreground text-center mt-4">
           Already have an account?{' '}
           <Link href="/login" className="text-primary hover:underline">
             Sign in
@@ -132,5 +163,13 @@ export default function SignupPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   )
 }
