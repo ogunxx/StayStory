@@ -111,9 +111,9 @@ export default function GeneratorPage() {
     <div className="flex flex-col gap-10 max-w-2xl">
       <div>
         <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 2</p>
-        <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Hospitality Generator</h1>
+        <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Experience Generator</h1>
         <p className="text-muted-foreground leading-relaxed">
-          Tell us about your guest. The more specific you are, the more powerful the output. Every detail unlocks a more personal moment.
+          Tell us about your guest. The more specific you are, the more meaningful the moments. Every detail unlocks a more personal experience.
         </p>
       </div>
 

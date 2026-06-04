@@ -68,15 +68,15 @@ export default async function DashboardPage() {
 
       {/* Active tools */}
       <div>
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">Your tools</p>
+        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">Your system</p>
         <div className="grid sm:grid-cols-2 gap-4">
 
           {/* Audit — always available */}
           <div className="bg-secondary rounded-2xl p-6 flex flex-col gap-4">
             <div>
               <span className="text-xs text-muted-foreground font-mono">1</span>
-              <h2 className="font-serif font-semibold text-foreground mt-1">Foundation Audit</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mt-2">Fix what guests feel but never say — arrival, lighting, smell, sound, warmth.</p>
+              <h2 className="font-serif font-semibold text-foreground mt-1">Experience Audit</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed mt-2">See your stay through your guest&apos;s eyes — arrival, lighting, smell, sound, warmth.</p>
             </div>
             <Link href="/audit" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'mt-auto w-fit')}>Run audit →</Link>
           </div>
@@ -98,8 +98,8 @@ export default async function DashboardPage() {
                   <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">Unlimited</span>
                 )}
               </div>
-              <h2 className="font-serif font-semibold text-foreground mt-1">Hospitality Generator</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mt-2">Tell us about your guest. Get tiered gesture ideas, setup plan, shopping list, and messages.</p>
+              <h2 className="font-serif font-semibold text-foreground mt-1">Experience Generator</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed mt-2">Tell us about your guest. Get meaningful moment ideas, a setup plan, shopping list, and messages.</p>
             </div>
             <Link
               href={remaining === 0 && !isLegendary ? '/pricing' : '/generator'}
@@ -109,7 +109,7 @@ export default async function DashboardPage() {
             </Link>
           </div>
 
-          {/* Journey Map */}
+          {/* Experience Blueprint */}
           {isLegendary ? (
             <div className="bg-card border border-border rounded-2xl p-6 flex flex-col gap-4">
               <div>
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
                   <span className="text-xs text-muted-foreground font-mono">3</span>
                   <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">Unlimited</span>
                 </div>
-                <h2 className="font-serif font-semibold text-foreground mt-1">Journey Map</h2>
+                <h2 className="font-serif font-semibold text-foreground mt-1">Experience Blueprint</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed mt-2">Map every touchpoint — from booking to what they find in the car weeks later.</p>
               </div>
               <Link href="/journey" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'mt-auto w-fit')}>Open map →</Link>
@@ -127,7 +127,7 @@ export default async function DashboardPage() {
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <span className="text-xs text-muted-foreground font-mono">3</span>
-                  <h2 className="font-serif font-semibold text-foreground mt-1">Journey Map</h2>
+                  <h2 className="font-serif font-semibold text-foreground mt-1">Experience Blueprint</h2>
                   <p className="text-sm text-muted-foreground leading-relaxed mt-2">Map every touchpoint across the guest experience — 14 moments across 5 phases.</p>
                   <p className="text-xs text-muted-foreground mt-2">Start Strong → Stick the Landing → Transform Pain Points</p>
                 </div>
@@ -145,7 +145,7 @@ export default async function DashboardPage() {
                   <span className="text-xs text-muted-foreground font-mono">4</span>
                   <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">Unlimited</span>
                 </div>
-                <h2 className="font-serif font-semibold text-foreground mt-1">Guest Story Builder</h2>
+                <h2 className="font-serif font-semibold text-foreground mt-1">Story Builder</h2>
                 <p className="text-sm text-muted-foreground leading-relaxed mt-2">Turn what you did into a story — for your brand, listing, and the memory they carry home.</p>
               </div>
               <Link href="/story" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'mt-auto w-fit')}>Build story →</Link>
@@ -155,8 +155,8 @@ export default async function DashboardPage() {
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <span className="text-xs text-muted-foreground font-mono">4</span>
-                  <h2 className="font-serif font-semibold text-foreground mt-1">Guest Story Builder</h2>
-                  <p className="text-sm text-muted-foreground leading-relaxed mt-2">Turn a moment into a narrative guests retell. Brand story, social caption, listing copy.</p>
+                  <h2 className="font-serif font-semibold text-foreground mt-1">Story Builder</h2>
+                  <p className="text-sm text-muted-foreground leading-relaxed mt-2">Turn a moment into a story guests retell — for your listing, your brand, and the memory they take home.</p>
                   <p className="text-xs text-muted-foreground italic mt-2">"They left a note on the guest book we didn't expect…"</p>
                 </div>
                 <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full shrink-0">Legendary</span>

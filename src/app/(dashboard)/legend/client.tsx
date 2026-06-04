@@ -199,8 +199,8 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
       {/* 3 pillars */}
       <div className="grid sm:grid-cols-3 gap-4">
         {[
-          { n: '1', title: 'All Five Tools — Unlimited', desc: 'Foundation Audit, Hospitality Generator, Journey Map, Guest Story Builder, and your custom Guest Journey Playbook. No limits, no resets.' },
-          { n: '2', title: 'Custom Guest Journey Playbook', desc: 'Your complete hosting intelligence document — guest archetypes, touchpoint priorities, signature experience, and monthly rhythm.' },
+          { n: '1', title: 'The Whole System — Unlimited', desc: 'Experience Audit, Experience Generator, Experience Blueprint, Story Builder, and your custom Guest Journey Playbook. No limits, no resets.' },
+          { n: '2', title: 'Custom Guest Journey Playbook', desc: 'Your complete hosting playbook — guest archetypes, touchpoint priorities, signature experience, and monthly rhythm.' },
           { n: '3', title: 'Priority Support', desc: 'Direct access to Ogun & Evie for questions, new guest situations, and anything that comes up. Real answers from people who\'ve lived it.' },
         ].map((item) => (
           <div key={item.n} className="bg-card border border-border rounded-xl p-5 flex flex-col gap-3">

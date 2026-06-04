@@ -99,7 +99,7 @@ function SignupForm() {
           <div className="mt-2 mb-6 bg-primary/10 border border-primary/20 rounded-xl px-4 py-3">
             <p className="text-sm font-semibold text-foreground">Starting with Legendary — {LEGENDARY_PRICE}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Create your account, verify your email, then complete payment. All five tools, unlimited.
+              Create your account, verify your email, then complete payment. The whole system, unlimited.
             </p>
           </div>
         ) : (

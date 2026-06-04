@@ -190,85 +190,158 @@ export default async function LandingPage() {
           How it works
         </p>
         <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-center text-foreground mb-4 max-w-2xl mx-auto">
-          Three phases. One system.<br />One unforgettable stay.
+          Four parts. One system.<br />One stay they&apos;ll never forget.
         </h2>
         <p className="text-center text-muted-foreground mb-20 max-w-xl mx-auto text-sm leading-relaxed">
-          StayStory is not a set of tools. It is a method — designed around how great hosts already think,
-          and tested on a real property before it was ever shared with anyone else.
+          StayStory walks with you through the whole journey — from understanding what your guests
+          feel, to designing the moments that move them, to telling the story those moments become.
         </p>
 
         <div className="flex flex-col gap-2">
 
-          {/* Phase 1 */}
+          {/* 1 — Experience Audit */}
           <div className="bg-secondary rounded-2xl p-8 sm:p-10 grid sm:grid-cols-[1fr_2fr] gap-8 items-start">
             <div className="flex flex-col gap-3">
               <span className="text-4xl font-serif font-bold text-muted-foreground/20">01</span>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Phase One</p>
-              <h3 className="text-2xl font-serif font-semibold text-foreground">Design</h3>
+              <h3 className="text-2xl font-serif font-semibold text-foreground">Experience Audit</h3>
+              <p className="text-xs uppercase tracking-widest text-primary">Makes the invisible visible</p>
             </div>
             <div className="flex flex-col gap-4">
               <p className="text-lg font-serif text-foreground leading-snug">
-                Know what your guest will feel before they arrive.
+                See your stay through your guest&apos;s eyes.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Most of what guests feel at a property was decided before they walked in the door.
-                The temperature. The smell. The first thing their eyes go to. The thing that was waiting
-                for them that they didn&apos;t expect.
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                StayStory starts here — with an audit that surfaces the invisible things that shape
-                every guest&apos;s impression, and a system that turns what you know about a specific
-                guest into a specific plan of care.
+                Before you can create a better experience, you have to find the moments quietly working
+                against you — and the ones full of untapped meaning. The Experience Audit surfaces the
+                emotional peaks, the missed opportunities, and the small gaps your guests feel but never
+                mention.
               </p>
             </div>
           </div>
 
-          {/* Phase 2 */}
+          {/* 2 — Experience Blueprint */}
           <div className="bg-accent rounded-2xl p-8 sm:p-10 grid sm:grid-cols-[1fr_2fr] gap-8 items-start">
             <div className="flex flex-col gap-3">
               <span className="text-4xl font-serif font-bold text-muted-foreground/20">02</span>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Phase Two</p>
-              <h3 className="text-2xl font-serif font-semibold text-foreground">Map</h3>
+              <h3 className="text-2xl font-serif font-semibold text-foreground">Experience Blueprint</h3>
+              <p className="text-xs uppercase tracking-widest text-primary">Turns a place into a journey</p>
             </div>
             <div className="flex flex-col gap-4">
               <p className="text-lg font-serif text-foreground leading-snug">
-                Every moment of their stay, mapped — including the ones you haven&apos;t thought about yet.
+                Map the journey, from first message to final goodbye.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                From the second a guest books to after they check out, there are fourteen moments
-                that define how they will feel about their stay. Most hosts are excellent at two or
-                three of them. They are unaware of the rest.
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                The Journey Map shows you all fourteen — across every phase of the stay — and surfaces
-                exactly where guests are forming impressions you have not designed for yet.
+                Every stay is a sequence of moments. The Experience Blueprint helps you design and map
+                the whole guest journey — beginning to end — so nothing meaningful is left to chance,
+                and every moment has intention behind it.
               </p>
             </div>
           </div>
 
-          {/* Phase 3 */}
+          {/* 3 — Experience Generator */}
           <div className="bg-primary/10 rounded-2xl p-8 sm:p-10 grid sm:grid-cols-[1fr_2fr] gap-8 items-start">
             <div className="flex flex-col gap-3">
               <span className="text-4xl font-serif font-bold text-muted-foreground/20">03</span>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Phase Three</p>
-              <h3 className="text-2xl font-serif font-semibold text-foreground">Tell</h3>
+              <h3 className="text-2xl font-serif font-semibold text-foreground">Experience Generator</h3>
+              <p className="text-xs uppercase tracking-widest text-primary">Makes care specific</p>
             </div>
             <div className="flex flex-col gap-4">
               <p className="text-lg font-serif text-foreground leading-snug">
-                Turn what you created into a story that outlasts the stay.
+                Turn intention into moments guests remember.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Hospitality without a story is just service. The Guest Story Builder takes what you did —
-                the gesture, the detail, the moment — and turns it into a narrative your brand can carry:
-                listing copy, social captions, the words that make a stranger choose you over everyone else.
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                The Guest Journey Playbook ties everything together — your property&apos;s positioning,
-                your guest archetypes, your touchpoint priorities, your monthly rhythm. All in one place.
+                The ideas are the hard part. The Experience Generator helps you create the meaningful
+                moments, small rituals, and unexpected gestures that turn an ordinary stay into one
+                guests feel — shaped around your place and the people staying in it.
               </p>
             </div>
           </div>
 
+          {/* 4 — Story Builder */}
+          <div className="bg-secondary rounded-2xl p-8 sm:p-10 grid sm:grid-cols-[1fr_2fr] gap-8 items-start">
+            <div className="flex flex-col gap-3">
+              <span className="text-4xl font-serif font-bold text-muted-foreground/20">04</span>
+              <h3 className="text-2xl font-serif font-semibold text-foreground">Story Builder</h3>
+              <p className="text-xs uppercase tracking-widest text-primary">Turns experience into memory</p>
+            </div>
+            <div className="flex flex-col gap-4">
+              <p className="text-lg font-serif text-foreground leading-snug">
+                Give the experience words guests can carry home.
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                An experience only becomes a story when it can be told. The Story Builder helps you
+                express what you created — so guests can anticipate it before they arrive, feel it while
+                they&apos;re there, and remember it long after they leave. It isn&apos;t about writing copy.
+                It&apos;s about making meaning.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <p className="text-center text-muted-foreground mt-12 max-w-xl mx-auto text-sm leading-relaxed">
+          Run the whole system and it comes together in your{' '}
+          <strong className="text-foreground">Guest Journey Playbook</strong> — your property&apos;s
+          entire experience, in one place. <span className="text-primary">(Legendary)</span>
+        </p>
+      </section>
+
+      {/* ─── About the system ─────────────────────────────────────────────── */}
+      <section className="py-24 px-6 bg-card border-y border-border">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-4">
+            Why it works
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-center text-foreground mb-6 max-w-2xl mx-auto">
+            Each part does one thing.<br />Together, they change everything.
+          </h2>
+          <p className="text-center text-muted-foreground mb-16 max-w-xl mx-auto text-sm leading-relaxed">
+            StayStory isn&apos;t four features that happen to sit side by side. It&apos;s one path,
+            walked in order — each step making the next one possible.
+          </p>
+
+          <div className="flex flex-col divide-y divide-border border-y border-border">
+            {[
+              {
+                name: 'Experience Audit',
+                gives: 'Awareness',
+                purpose: 'You can’t design what you can’t feel. The Audit returns you to your guest’s first-time eyes — so the invisible becomes obvious.',
+              },
+              {
+                name: 'Experience Blueprint',
+                gives: 'Structure',
+                purpose: 'A stay isn’t a building. It’s a sequence of moments in time. The Blueprint gives that sequence a beginning, a middle, and an ending worth remembering.',
+              },
+              {
+                name: 'Experience Generator',
+                gives: 'Specificity',
+                purpose: 'Generic care is just service. The Generator makes care specific — this gesture, for this guest, at this moment.',
+              },
+              {
+                name: 'Story Builder',
+                gives: 'Meaning',
+                purpose: 'An experience that can’t be told ends at checkout. The Story Builder gives it a second life — anticipated, felt, and retold in the guest’s own words.',
+              },
+              {
+                name: 'Guest Journey Playbook',
+                gives: 'Identity',
+                purpose: 'Run the system once and you’ve created a moment. Run it until it’s who you are, and the Playbook is what you become — a host who guides on purpose.',
+              },
+            ].map((row) => (
+              <div key={row.name} className="grid sm:grid-cols-[1fr_1.6fr] gap-2 sm:gap-8 py-6 items-start">
+                <div className="flex flex-col gap-1">
+                  <p className="font-serif font-semibold text-foreground">{row.name}</p>
+                  <p className="text-xs uppercase tracking-widest text-primary">Gives you {row.gives.toLowerCase()}</p>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">{row.purpose}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center text-foreground font-serif text-lg sm:text-xl leading-snug mt-16 max-w-2xl mx-auto">
+            Together, they move you from running a rental to guiding a hero
+            through a story worth remembering.
+          </p>
         </div>
       </section>
 
@@ -489,14 +562,14 @@ export default async function LandingPage() {
           Your next guest deserves<br />to feel something.
         </h2>
         <p className="text-muted-foreground leading-relaxed mb-10 max-w-xl mx-auto">
-          Start with a Foundation Audit. It takes five minutes. It will show you the moments
+          Start with an Experience Audit. It takes five minutes. It will show you the moments
           that matter most to your guests — and exactly which ones you can make unforgettable.
         </p>
         <Link href="/signup" className={cn(buttonVariants({ size: 'lg' }), 'px-10')}>
           Start free — no card needed
         </Link>
         <p className="text-xs text-muted-foreground mt-5">
-          Free plan includes full access to the Foundation Audit and one generation.
+          Free plan includes full access to the Experience Audit and your first designed moment.
           Upgrade to Legendary when you&apos;re ready.
         </p>
       </section>
@@ -527,9 +600,9 @@ export default async function LandingPage() {
               </div>
               <ul className="flex flex-col gap-2 text-sm text-muted-foreground flex-1">
                 {[
-                  'Foundation Audit — full access',
-                  'Hospitality Generator — 1 use / month',
-                  'Preview of every part of the system',
+                  'Experience Audit — full access',
+                  'Experience Generator — 1 moment / month',
+                  'A preview of every part of the system',
                   'Guest message auto-fill',
                 ].map((f) => (
                   <li key={f} className="flex items-start gap-2">
@@ -548,15 +621,15 @@ export default async function LandingPage() {
                 <p className="font-serif font-semibold text-foreground text-lg">Legendary</p>
                 <p className="text-3xl font-semibold text-foreground mt-2">{LEGENDARY_PRICE}</p>
                 <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                  The complete system. Every phase, every instrument, no limits — plus your custom
+                  The complete system. Every part, no limits — plus your custom
                   Guest Journey Playbook built for your property.
                 </p>
               </div>
               <ul className="flex flex-col gap-2 text-sm text-muted-foreground flex-1">
                 {[
                   'Everything in Free — unlimited',
-                  'Journey Map — all 14 touchpoints',
-                  'Guest Story Builder — unlimited',
+                  'Experience Blueprint — all 14 touchpoints',
+                  'Story Builder — unlimited',
                   'Guest Journey Playbook — your full property playbook',
                   'Priority support from Ogun & Evie',
                 ].map((f) => (

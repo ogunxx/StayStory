@@ -64,7 +64,7 @@ export async function POST(request: Request) {
             <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:40px 24px;color:#1a1a1a">
               <p style="font-size:20px;font-weight:600;margin:0 0 24px">Welcome to StayStory Legendary.</p>
               <p style="font-size:15px;line-height:1.7;margin:0 0 16px">
-                Your subscription is active. Every tool is now unlimited — the Hospitality Generator, Journey Map, Guest Story Builder, Foundation Audit, and your full Guest Journey Playbook.
+                Your subscription is active. The whole system is now unlimited — the Experience Audit, Experience Blueprint, Experience Generator, Story Builder, and your full Guest Journey Playbook.
               </p>
               <p style="font-size:15px;line-height:1.7;margin:0 0 32px">
                 This is where great hosting begins. Head to your dashboard and start building the stay your guests will talk about.

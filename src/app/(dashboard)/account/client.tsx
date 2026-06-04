@@ -23,11 +23,11 @@ const TIER_COLORS: Record<string, string> = {
 }
 
 const TIER_FEATURES: Record<string, string[]> = {
-  free: ['1 generator use/month', 'Foundation Audit', '1 free preview of each tool'],
-  host: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
-  signature: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
-  legend: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
-  legendary: ['All five tools — unlimited', 'Custom Guest Journey Playbook', 'Guest Story Builder', 'Journey Map', 'Priority support'],
+  free: ['1 designed moment/month', 'Experience Audit', '1 free preview of each part'],
+  host: ['The whole system — unlimited', 'Custom Guest Journey Playbook', 'Story Builder', 'Experience Blueprint', 'Priority support'],
+  signature: ['The whole system — unlimited', 'Custom Guest Journey Playbook', 'Story Builder', 'Experience Blueprint', 'Priority support'],
+  legend: ['The whole system — unlimited', 'Custom Guest Journey Playbook', 'Story Builder', 'Experience Blueprint', 'Priority support'],
+  legendary: ['The whole system — unlimited', 'Custom Guest Journey Playbook', 'Story Builder', 'Experience Blueprint', 'Priority support'],
 }
 
 function formatDate(iso: string | null) {
@@ -207,7 +207,7 @@ export default function AccountClient({ email, profile, suggestions, stories, au
         {[
           { label: 'Audits', count: audits.length, href: '/audit' },
           { label: 'Generator', count: suggestions.length, href: '/generator' },
-          { label: 'Journey Map', count: journeys.length, href: '/journey' },
+          { label: 'Blueprints', count: journeys.length, href: '/journey' },
           { label: 'Stories', count: stories.length, href: '/story' },
           { label: 'Playbooks', count: playbooks.length, href: '/legend' },
         ].map((s) => (
@@ -224,8 +224,8 @@ export default function AccountClient({ email, profile, suggestions, stories, au
 
         <div className="flex flex-col gap-8">
 
-          {/* Foundation Audit */}
-          <ToolSection label="Foundation Audit" href="/audit" count={audits.length}>
+          {/* Experience Audit */}
+          <ToolSection label="Experience Audit" href="/audit" count={audits.length}>
             {audits.length === 0 ? <EmptyState href="/audit" /> : (
               <ul className="flex flex-col">
                 {audits.map((a) => (
@@ -281,8 +281,8 @@ export default function AccountClient({ email, profile, suggestions, stories, au
             )}
           </ToolSection>
 
-          {/* Hospitality Generator */}
-          <ToolSection label="Hospitality Generator" href="/generator" count={suggestions.length}>
+          {/* Experience Generator */}
+          <ToolSection label="Experience Generator" href="/generator" count={suggestions.length}>
             {suggestions.length === 0 ? <EmptyState href="/generator" /> : (
               <ul className="flex flex-col">
                 {suggestions.map((s) => {
@@ -349,8 +349,8 @@ export default function AccountClient({ email, profile, suggestions, stories, au
             )}
           </ToolSection>
 
-          {/* Guest Journey Map */}
-          <ToolSection label="Guest Journey Map" href="/journey" count={journeys.length}>
+          {/* Experience Blueprint */}
+          <ToolSection label="Experience Blueprint" href="/journey" count={journeys.length}>
             {journeys.length === 0 ? <EmptyState href="/journey" /> : (
               <ul className="flex flex-col">
                 {journeys.map((j) => (
@@ -387,7 +387,7 @@ export default function AccountClient({ email, profile, suggestions, stories, au
                           <p className="text-xs text-muted-foreground">Ideas not recorded for this session.</p>
                         )}
                         <Link href="/journey" className="text-xs text-primary hover:underline underline-offset-2 w-fit">
-                          Open Journey Map →
+                          Open Experience Blueprint →
                         </Link>
                       </div>
                     )}
@@ -397,8 +397,8 @@ export default function AccountClient({ email, profile, suggestions, stories, au
             )}
           </ToolSection>
 
-          {/* Guest Story Builder */}
-          <ToolSection label="Guest Story Builder" href="/story" count={stories.length}>
+          {/* Story Builder */}
+          <ToolSection label="Story Builder" href="/story" count={stories.length}>
             {stories.length === 0 ? <EmptyState href="/story" /> : (
               <ul className="flex flex-col">
                 {stories.map((s) => (

@@ -118,9 +118,9 @@ export default function AuditPage() {
     <div className="flex flex-col gap-10 max-w-2xl">
       <div>
         <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 1</p>
-        <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Foundation Audit</h1>
+        <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Experience Audit</h1>
         <p className="text-muted-foreground leading-relaxed">
-          The first principle of great hosting: stay in your own rental before renting it out. This audit helps you see your property through fresh eyes — fixing the invisible things that guests feel but rarely mention.
+          The first principle of great hosting: stay in your own rental before renting it out. This audit helps you see your stay through your guest&apos;s eyes — surfacing the emotional peaks, the missed moments, and the invisible things guests feel but rarely mention.
         </p>
       </div>
 
@@ -245,8 +245,8 @@ export default function AuditPage() {
 
           <p className="text-sm text-muted-foreground">
             Foundation is solid enough? Head to the{' '}
-            <a href="/generator" className="text-primary hover:underline">Hospitality Generator</a>{' '}
-            to create personalized moments for your next guest.
+            <a href="/generator" className="text-primary hover:underline">Experience Generator</a>{' '}
+            to create meaningful moments for your next guest.
           </p>
         </div>
       )}

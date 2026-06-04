@@ -78,7 +78,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
 
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 4</p>
-          <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Guest Story Builder</h1>
+          <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Story Builder</h1>
           <p className="text-muted-foreground leading-relaxed">
             Every guest has a story. This is what it looks like when you tell it well. The example below was built from a single guest: Sarah & Marcus, 5-year anniversary, first trip alone in three years.
           </p>
@@ -149,9 +149,9 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
       )}
       <div>
         <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 4</p>
-        <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Guest Story Builder</h1>
+        <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Story Builder</h1>
         <p className="text-muted-foreground leading-relaxed">
-          The host is the guide, the guest is the hero. Turn what you did into a story — for your brand, your listing, and the memory they carry home.
+          The host is the guide, the guest is the hero. Express what you created as a story — so guests can anticipate it, feel it, and carry it home.
         </p>
       </div>
 
