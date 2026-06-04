@@ -1,5 +1,7 @@
-export const LEGENDARY_PRICE = process.env.NEXT_PUBLIC_LEGENDARY_PRICE || '$29/mo'
-export const PORTFOLIO_PRICE = process.env.NEXT_PUBLIC_PORTFOLIO_PRICE || '$79/mo'
+// Display prices shown across the site. Single source of truth — keep in sync
+// with the Stripe PLANS amounts in src/lib/stripe.ts.
+export const LEGENDARY_PRICE = '$29/mo'
+export const PORTFOLIO_PRICE = '$79/mo'
 
 // Everyone can build & edit their Experience Blueprint. Free accounts get a
 // taste of idea generation; paid plans (Legendary, Portfolio) are unlimited.
