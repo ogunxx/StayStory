@@ -1,13 +1,20 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { listProperties } from '@/lib/properties'
+import { resolveActivePropertyId } from '@/lib/active-property'
 import { MobileNav } from './mobile-nav'
+import { PropertySwitcher } from './property-switcher'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) redirect('/login')
+
+  // Only surface the property switcher when there's more than one to switch to.
+  const properties = await listProperties()
+  const activePropertyId = properties.length > 1 ? await resolveActivePropertyId(user.id) : null
 
   const navItems = [
     { href: '/dashboard', label: 'Home' },
@@ -39,14 +46,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </Link>
           ))}
         </nav>
-        <div className="hidden sm:block">
+        <div className="hidden sm:flex items-center gap-4">
+          {properties.length > 1 && (
+            <PropertySwitcher properties={properties} activeId={activePropertyId} />
+          )}
           <form action="/api/auth/signout" method="post">
             <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Sign out
             </button>
           </form>
         </div>
-        <MobileNav />
+        <MobileNav properties={properties} activePropertyId={activePropertyId} />
       </header>
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-10">
         {children}

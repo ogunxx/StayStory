@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { anthropic } from '@/lib/anthropic'
+import { resolveActivePropertyId } from '@/lib/active-property'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -82,8 +83,11 @@ Create a comprehensive custom guest journey playbook. Return JSON only:
     const end = text.lastIndexOf('}')
     const playbook = JSON.parse(start !== -1 ? text.slice(start, end + 1) : text)
 
+    const property_id = await resolveActivePropertyId(user.id)
+
     await supabase.from('playbooks').insert({
       user_id: user.id,
+      property_id,
       property_name: form.propertyName || null,
       executive_summary: playbook.executive_summary || null,
     })

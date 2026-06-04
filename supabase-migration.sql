@@ -128,3 +128,20 @@ do $$ begin
       )
     );
 exception when duplicate_object then null; end $$;
+
+-- ── PER-PROPERTY SCOPING ────────────────────────────────────────────────────
+-- Tag each piece of generated data with the property it belongs to. Nullable so
+-- existing rows stay valid ("unassigned"); on property delete the data is kept
+-- but its property_id is cleared rather than cascade-deleted.
+
+alter table audits           add column if not exists property_id uuid references properties on delete set null;
+alter table suggestions      add column if not exists property_id uuid references properties on delete set null;
+alter table guest_stories    add column if not exists property_id uuid references properties on delete set null;
+alter table journey_sessions add column if not exists property_id uuid references properties on delete set null;
+alter table playbooks        add column if not exists property_id uuid references properties on delete set null;
+
+create index if not exists audits_property_id_idx           on audits (property_id);
+create index if not exists suggestions_property_id_idx      on suggestions (property_id);
+create index if not exists guest_stories_property_id_idx    on guest_stories (property_id);
+create index if not exists journey_sessions_property_id_idx on journey_sessions (property_id);
+create index if not exists playbooks_property_id_idx        on playbooks (property_id);

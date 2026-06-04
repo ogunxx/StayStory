@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { anthropic } from '@/lib/anthropic'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
+import { resolveActivePropertyId } from '@/lib/active-property'
 import { FREE_BLUEPRINT_GENERATIONS } from '@/lib/config'
 import { NextResponse } from 'next/server'
 
@@ -76,7 +77,9 @@ Return JSON only:
     const end = text.lastIndexOf('}')
     const ideas = JSON.parse(start !== -1 ? text.slice(start, end + 1) : text)
 
-    await supabase.from('journey_sessions').insert({ user_id: user.id, touchpoint, ideas })
+    const property_id = await resolveActivePropertyId(user.id)
+
+    await supabase.from('journey_sessions').insert({ user_id: user.id, property_id, touchpoint, ideas })
 
     return NextResponse.json({ ideas })
   } catch (err) {

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { resolveActivePropertyId } from '@/lib/active-property'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -9,7 +10,9 @@ export async function POST(request: Request) {
 
   const { score, responses } = await request.json()
 
-  const { error } = await supabase.from('audits').insert({ user_id: user.id, score, responses })
+  const property_id = await resolveActivePropertyId(user.id)
+
+  const { error } = await supabase.from('audits').insert({ user_id: user.id, property_id, score, responses })
   if (error) console.error('Audit save error:', error)
 
   return NextResponse.json({ ok: true })

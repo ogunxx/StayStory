@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { PropertySwitcher } from './property-switcher'
+import type { Property } from '@/lib/properties'
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Home' },
@@ -16,7 +18,13 @@ const NAV_ITEMS = [
   { href: '/pricing', label: 'Upgrade' },
 ]
 
-export function MobileNav() {
+export function MobileNav({
+  properties = [],
+  activePropertyId = null,
+}: {
+  properties?: Property[]
+  activePropertyId?: string | null
+}) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -39,6 +47,11 @@ export function MobileNav() {
 
       {open && (
         <div className="absolute top-[57px] left-0 right-0 bg-card border-b border-border z-50 px-6 py-4 flex flex-col gap-1">
+          {properties.length > 1 && (
+            <div className="pb-3 mb-1 border-b border-border/50">
+              <PropertySwitcher properties={properties} activeId={activePropertyId} />
+            </div>
+          )}
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}

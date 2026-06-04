@@ -3,6 +3,11 @@
 export const LEGENDARY_PRICE = '$29/mo'
 export const PORTFOLIO_PRICE = '$79/mo'
 
+// Cookie holding the user's active property selection. Defined here (a
+// client-safe module) so both the client PropertySwitcher and the server-side
+// resolver can share it without pulling server-only code into the client bundle.
+export const ACTIVE_PROPERTY_COOKIE = 'active_property_id'
+
 // Everyone can build & edit their Experience Blueprint. Free accounts get a
 // taste of idea generation; paid plans (Legendary, Portfolio) are unlimited.
 export const FREE_BLUEPRINT_GENERATIONS = 3

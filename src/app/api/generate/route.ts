@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { generateHospitalityMoment } from '@/lib/anthropic'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
+import { resolveActivePropertyId } from '@/lib/active-property'
 import { NextResponse } from 'next/server'
 import type { GeneratorFormData } from '@/types'
 
@@ -44,10 +45,13 @@ export async function POST(request: Request) {
   try {
     const suggestion = await generateHospitalityMoment(body)
 
+    const property_id = await resolveActivePropertyId(user.id)
+
     const { data, error } = await supabase
       .from('suggestions')
       .insert({
         user_id: user.id,
+        property_id,
         guest_id: null,
         level: 3,
         content: suggestion,

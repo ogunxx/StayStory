@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { anthropic } from '@/lib/anthropic'
+import { resolveActivePropertyId } from '@/lib/active-property'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -48,8 +49,11 @@ Return a JSON object only:
     const end = jsonStr.lastIndexOf('}')
     const story = JSON.parse(start !== -1 ? jsonStr.slice(start, end + 1) : jsonStr)
 
+    const property_id = await resolveActivePropertyId(user.id)
+
     await supabase.from('guest_stories').insert({
       user_id: user.id,
+      property_id,
       guest_id: null,
       narrative: story.narrative,
       host_perspective: story.host_perspective,
