@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
-import { LEGENDARY_PRICE, PORTFOLIO_PRICE } from '@/lib/config'
+import { HomePricing } from './home-pricing'
 
 const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
 
@@ -576,110 +576,7 @@ export default async function LandingPage() {
 
       {/* ─── Pricing ──────────────────────────────────────────────────────── */}
       <section className="py-24 px-6 bg-card border-t border-border">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4 text-center">
-            Where you are, where you&apos;re going
-          </p>
-          <h2 className="text-3xl font-serif font-semibold text-center mb-4 text-foreground">
-            Start free. Grow when<br />you&apos;re ready.
-          </h2>
-          <p className="text-center text-muted-foreground mb-14 text-sm">
-            Annual billing saves two months. Cancel anytime. No contracts.
-          </p>
-
-          <div className="grid md:grid-cols-3 gap-5">
-            {/* Free */}
-            <div className="rounded-2xl p-7 flex flex-col gap-5 border border-border bg-background">
-              <div>
-                <p className="font-serif font-semibold text-foreground text-lg">Free</p>
-                <p className="text-3xl font-semibold text-foreground mt-2">$0</p>
-                <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                  See your stay the way your guests do. Build your blueprint, run an audit,
-                  and try the system.
-                </p>
-              </div>
-              <ul className="flex flex-col gap-2 text-sm text-muted-foreground flex-1">
-                {[
-                  'Build & edit your Experience Blueprint',
-                  'Experience Audit',
-                  'A taste of the Experience Generator',
-                  'Guest message auto-fill',
-                ].map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <span className="text-primary mt-0.5 shrink-0">✓</span>{f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/signup" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
-                Start free
-              </Link>
-            </div>
-
-            {/* Legendary */}
-            <div className="rounded-2xl p-7 flex flex-col gap-5 border border-primary bg-primary/5">
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="font-serif font-semibold text-foreground text-lg">Legendary</p>
-                  <span className="text-[10px] uppercase tracking-widest text-primary border border-primary/40 rounded-full px-2 py-0.5">
-                    Most loved
-                  </span>
-                </div>
-                <p className="text-3xl font-semibold text-foreground mt-2">{LEGENDARY_PRICE}</p>
-                <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                  The whole system, unlimited — for the place you pour yourself into.
-                </p>
-              </div>
-              <ul className="flex flex-col gap-2 text-sm text-muted-foreground flex-1">
-                {[
-                  'Unlimited moments, audits & stories',
-                  'Advanced customization & saved variations',
-                  'Enhanced outputs across the system',
-                  'Your full Custom Guest Journey Playbook',
-                  'Priority support from Ogun & Evie',
-                ].map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <span className="text-primary mt-0.5 shrink-0">✓</span>{f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/signup" className={cn(buttonVariants({ size: 'sm' }))}>
-                Become Legendary →
-              </Link>
-            </div>
-
-            {/* Portfolio */}
-            <div className="rounded-2xl p-7 flex flex-col gap-5 border border-border bg-background">
-              <div>
-                <p className="font-serif font-semibold text-foreground text-lg">Portfolio</p>
-                <p className="text-3xl font-semibold text-foreground mt-2">{PORTFOLIO_PRICE}</p>
-                <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-                  Everything in Legendary — across every place you host.
-                </p>
-              </div>
-              <ul className="flex flex-col gap-2 text-sm text-muted-foreground flex-1">
-                {[
-                  'Everything in Legendary',
-                  'Up to 5 properties, each with its own blueprint',
-                  'Co-host & team access',
-                  'Priority support + onboarding',
-                ].map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <span className="text-primary mt-0.5 shrink-0">✓</span>{f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/signup" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
-                Scale with Portfolio
-              </Link>
-            </div>
-          </div>
-
-          <p className="text-center text-sm text-muted-foreground mt-10">
-            <Link href="/pricing" className="text-primary underline underline-offset-4">
-              Compare plans and see what changes as you grow →
-            </Link>
-          </p>
-        </div>
+        <HomePricing />
       </section>
 
       {/* ─── Philosophy footer ─────────────────────────────────────────────── */}

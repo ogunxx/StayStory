@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { tier, interval = 'monthly' } = await request.json()
+    const { tier, interval = 'monthly', autoRenew = true } = await request.json()
     const plan = PLANS[tier as keyof typeof PLANS]
 
     if (!plan) {
@@ -34,6 +34,11 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single()
 
+    // When the host opts out of auto-renewal we still create the subscription so
+    // they get access for the period they paid for — the webhook then flags it
+    // to cancel at period end, so Stripe never charges them again automatically.
+    const autoRenewFlag = autoRenew === false ? 'false' : 'true'
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       customer: profile?.stripe_customer_id || undefined,
@@ -41,7 +46,8 @@ export async function POST(request: Request) {
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgraded=true`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
-      metadata: { user_id: user.id, tier },
+      metadata: { user_id: user.id, tier, auto_renew: autoRenewFlag },
+      subscription_data: { metadata: { user_id: user.id, tier, auto_renew: autoRenewFlag } },
     })
 
     return NextResponse.json({ url: session.url })

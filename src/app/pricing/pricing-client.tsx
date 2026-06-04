@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { PLAN_PRICING } from '@/lib/config'
 
 type Interval = 'monthly' | 'annual'
 
@@ -13,8 +15,8 @@ type Plan = {
   priceAnnual: number
   outcomes: string[]
   cta: string
-  disabled: boolean
   highlight: boolean
+  paid: boolean
 }
 
 const PLANS: Plan[] = [
@@ -30,16 +32,16 @@ const PLANS: Plan[] = [
       'A first taste of the Experience Generator',
       'Guest message auto-fill',
     ],
-    cta: 'Current plan',
-    disabled: true,
+    cta: 'Start free',
     highlight: false,
+    paid: false,
   },
   {
     key: 'legendary',
     name: 'Legendary',
     promise: 'The whole system, unlimited — for the place you pour yourself into.',
-    priceMonthly: 29,
-    priceAnnual: 290,
+    priceMonthly: PLAN_PRICING.legendary.monthly,
+    priceAnnual: PLAN_PRICING.legendary.annual,
     outcomes: [
       'Unlimited moments, audits, and stories',
       'Advanced customization and saved blueprint variations',
@@ -48,15 +50,15 @@ const PLANS: Plan[] = [
       'Priority support',
     ],
     cta: 'Become Legendary',
-    disabled: false,
     highlight: true,
+    paid: true,
   },
   {
     key: 'portfolio',
     name: 'Portfolio',
     promise: 'Everything in Legendary — across every place you host.',
-    priceMonthly: 79,
-    priceAnnual: 790,
+    priceMonthly: PLAN_PRICING.portfolio.monthly,
+    priceAnnual: PLAN_PRICING.portfolio.annual,
     outcomes: [
       'Everything in Legendary',
       'Up to 5 properties, each with its own blueprint & playbook',
@@ -64,8 +66,8 @@ const PLANS: Plan[] = [
       'Priority support and onboarding',
     ],
     cta: 'Scale with Portfolio',
-    disabled: false,
     highlight: false,
+    paid: true,
   },
 ]
 
@@ -89,36 +91,52 @@ const GROWTH = [
 
 const FAQ = [
   {
-    q: 'What can I do for free?',
-    a: 'Everything begins with the Experience Blueprint — and that\'s yours to build and edit on the free plan, along with an Experience Audit and a taste of the Experience Generator.',
+    q: 'How does monthly billing work?',
+    a: 'You pay for one month at a time. On a monthly plan you\'re charged at the start of each month and you can cancel anytime — your access stays active until the end of the month you\'ve already paid for.',
   },
   {
-    q: 'What changes when I upgrade?',
-    a: 'Paid plans remove the limits: unlimited generation, advanced customization, saved blueprint variations, enhanced outputs, and your full Guest Journey Playbook.',
+    q: 'How does annual billing work?',
+    a: 'You pay once, up front, for the whole year — and that price already includes two months free versus paying monthly. Your access runs for the full year. You can cancel anytime before it renews.',
+  },
+  {
+    q: 'Can I stop it from renewing automatically?',
+    a: 'Yes. Uncheck "Renew automatically" at checkout and your plan simply ends when the period you paid for is over — we will never charge you again without you choosing to. You can also turn renewal on or off later from your account settings.',
+  },
+  {
+    q: 'What can I do for free?',
+    a: 'Everything begins with the Experience Blueprint — and that\'s yours to build and edit on the free plan, along with an Experience Audit and a taste of the Experience Generator.',
   },
   {
     q: 'When should I choose Portfolio?',
     a: 'When you host more than one place, or you have co-hosts. Portfolio gives each property its own blueprint and playbook, plus team access.',
   },
-  {
-    q: 'Can I cancel anytime?',
-    a: 'Yes. Cancel from your account settings whenever you like. Everything you\'ve built stays with you.',
-  },
 ]
 
-export default function PricingPage() {
+export default function PricingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
+  const router = useRouter()
   const [interval, setInterval] = useState<Interval>('annual')
+  const [autoRenew, setAutoRenew] = useState(true)
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  async function handleUpgrade(tier: string) {
-    setLoading(tier)
+  async function handleSelect(plan: Plan) {
+    // Free plan, or anyone not signed in yet, goes through signup first.
+    if (!plan.paid) {
+      router.push(isLoggedIn ? '/dashboard' : '/signup')
+      return
+    }
+    if (!isLoggedIn) {
+      router.push('/signup')
+      return
+    }
+
+    setLoading(plan.key)
     setError(null)
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tier, interval }),
+        body: JSON.stringify({ tier: plan.key, interval, autoRenew }),
       })
       const text = await res.text()
       if (!text) throw new Error(`Server returned empty response (${res.status})`)
@@ -133,17 +151,25 @@ export default function PricingPage() {
 
   function priceLabel(plan: Plan) {
     if (plan.priceMonthly === 0) return '$0'
-    if (interval === 'annual') {
-      const perMonth = Math.round(plan.priceAnnual / 12)
-      return `$${perMonth}`
-    }
+    if (interval === 'annual') return `$${Math.round(plan.priceAnnual / 12)}`
     return `$${plan.priceMonthly}`
   }
 
+  // Plain-language explanation of exactly how the charge works, given the
+  // current interval + auto-renew choice.
+  const billingNote =
+    interval === 'monthly'
+      ? autoRenew
+        ? 'On a paid monthly plan you\'re charged at the start of each month. Cancel anytime — you keep access until the end of the month you\'ve paid for.'
+        : 'You\'ll be charged once for a single month. Your plan won\'t renew — access ends when the month is over and you won\'t be charged again.'
+      : autoRenew
+        ? 'You\'ll be charged once for the full year (two months free versus monthly). It renews yearly — cancel anytime before it renews.'
+        : 'You\'ll be charged once for the full year (two months free versus monthly). It won\'t renew — access ends when the year is over and you won\'t be charged again.'
+
   return (
-    <div className="flex flex-col gap-14 max-w-5xl">
+    <div className="flex flex-col gap-14 max-w-5xl mx-auto w-full">
       <div className="max-w-2xl">
-        <p className="text-xs uppercase tracking-widest text-primary mb-3">Your plan</p>
+        <p className="text-xs uppercase tracking-widest text-primary mb-3">Plans &amp; pricing</p>
         <h1 className="text-3xl sm:text-4xl font-serif font-semibold text-foreground mb-4">
           Start where you are. Grow when you&apos;re ready.
         </h1>
@@ -153,31 +179,54 @@ export default function PricingPage() {
         </p>
       </div>
 
-      {/* Billing toggle */}
-      <div className="flex items-center gap-4">
-        <div className="inline-flex rounded-full border border-border bg-card p-1">
-          <button
-            onClick={() => setInterval('monthly')}
-            className={`px-4 py-1.5 text-sm rounded-full transition ${
-              interval === 'monthly'
-                ? 'bg-foreground text-background'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setInterval('annual')}
-            className={`px-4 py-1.5 text-sm rounded-full transition ${
-              interval === 'annual'
-                ? 'bg-foreground text-background'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Annual
-          </button>
+      {/* Billing controls */}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="inline-flex rounded-full border border-border bg-card p-1">
+            <button
+              onClick={() => setInterval('monthly')}
+              className={`px-4 py-1.5 text-sm rounded-full transition ${
+                interval === 'monthly'
+                  ? 'bg-foreground text-background'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setInterval('annual')}
+              className={`px-4 py-1.5 text-sm rounded-full transition ${
+                interval === 'annual'
+                  ? 'bg-foreground text-background'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Annual
+            </button>
+          </div>
+          <span className="text-sm text-primary">Two months free, billed yearly</span>
         </div>
-        <span className="text-sm text-primary">Two months free, billed yearly</span>
+
+        {/* Auto-renew opt-out */}
+        <label className="flex items-start gap-3 text-sm text-foreground cursor-pointer max-w-xl">
+          <input
+            type="checkbox"
+            checked={autoRenew}
+            onChange={(e) => setAutoRenew(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-border accent-[var(--primary)]"
+          />
+          <span>
+            <span className="font-medium">Renew automatically</span>
+            <span className="text-muted-foreground">
+              {' '}— keep my plan going so I don&apos;t lose access. Uncheck it and your plan simply
+              ends when the period you paid for is over; we&apos;ll never charge you automatically.
+            </span>
+          </span>
+        </label>
+
+        <p className="text-sm text-muted-foreground bg-secondary rounded-xl px-4 py-3 max-w-xl">
+          {billingNote}
+        </p>
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
@@ -202,13 +251,13 @@ export default function PricingPage() {
               </div>
               <div className="flex items-baseline gap-1 mt-2">
                 <span className="text-3xl font-semibold text-foreground">{priceLabel(plan)}</span>
-                {plan.priceMonthly > 0 && (
-                  <span className="text-sm text-muted-foreground">/mo</span>
-                )}
+                {plan.paid && <span className="text-sm text-muted-foreground">/mo</span>}
               </div>
-              {plan.priceMonthly > 0 && interval === 'annual' && (
+              {plan.paid && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  ${plan.priceAnnual} billed yearly
+                  {interval === 'annual'
+                    ? `$${plan.priceAnnual} billed once a year`
+                    : `$${plan.priceMonthly} billed each month`}
                 </p>
               )}
               <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{plan.promise}</p>
@@ -224,8 +273,8 @@ export default function PricingPage() {
             </ul>
 
             <Button
-              onClick={() => !plan.disabled && handleUpgrade(plan.key)}
-              disabled={plan.disabled || loading === plan.key}
+              onClick={() => handleSelect(plan)}
+              disabled={loading === plan.key}
               variant={plan.highlight ? 'default' : 'outline'}
               size="sm"
               className="w-full"
@@ -257,7 +306,7 @@ export default function PricingPage() {
 
       {/* FAQ */}
       <div className="border-t border-border pt-12">
-        <h2 className="text-2xl font-serif font-semibold text-foreground mb-8">Questions, answered.</h2>
+        <h2 className="text-2xl font-serif font-semibold text-foreground mb-8">Billing, answered.</h2>
         <div className="divide-y divide-border">
           {FAQ.map((item) => (
             <div key={item.q} className="py-5 grid sm:grid-cols-3 gap-4">
@@ -269,8 +318,8 @@ export default function PricingPage() {
       </div>
 
       <p className="text-xs text-muted-foreground border-t border-border pt-8">
-        Payments are processed securely by Stripe. Cancel anytime from your account settings — everything
-        you&apos;ve built stays with you.
+        Payments are processed securely by Stripe. Cancel anytime — everything you&apos;ve built stays
+        with you.
       </p>
     </div>
   )

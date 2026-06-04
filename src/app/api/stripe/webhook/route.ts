@@ -62,6 +62,15 @@ export async function POST(request: Request) {
         })
         .eq('id', userId)
 
+      // Host opted out of auto-renewal: keep their paid access for this period,
+      // but tell Stripe to end the subscription when the period is over so they
+      // are never charged again automatically.
+      if (session.metadata?.auto_renew === 'false' && session.subscription) {
+        await stripe.subscriptions
+          .update(session.subscription as string, { cancel_at_period_end: true })
+          .catch((err) => console.error('[stripe] cancel_at_period_end failed:', err))
+      }
+
       const customerEmail = session.customer_details?.email ?? session.customer_email
       if (customerEmail && process.env.RESEND_API_KEY) {
         const planName = tier === 'portfolio' ? 'Portfolio' : 'Legendary'
