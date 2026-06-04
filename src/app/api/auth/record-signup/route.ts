@@ -13,6 +13,12 @@ function getIP(request: Request): string {
 }
 
 export async function POST(request: Request) {
+  // When the IP limit is disabled we don't record IPs, so the table stays clean
+  // for when the guard is switched back on.
+  if (process.env.SIGNUP_IP_LIMIT_ENABLED === 'false') {
+    return NextResponse.json({ ok: true })
+  }
+
   const ip = getIP(request)
 
   if (ip === 'unknown' || ip === '127.0.0.1' || ip === '::1') {

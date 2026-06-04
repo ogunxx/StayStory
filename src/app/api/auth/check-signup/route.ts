@@ -13,6 +13,12 @@ function getIP(request: Request): string {
 }
 
 export async function POST(request: Request) {
+  // Master switch for the one-account-per-IP guard. Set SIGNUP_IP_LIMIT_ENABLED
+  // to "false" (e.g. while testing) to allow unlimited signups per IP.
+  if (process.env.SIGNUP_IP_LIMIT_ENABLED === 'false') {
+    return NextResponse.json({ allowed: true })
+  }
+
   const ip = getIP(request)
 
   if (ip === 'unknown' || ip === '127.0.0.1' || ip === '::1') {
