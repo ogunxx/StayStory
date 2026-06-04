@@ -29,7 +29,7 @@ const IMAGES = {
   deck: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/d6a3add4-6041-4731-ad96-76aaf6e87b61/WhatsApp+Image+2025-11-23+at+3.32.46+PM.jpeg?format=1500w',
   movieNight: 'https://a0.muscache.com/im/pictures/hosting/Hosting-775430494188891274/original/e927b3f7-5a56-4502-860b-48c62c139429.png?im_w=480&im_q=medq',
   wellness: 'https://a0.muscache.com/im/pictures/hosting/Hosting-1602145313140364507/original/e5e36dce-a806-4a55-af47-4176f609851f.png?im_w=720',
-  ogun: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/724bab11-6cb1-4ac1-97a7-4a7413bd4052/WhatsApp+Image+2026-01-22+at+7.37.19+AM.jpeg?format=2500w',
+  ogun: '/images/ogun.jpg',
   evie: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/07ed0151-1334-403c-abfe-5b40be6d44b5/20240704_110537.jpg?format=2500w',
   together: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/87953ab6-87f5-479b-b95c-735a41c92e8b/Blue+Bird.png?format=2500w',
 }
