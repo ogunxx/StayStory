@@ -9,23 +9,18 @@ export default async function JourneyPage() {
   if (!user) redirect('/login')
 
   const tier = await getUserTier()
-  if (hasAccess(tier, 'legendary')) {
-    return <JourneyClient />
+  const isPaid = hasAccess(tier, 'legendary')
+
+  // Everyone can build & edit their full Blueprint. We only meter idea
+  // generation for free accounts, so count how many they've already used.
+  let generationsUsed = 0
+  if (!isPaid) {
+    const { count } = await supabase
+      .from('journey_sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+    generationsUsed = count ?? 0
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('journey_trial_used')
-    .eq('id', user.id)
-    .single()
-
-  if (!profile?.journey_trial_used) {
-    await supabase
-      .from('profiles')
-      .update({ journey_trial_used: true })
-      .eq('id', user.id)
-    return <JourneyClient isTrial />
-  }
-
-  return <JourneyClient isPreview />
+  return <JourneyClient isPaid={isPaid} generationsUsed={generationsUsed} />
 }

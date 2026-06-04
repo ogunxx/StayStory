@@ -17,7 +17,16 @@ function getTierFromPriceId(priceId: string): string {
     price_1TSJD2IOCUJyk0u8eJU7QOSd: 'signature',
     price_1TSJDkIOCUJyk0u82KyQ0j97: 'legend',
   }
+  if (process.env.STRIPE_PORTFOLIO_PRICE_ID && priceId === process.env.STRIPE_PORTFOLIO_PRICE_ID) {
+    return 'portfolio'
+  }
+  if (process.env.STRIPE_PORTFOLIO_ANNUAL_PRICE_ID && priceId === process.env.STRIPE_PORTFOLIO_ANNUAL_PRICE_ID) {
+    return 'portfolio'
+  }
   if (process.env.STRIPE_LEGEND_PRICE_ID && priceId === process.env.STRIPE_LEGEND_PRICE_ID) {
+    return 'legendary'
+  }
+  if (process.env.STRIPE_LEGEND_ANNUAL_PRICE_ID && priceId === process.env.STRIPE_LEGEND_ANNUAL_PRICE_ID) {
     return 'legendary'
   }
   // Normalize legacy tier values to 'legendary'
@@ -55,16 +64,21 @@ export async function POST(request: Request) {
 
       const customerEmail = session.customer_details?.email ?? session.customer_email
       if (customerEmail && process.env.RESEND_API_KEY) {
+        const planName = tier === 'portfolio' ? 'Portfolio' : 'Legendary'
+        const intro =
+          tier === 'portfolio'
+            ? 'Your subscription is active. The whole system is now unlimited across up to five properties — the Experience Audit, Experience Blueprint, Experience Generator, Story Builder, and a full Guest Journey Playbook for each place, plus co-host team access.'
+            : 'Your subscription is active. The whole system is now unlimited — the Experience Audit, Experience Blueprint, Experience Generator, Story Builder, and your full Guest Journey Playbook.'
         await resend.emails.send({
           from: 'StayStory <hello@staystory.co>',
           to: customerEmail,
           replyTo: 'hello@staystory.co',
-          subject: 'Welcome to Legendary — you\'re in.',
+          subject: `Welcome to ${planName} — you're in.`,
           html: `
             <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:40px 24px;color:#1a1a1a">
-              <p style="font-size:20px;font-weight:600;margin:0 0 24px">Welcome to StayStory Legendary.</p>
+              <p style="font-size:20px;font-weight:600;margin:0 0 24px">Welcome to StayStory ${planName}.</p>
               <p style="font-size:15px;line-height:1.7;margin:0 0 16px">
-                Your subscription is active. The whole system is now unlimited — the Experience Audit, Experience Blueprint, Experience Generator, Story Builder, and your full Guest Journey Playbook.
+                ${intro}
               </p>
               <p style="font-size:15px;line-height:1.7;margin:0 0 32px">
                 This is where great hosting begins. Head to your dashboard and start building the stay your guests will talk about.
@@ -74,7 +88,7 @@ export async function POST(request: Request) {
               </a>
               <p style="font-size:13px;color:#666;margin:40px 0 0;line-height:1.6">
                 Questions? Reply to this email or reach us at <a href="mailto:hello@staystory.co" style="color:#1a1a1a">hello@staystory.co</a>.<br>
-                You're billed $17/mo. Cancel anytime from your account settings.
+                Cancel anytime from your account settings.
               </p>
             </div>
           `,

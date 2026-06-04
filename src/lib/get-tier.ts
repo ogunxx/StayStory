@@ -1,13 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import type { SubscriptionTier } from '@/types'
 
-// Legacy tiers (host, signature, legend) map to legendary rank for backward compat
+// Legacy tiers (host, signature, legend) map to legendary rank for backward compat.
+// Portfolio sits above legendary (full legendary access + multi-property/team).
 const TIER_RANK: Record<SubscriptionTier, number> = {
   free: 0,
   host: 1,
   signature: 1,
   legend: 1,
   legendary: 1,
+  portfolio: 2,
 }
 
 export async function getUserTier(): Promise<SubscriptionTier> {

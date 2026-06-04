@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { anthropic } from '@/lib/anthropic'
+import { getUserTier, hasAccess } from '@/lib/get-tier'
+import { FREE_BLUEPRINT_GENERATIONS } from '@/lib/config'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -8,6 +10,25 @@ export async function POST(request: Request) {
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  // Building & editing the Blueprint is free for everyone; generating ideas is
+  // metered for free accounts and unlimited on paid plans.
+  const tier = await getUserTier()
+  if (!hasAccess(tier, 'legendary')) {
+    const { count } = await supabase
+      .from('journey_sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+    if ((count ?? 0) >= FREE_BLUEPRINT_GENERATIONS) {
+      return NextResponse.json(
+        {
+          error: `You've used all ${FREE_BLUEPRINT_GENERATIONS} free idea generations. Upgrade to Legendary for unlimited.`,
+          limitReached: true,
+        },
+        { status: 402 }
+      )
+    }
   }
 
   const { touchpoint, question, guidara, current, propertyContext, keyMoment } = await request.json()
