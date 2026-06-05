@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
   const prompt = `You are a storytelling advisor trained in Jay Acunzo's frameworks: the host is the guide, the guest is the hero, prioritize resonance over reach, every moment is a story.
 
-A host created a memorable moment for their guest. Help them turn it into a story for their brand.
+A host created a memorable moment for their guest. Help them put it into words — so the experience can be understood, anticipated, felt, and remembered. This is about making meaning, not writing marketing copy.
 
 GUEST: ${guestName || 'Guest'} — ${whyVisiting}
 OCCASION: ${occasion || 'None'}
@@ -30,9 +30,9 @@ Return a JSON object only:
 {
   "narrative": "3-4 sentence guest story. Guest is the hero. Written from their perspective — what they felt, what they'll remember, what they'll tell people.",
   "host_perspective": "2-3 sentences from the host's perspective — why they did it, what it meant. Authentic, not performative.",
-  "social_caption": "Instagram/TikTok caption. No hashtags. Warm, story-driven, 2-3 sentences. Could start with a scene or a feeling.",
+  "social_caption": "The moment in words the host could share — a short, true expression of what happened and how it felt, 2-3 sentences. Capture the feeling, not a marketing caption. No hashtags, no salesy language. Start with a scene or a feeling.",
   "pre_arrival_message": "Pre-arrival message in a warm, personal host voice. References something specific about their purpose. Under 100 words.",
-  "listing_improvements": "2-3 specific improvements to listing copy that would attract guests who value thoughtful hospitality. Make them feel something, not just describe features."
+  "listing_improvements": "Describe what a FUTURE guest should be able to FEEL before they book — the emotional truth of this experience, written so someone reading it can anticipate the moment and imagine themselves in it. 2-3 sentences. Not feature edits, not marketing copy — the meaning a future guest should sense is waiting for them."
 }`
 
   try {

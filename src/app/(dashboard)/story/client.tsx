@@ -95,7 +95,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
               <p className="text-foreground leading-relaxed italic">{SAMPLE_STORY.host_perspective}</p>
             </div>
             <div className="bg-accent rounded-xl p-6">
-              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Social caption</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">The moment, in words you could share</p>
               <p className="text-foreground leading-relaxed whitespace-pre-line">{SAMPLE_STORY.social_caption}</p>
             </div>
             <div className="flex flex-col gap-4" style={{ filter: 'blur(4px)', pointerEvents: 'none', userSelect: 'none' }}>
@@ -104,7 +104,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
                 <p className="text-foreground leading-relaxed whitespace-pre-line">{SAMPLE_STORY.pre_arrival_message}</p>
               </div>
               <div className="bg-primary/10 rounded-xl p-6">
-                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Listing copy improvements</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">What future guests should feel before they book</p>
                 <p className="text-foreground leading-relaxed whitespace-pre-line">{SAMPLE_STORY.listing_improvements}</p>
               </div>
             </div>
@@ -113,7 +113,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
           {/* Lock overlay on last 2 sections */}
           <div className="absolute bottom-0 left-0 right-0 h-80 flex flex-col items-center justify-end pb-8 bg-gradient-to-t from-background via-background/90 to-transparent">
             <div className="text-center px-6 mb-5">
-              <p className="text-lg font-serif font-semibold text-foreground mb-1">Pre-arrival message + listing copy — locked</p>
+              <p className="text-lg font-serif font-semibold text-foreground mb-1">Pre-arrival message + what future guests feel — locked</p>
               <p className="text-sm text-muted-foreground max-w-sm">Upgrade to Legendary to generate every section for every guest you host — unlimited.</p>
             </div>
             <Link href="/pricing" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
@@ -126,7 +126,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
           <p className="text-xs uppercase tracking-widest text-primary-foreground/60">Legendary</p>
           <h2 className="text-2xl font-serif font-semibold">Every guest leaves a story. Start telling them.</h2>
           <p className="text-primary-foreground/80 text-sm max-w-sm leading-relaxed">
-            Guest narrative, host perspective, social caption, pre-arrival message, and listing improvements — all from a 5-field form. Unlimited, for every guest.
+            Guest narrative, host perspective, a moment worth sharing, pre-arrival message, and what future guests feel before they book — all from a 5-field form. Unlimited, for every guest.
           </p>
           <Link href="/pricing" className="bg-primary-foreground text-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/90 transition-colors">
             Become Legendary →
@@ -234,7 +234,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
           </div>
 
           <div className="bg-accent rounded-xl p-6">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Social caption</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">The moment, in words you could share</p>
             <p className="text-foreground leading-relaxed">{result.social_caption}</p>
           </div>
 
@@ -244,7 +244,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
           </div>
 
           <div className="bg-primary/10 rounded-xl p-6">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Listing copy improvements</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">What future guests should feel before they book</p>
             <p className="text-foreground leading-relaxed whitespace-pre-line">{result.listing_improvements}</p>
           </div>
 

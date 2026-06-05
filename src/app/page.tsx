@@ -384,10 +384,11 @@ export default async function LandingPage() {
                 Give the experience words guests can carry home.
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                An experience only becomes a story when it can be told. The Story Builder helps you
-                express what you created — so guests can anticipate it before they arrive, feel it while
-                they&apos;re there, and remember it long after they leave. It isn&apos;t about writing copy.
-                It&apos;s about making meaning.
+                A moment nobody can describe ends at checkout. The Story Builder helps you put the
+                experience into language — so guests understand what you&apos;ve made for them,
+                anticipate it before they arrive, feel it more deeply while they&apos;re there, and
+                remember it long after they leave. It isn&apos;t about writing copy. It&apos;s about
+                making meaning that lasts.
               </p>
             </div>
           </div>
