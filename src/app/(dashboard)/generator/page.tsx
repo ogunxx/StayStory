@@ -113,7 +113,7 @@ export default function GeneratorPage() {
         <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 2</p>
         <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Experience Generator</h1>
         <p className="text-muted-foreground leading-relaxed">
-          Tell us about your guest. The more specific you are, the more meaningful the moments. Every detail unlocks a more personal experience.
+          Tell us about your guest. The more specific you are, the more meaningful the moments — every detail unlocks a way to make them feel seen.
         </p>
       </div>
 

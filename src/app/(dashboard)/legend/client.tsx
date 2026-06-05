@@ -98,7 +98,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 5</p>
           <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Guest Journey Playbook</h1>
-          <p className="text-muted-foreground leading-relaxed">Your complete hosting intelligence document — built for your property, your guests, your style. Here's what it looks like.</p>
+          <p className="text-muted-foreground leading-relaxed">Your complete hosting playbook — everything it takes to become the host your guests never forget, built for your property, your guests, your style. Here's what it looks like.</p>
         </div>
 
         {/* Sample playbook — executive summary fully visible */}
@@ -192,7 +192,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
         <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-2">Level 5 · Legendary Member</p>
         <h1 className="text-3xl font-serif font-semibold mb-3">Your full hospitality experience</h1>
         <p className="text-primary-foreground/80 leading-relaxed">
-          Every tool, unlimited. Your custom guest journey playbook — built for your property, your guests, your hosting style.
+          Every tool, unlimited. Your custom guest journey playbook — everything it takes to become the host your guests never forget, built for your property, your guests, your hosting style.
         </p>
       </div>
 

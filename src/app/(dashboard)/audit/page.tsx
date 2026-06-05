@@ -120,7 +120,7 @@ export default function AuditPage() {
         <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Level 1</p>
         <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Experience Audit</h1>
         <p className="text-muted-foreground leading-relaxed">
-          The first principle of great hosting: stay in your own rental before renting it out. This audit helps you see your stay through your guest&apos;s eyes — surfacing the emotional peaks, the missed moments, and the invisible things guests feel but rarely mention.
+          The first principle of great hosting: stay in your own rental before renting it out. This audit helps you see your stay through your guest&apos;s eyes — surfacing the emotional peaks, the missed moments, and the invisible things guests feel but rarely mention. It&apos;s where a stay they forget starts becoming one they never will.
         </p>
       </div>
 

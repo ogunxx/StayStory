@@ -243,7 +243,7 @@ export default function JourneyClient({
         <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">Experience Blueprint</p>
         <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Experience Blueprint</h1>
         <p className="text-muted-foreground leading-relaxed">
-          Map every moment your guest experiences — from booking confirmation to what they discover after checkout. Get ridiculously granular. No touchpoint is too small.
+          Map every moment your guest experiences — from booking confirmation to what they discover after checkout. Get ridiculously granular; no touchpoint is too small. This is how a stay becomes one they never forget.
         </p>
       </div>
 
