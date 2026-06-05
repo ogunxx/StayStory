@@ -9,28 +9,28 @@ import { PLAN_PRICING } from '@/lib/config'
 type Interval = 'monthly' | 'annual'
 
 export function HomePricing() {
-  const [interval, setInterval] = useState<Interval>('annual')
+  const [billingInterval, setBillingInterval] = useState<Interval>('annual')
 
   const legend =
-    interval === 'annual'
+    billingInterval ==='annual'
       ? `$${Math.round(PLAN_PRICING.legendary.annual / 12)}`
       : `$${PLAN_PRICING.legendary.monthly}`
   const portfolio =
-    interval === 'annual'
+    billingInterval ==='annual'
       ? `$${Math.round(PLAN_PRICING.portfolio.annual / 12)}`
       : `$${PLAN_PRICING.portfolio.monthly}`
 
   const subLegend =
-    interval === 'annual'
+    billingInterval ==='annual'
       ? `$${PLAN_PRICING.legendary.annual} billed once a year`
       : `$${PLAN_PRICING.legendary.monthly} billed each month`
   const subPortfolio =
-    interval === 'annual'
+    billingInterval ==='annual'
       ? `$${PLAN_PRICING.portfolio.annual} billed once a year`
       : `$${PLAN_PRICING.portfolio.monthly} billed each month`
 
   const billingNote =
-    interval === 'annual'
+    billingInterval ==='annual'
       ? 'Pay once for the full year — two months free versus monthly. Cancel anytime before it renews, or turn off auto-renewal at checkout so you\'re never charged again automatically.'
       : 'Pay month to month. Cancel anytime — you keep access through the month you\'ve paid for. Turn off auto-renewal at checkout and your plan simply ends when the month is over.'
 
@@ -47,9 +47,9 @@ export function HomePricing() {
       <div className="flex flex-col items-center gap-3 mb-4">
         <div className="inline-flex rounded-full border border-border bg-background p-1">
           <button
-            onClick={() => setInterval('monthly')}
+            onClick={() => setBillingInterval('monthly')}
             className={`px-4 py-1.5 text-sm rounded-full transition ${
-              interval === 'monthly'
+              billingInterval ==='monthly'
                 ? 'bg-foreground text-background'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
@@ -57,9 +57,9 @@ export function HomePricing() {
             Monthly
           </button>
           <button
-            onClick={() => setInterval('annual')}
+            onClick={() => setBillingInterval('annual')}
             className={`px-4 py-1.5 text-sm rounded-full transition ${
-              interval === 'annual'
+              billingInterval ==='annual'
                 ? 'bg-foreground text-background'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
