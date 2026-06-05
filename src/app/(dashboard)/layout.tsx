@@ -26,6 +26,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: '/journey', label: 'Experience Blueprint' },
     { href: '/story', label: 'Story Builder' },
     { href: '/legend', label: 'Guest Journey Playbook' },
+    { href: '/history', label: 'History' },
     { href: '/pricing', label: 'Upgrade' },
   ]
 
