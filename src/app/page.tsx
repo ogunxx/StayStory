@@ -115,9 +115,8 @@ export default async function LandingPage() {
           <span className="text-primary">StayStory is how you write<br className="hidden sm:block" /> the story they never forget.</span>
         </h1>
         <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl">
-          Most hosts optimise the property. The best hosts design the experience.
-          StayStory gives you the system to do it — from the moment a guest books
-          to the memory they carry home.
+          StayStory is the system that helps hosts design unforgettable stays —
+          and put them into words guests carry home.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <Link href="/signup" className={cn(buttonVariants({ size: 'lg' }), 'px-8')}>
@@ -669,6 +668,38 @@ export default async function LandingPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ─── Manifesto ────────────────────────────────────────────────────── */}
+      <section className="py-28 px-6 bg-foreground text-background">
+        <div className="max-w-3xl mx-auto flex flex-col gap-8 text-center">
+          <p className="text-xs uppercase tracking-widest text-background/50">
+            What we believe
+          </p>
+          <div className="flex flex-col gap-7 font-serif text-2xl sm:text-3xl leading-snug">
+            <p>
+              The room was never the point. A guest forgets the thread count.
+              They remember how your place made them feel.
+            </p>
+            <p>
+              Service does what&apos;s expected. Hospitality makes someone feel seen.
+            </p>
+            <p>
+              That feeling isn&apos;t luck. It&apos;s a craft — and a craft can be
+              designed, and repeated.
+            </p>
+            <p className="text-primary">
+              The host is the guide. The guest is the hero.
+            </p>
+          </div>
+          <p className="text-background/70 text-base sm:text-lg leading-relaxed max-w-xl mx-auto pt-2">
+            We&apos;re not here to help you manage a property. We&apos;re here to help
+            you author an experience — and put it into words guests carry home.
+          </p>
+          <p className="font-serif text-xl sm:text-2xl text-background pt-2">
+            StayStory is how you write the story they never forget.
+          </p>
         </div>
       </section>
 
