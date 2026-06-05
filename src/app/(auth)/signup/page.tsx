@@ -103,7 +103,9 @@ function SignupForm() {
             </p>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground mb-8">Free to start. No card needed.</p>
+          <p className="text-sm text-muted-foreground mb-8">
+            Free to start, no card needed — begin becoming the host your guests never forget.
+          </p>
         )}
 
         <form onSubmit={handleSignup} className="flex flex-col gap-5">

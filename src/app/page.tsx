@@ -635,7 +635,7 @@ export default async function LandingPage() {
           </h2>
           <p className="text-center text-muted-foreground text-sm mb-16 max-w-lg mx-auto leading-relaxed">
             StayStory was built to move hosts from wherever they are to the next stage —
-            and eventually, to stay there permanently.
+            until they become the host their guests never forget.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

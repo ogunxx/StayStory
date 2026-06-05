@@ -174,8 +174,9 @@ export default function PricingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
           Start where you are. Grow when you&apos;re ready.
         </h1>
         <p className="text-muted-foreground text-lg leading-relaxed">
-          Every plan helps you turn a place to stay into a story worth remembering. The only question
-          is how much of the system you want working for you — and across how many places.
+          Every plan moves you toward the same thing: becoming the host your guests never forget —
+          turning a place to stay into a stay they retell. The only question is how much of the
+          system you want working for you, and across how many places.
         </p>
       </div>
 

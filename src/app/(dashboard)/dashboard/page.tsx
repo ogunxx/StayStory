@@ -38,7 +38,7 @@ export default async function DashboardPage() {
           Welcome back, {name}.
         </h1>
         <p className="text-muted-foreground">
-          Every great stay starts with intention. What are you working on today?
+          Every unforgettable stay starts with intention. Let&apos;s make a guest feel seen today.
         </p>
       </div>
 
@@ -146,7 +146,7 @@ export default async function DashboardPage() {
                   <span className="text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full font-medium">Unlimited</span>
                 </div>
                 <h2 className="font-serif font-semibold text-foreground mt-1">Story Builder</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed mt-2">Turn what you did into a story — for your brand, listing, and the memory they carry home.</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mt-2">Put the experience into words guests carry home — understood, anticipated, and never forgotten.</p>
               </div>
               <Link href="/story" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'mt-auto w-fit')}>Build story →</Link>
             </div>
@@ -156,7 +156,7 @@ export default async function DashboardPage() {
                 <div>
                   <span className="text-xs text-muted-foreground font-mono">4</span>
                   <h2 className="font-serif font-semibold text-foreground mt-1">Story Builder</h2>
-                  <p className="text-sm text-muted-foreground leading-relaxed mt-2">Turn a moment into a story guests retell — for your listing, your brand, and the memory they take home.</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed mt-2">Put the experience into words guests carry home — and retell long after they leave.</p>
                   <p className="text-xs text-muted-foreground italic mt-2">"They left a note on the guest book we didn't expect…"</p>
                 </div>
                 <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full shrink-0">Legendary</span>
