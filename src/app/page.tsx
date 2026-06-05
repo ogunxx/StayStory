@@ -184,6 +184,121 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* ─── Why Experiences Matter ───────────────────────────────────────── */}
+      <section className="py-24 px-6 max-w-5xl mx-auto w-full">
+        <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-4">
+          The bigger picture
+        </p>
+        <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-center text-foreground mb-6 max-w-2xl mx-auto">
+          Why experiences matter<br />more than ever.
+        </h2>
+        <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto leading-relaxed">
+          The whole economy has been moving in one direction for decades. People stopped
+          buying things and started buying how those things make them feel. Hospitality is
+          living through that shift right now — and the hosts who see it early are the ones
+          guests never stop talking about.
+        </p>
+
+        {/* Statistics */}
+        <div className="grid sm:grid-cols-3 gap-5 mb-20">
+          <div className="bg-secondary rounded-2xl p-7 flex flex-col gap-3">
+            <p className="text-4xl font-serif font-semibold text-foreground">86%</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              of customers will pay more for a better experience — not a better product.
+            </p>
+            <p className="text-xs text-muted-foreground/70 mt-auto">
+              PwC, &ldquo;Experience Is Everything&rdquo;
+            </p>
+          </div>
+          <div className="bg-secondary rounded-2xl p-7 flex flex-col gap-3">
+            <p className="text-4xl font-serif font-semibold text-foreground">73%</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              say experience is a deciding factor in what they buy and who they stay loyal to.
+            </p>
+            <p className="text-xs text-muted-foreground/70 mt-auto">
+              PwC consumer research
+            </p>
+          </div>
+          <div className="bg-secondary rounded-2xl p-7 flex flex-col gap-3">
+            <p className="text-4xl font-serif font-semibold text-foreground">4th</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Experiences are the fourth stage of economic value — beyond commodities, goods,
+              and services.
+            </p>
+            <p className="text-xs text-muted-foreground/70 mt-auto">
+              Pine &amp; Gilmore, Harvard Business Review
+            </p>
+          </div>
+        </div>
+
+        {/* Voices */}
+        <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-10">
+          The people who saw it first
+        </p>
+        <div className="grid sm:grid-cols-2 gap-5 mb-20">
+          {[
+            {
+              quote: 'Goods and services are no longer enough.',
+              name: 'Pine & Gilmore',
+              detail: 'Authors of The Experience Economy',
+              body: 'They argued that the next competitive battleground wouldn’t be price or features — it would be experiences staged so memorably that people pay simply to feel them. A stay is exactly that kind of experience, waiting to be designed.',
+            },
+            {
+              quote: 'Service is black and white. Hospitality is color.',
+              name: 'Will Guidara',
+              detail: 'Unreasonable Hospitality',
+              body: 'He took a restaurant to number one in the world not by perfecting the food, but by obsessing over how guests felt. The lesson for hosts: the things that make people feel seen are rarely expensive — they’re intentional.',
+            },
+            {
+              quote: 'Resonance beats reach.',
+              name: 'Jay Acunzo',
+              detail: 'On standing out',
+              body: 'In a world of endless options, being a little better is invisible. What people remember is the host who made them feel something specific — the one moment that landed deeply enough to be retold.',
+            },
+            {
+              quote: 'Build a place people travel for, not just stay in.',
+              name: 'Isaac French',
+              detail: 'Creator of Live Oak Lake',
+              body: 'He turned a small piece of land into a micro-resort guests crossed states to experience — proof that a thoughtfully designed stay outperforms square footage, location, and amenities every time.',
+            },
+          ].map((v) => (
+            <div key={v.name} className="bg-background rounded-2xl p-7 border border-border flex flex-col gap-4">
+              <p className="text-xl font-serif text-foreground leading-snug">
+                &ldquo;{v.quote}&rdquo;
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed flex-1">{v.body}</p>
+              <div className="border-l-2 border-primary pl-3">
+                <p className="text-sm font-semibold text-foreground">{v.name}</p>
+                <p className="text-xs text-muted-foreground">{v.detail}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Emotional storytelling */}
+        <div className="max-w-2xl mx-auto text-center flex flex-col gap-6">
+          <p className="text-lg sm:text-xl font-serif text-foreground leading-relaxed">
+            Think about the trip you still talk about.
+          </p>
+          <p className="text-muted-foreground leading-relaxed">
+            You probably don&apos;t remember the thread count of the sheets, or whether the Wi-Fi was fast.
+            You remember the cold drink waiting after a long drive. The note with your name on it.
+            The way the light came through the window in the morning. The feeling that someone you&apos;d
+            never met had thought about you before you arrived.
+          </p>
+          <p className="text-muted-foreground leading-relaxed">
+            That feeling is the whole product. Guests will forgive a lot, and forget almost everything —
+            except how a place made them feel. The booking gets you the guest. The experience gets you
+            the review, the return, and the friend they send next.
+          </p>
+          <p className="text-foreground font-medium leading-relaxed">
+            Accommodation is what they pay for. An experience is what they remember.
+            That gap is where your next five-star review lives — and StayStory is the system built
+            to help you close it, on purpose, every single stay.
+          </p>
+        </div>
+      </section>
+
       {/* ─── The System ───────────────────────────────────────────────────── */}
       <section id="how-it-works" className="py-24 px-6 max-w-5xl mx-auto w-full">
         <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-4">
