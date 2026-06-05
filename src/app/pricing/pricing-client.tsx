@@ -114,7 +114,7 @@ const FAQ = [
 
 export default function PricingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
   const router = useRouter()
-  const [interval, setInterval] = useState<Interval>('annual')
+  const [interval, setBillingInterval] = useState<Interval>('annual')
   const [autoRenew, setAutoRenew] = useState(true)
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -185,7 +185,7 @@ export default function PricingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
         <div className="flex flex-wrap items-center gap-4">
           <div className="inline-flex rounded-full border border-border bg-card p-1">
             <button
-              onClick={() => setInterval('monthly')}
+              onClick={() => setBillingInterval('monthly')}
               className={`px-4 py-1.5 text-sm rounded-full transition ${
                 interval === 'monthly'
                   ? 'bg-foreground text-background'
@@ -195,7 +195,7 @@ export default function PricingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
               Monthly
             </button>
             <button
-              onClick={() => setInterval('annual')}
+              onClick={() => setBillingInterval('annual')}
               className={`px-4 py-1.5 text-sm rounded-full transition ${
                 interval === 'annual'
                   ? 'bg-foreground text-background'

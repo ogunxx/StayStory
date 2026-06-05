@@ -82,7 +82,7 @@ const TOUCHPOINTS: Touchpoint[] = [
     phase: 'The Stay',
     label: 'First morning',
     question: 'What is the guest\'s first morning like? Coffee? Light? Sound? Comfort?',
-    guidara: 'Soniat House did two things brilliantly every morning. What\'s your version?',
+    guidara: 'The best stays turn the first morning into a ritual — coffee ready, light right, nothing to figure out. What\'s your version?',
   },
   {
     id: 'mid_stay',

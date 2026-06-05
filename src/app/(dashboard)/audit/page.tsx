@@ -191,7 +191,7 @@ export default function AuditPage() {
           placeholder="e.g. The deck view at sunset, the outdoor movie setup, the wellness space..."
           rows={2}
         />
-        <p className="text-xs text-muted-foreground">Soniat House principle: do one thing so brilliantly that guests never forget it.</p>
+        <p className="text-xs text-muted-foreground">The principle: do one thing so brilliantly it becomes the reason guests never forget you.</p>
       </div>
 
       <Button onClick={calculateResults} size="lg" className="w-fit">
