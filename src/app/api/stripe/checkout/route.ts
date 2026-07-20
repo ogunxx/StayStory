@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { stripe, PLANS } from '@/lib/stripe'
+import { getStripe, PLANS } from '@/lib/stripe'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     // to cancel at period end, so Stripe never charges them again automatically.
     const autoRenewFlag = autoRenew === false ? 'false' : 'true'
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       mode: 'subscription',
       customer: profile?.stripe_customer_id || undefined,
       customer_email: !profile?.stripe_customer_id ? user.email : undefined,

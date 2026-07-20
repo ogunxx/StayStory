@@ -1,14 +1,7 @@
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
 
 function getTierFromPriceId(priceId: string): string {
   const map: Record<string, string> = {
@@ -35,6 +28,13 @@ function getTierFromPriceId(priceId: string): string {
 }
 
 export async function POST(request: Request) {
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+  const stripe = getStripe()
+  const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+
   const body = await request.text()
   const sig = request.headers.get('stripe-signature')!
 
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
       }
 
       const customerEmail = session.customer_details?.email ?? session.customer_email
-      if (customerEmail && process.env.RESEND_API_KEY) {
+      if (customerEmail && resend) {
         const planName = tier === 'portfolio' ? 'Portfolio' : 'Legendary'
         const intro =
           tier === 'portfolio'
@@ -140,7 +140,7 @@ export async function POST(request: Request) {
         .eq('id', profile.id)
 
       const customerEmail = sub.customer_email ?? profile.email
-      if (customerEmail && process.env.RESEND_API_KEY) {
+      if (customerEmail && resend) {
         await resend.emails.send({
           from: 'StayStory <hello@staystory.co>',
           to: customerEmail,
