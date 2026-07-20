@@ -536,3 +536,208 @@ If any answer is no, we continue refining — not because the feature isn't usef
 We are not trying to build the most feature-rich hospitality platform. We are trying to build the most thoughtful one — where every recommendation has a reason, every interaction has intention, every feature teaches something meaningful, every decision reinforces a single philosophy.
 
 Our goal is not for people to say "StayStory has great AI." Our goal is for them to say **"StayStory changed the way I think about hospitality."** When that happens, the software has become something much greater than a tool. It has become a trusted guide.
+
+---
+
+## Part XI — The StayStory Architecture
+
+### How the Philosophy Becomes a Product
+
+StayStory is not a collection of separate tools. The Audit, Experience Blueprint, Generator, Story Builder, and Guest Journey each serve a different purpose, but they are designed to work as one connected system.
+
+At the center of that system is the Experience Compass. The Compass holds the host's evolving understanding of: Wonder, Purpose, Story, Transformation, Hospitality Promise, Signature Memory, and The Story Guests Will Tell.
+
+Every part of StayStory should either contribute to the Compass, apply the Compass, or refine it. This is what turns a group of useful features into one coherent experience.
+
+### The Core Architecture
+
+```
+                 THE STAYSTORY OPERATING SYSTEM
+          Philosophy, principles, voice, and product laws
+                               │
+                               ▼
+                    THE EXPERIENCE COMPASS
+          The living source of truth for each property
+                               │
+          ┌────────────────────┼────────────────────┐
+          │                    │                    │
+          ▼                    ▼                    ▼
+       DISCOVER              DESIGN               EXPRESS
+   Audit + Story Builder    Blueprint + Generator   Story Builder
+          │                    │                    │
+          └────────────────────┼────────────────────┘
+                               ▼
+                          DELIVER
+                       Guest Journey
+                               │
+                               ▼
+                       GUEST EXPERIENCE
+                               │
+                               ▼
+             Reviews, observations, and host reflection
+                               │
+                               ▼
+                    COMPASS REFINEMENT
+                               │
+                               └─────── continuous cycle
+```
+
+The Operating System guides StayStory. The Compass guides the host. The product modules help hosts discover, design, express, and deliver the experience. Guest feedback then helps the experience evolve.
+
+### The Three Layers of StayStory
+
+**Layer One: The Governing Philosophy**
+
+This is the internal foundation of the product: the Manifesto, the Premise, the StayStory Method, Product Philosophy, the Laws of StayStory, AI Philosophy, the StayStory Voice, the StayStory Test.
+
+Hosts do not need to read these documents. They experience them through the way StayStory asks questions, explains ideas, generates recommendations, and guides decisions. The philosophy should remain largely invisible to the user but unmistakable in the product.
+
+**Layer Two: The Experience Compass**
+
+The Experience Compass is the shared source of truth across StayStory. It is not owned by one feature. It belongs to the entire platform. Each module should be able to:
+
+1. Read the Compass.
+2. Contribute new insights to it.
+3. Suggest refinements.
+4. Apply it to outputs.
+5. Explain which Compass elements informed a recommendation.
+
+The Compass prevents each feature from developing its own separate understanding of the property. Without it, the Audit may describe one experience, the Story Builder may write another, and the Guest Journey may deliver something else. With it, every feature reinforces the same intention.
+
+**Layer Three: The Product Modules**
+
+Each module has one primary responsibility.
+
+**Audit — Observe.** *Core question: Where are you now?* The Audit examines the existing guest experience. It identifies strengths already present, operational friction, emotional gaps, inconsistencies, underused opportunities, and moments that support or weaken the host's intended story.
+
+The Audit should not create the entire Experience Compass. However, it can reveal evidence that helps clarify or challenge it. For example: *"You said your Hospitality Promise is to help guests feel unhurried, but your arrival instructions currently introduce five separate tasks before they enter."* The Audit connects present reality to intended experience.
+
+**Story Builder — Discover and Articulate.** *Core question: What do you believe, and why does this place matter?* The Story Builder helps hosts uncover the meaning behind the property, their point of view, the experiences that shaped their hospitality, the story the property tells, and the story guests are invited to enter.
+
+It should not begin by writing polished copy. It should first gather raw material through reflection, curiosity, observation, and lived moments. The Story Builder is one of the primary contributors to Wonder, Purpose, Story, and The Story Guests Will Tell. Once those ideas are clear, it can translate them into brand language, listing copy, host stories, and guest-facing communication.
+
+**Experience Blueprint — Design.** *Core question: How should the experience unfold?* The Experience Blueprint translates the Compass into an intentional emotional and chronological journey: pre-booking, booking, anticipation, pre-arrival, arrival, first impression, time in the property, key experience moments, departure, post-stay memory and connection.
+
+For every stage, the Blueprint should identify what happens, what the guest may currently feel, what the host wants them to feel, what friction could interrupt the experience, what touchpoints could strengthen the story, and which Compass element the moment supports. The Blueprint turns philosophy into a designed journey.
+
+**Generator — Create.** *Core question: What can help bring this experience to life?* The Generator creates practical outputs informed by the Compass and Blueprint: guest messages, welcome rituals, experience ideas, room details, local recommendations, special-occasion gestures, listing language, host communication, story-driven content.
+
+The Generator should never operate as a blank prompt box disconnected from the rest of StayStory. Before generating, it should understand the relevant Compass elements, the specific stage of the guest journey, the guest or occasion, practical limitations, and the emotional purpose of the output. The Generator converts intention into usable expressions.
+
+**Guest Journey — Deliver.** *Core question: How will the experience be delivered consistently?* The Guest Journey turns the Blueprint into a practical hospitality playbook. It organizes the moments, messages, actions, and responsibilities required to deliver the experience. It should clarify what happens, when it happens, why it matters, what it communicates to the guest, whether it can be systemized, and where human involvement is essential.
+
+The Guest Journey is where Will Guidara's lesson becomes operational: thoughtfulness should feel personal, but it should not depend entirely on memory or improvisation. The system helps the host remember. The host provides the humanity.
+
+### The Product Flow
+
+The product should support a natural progression without forcing every host through one rigid path.
+
+**Recommended first-time journey:** Orientation → Compass Foundations → Audit → Story Discovery → Compass Confirmation → Experience Blueprint → Generator → Guest Journey → Launch, Observe, and Evolve.
+
+1. **Orientation.** Explain what StayStory will help the host accomplish. Do not introduce every tool at once. The host should understand one promise: *we will help you uncover what makes your hospitality meaningful and design the guest experience around it.*
+2. **Compass Foundations.** Collect only enough information to establish a preliminary Compass. This should not feel like a seven-part branding exercise before the host receives value. The Compass can begin with a few thoughtful questions and deepen over time.
+3. **Audit.** Assess the experience as it currently exists. Use the preliminary Compass as context, while allowing the Audit to reveal contradictions or possibilities.
+4. **Story Discovery.** Use the Story Builder to deepen the host's Wonder, Purpose, Story, and point of view.
+5. **Compass Confirmation.** Present a synthesized draft of the Experience Compass. The host should be able to accept it, edit it, reject parts of it, ask for alternatives, and see what information informed it. The AI should never silently decide the host's identity.
+6. **Experience Blueprint.** Translate the approved Compass into an intentional guest experience.
+7. **Generator.** Create the individual messages, ideas, rituals, and resources needed to support the Blueprint.
+8. **Guest Journey.** Organize those outputs into a repeatable delivery system.
+9. **Launch, Observe, and Evolve.** Invite hosts to return with reviews, observations, and new ideas. Use what happens in the real guest experience to refine the Compass and the system around it.
+
+### The Compass Should Be Progressive
+
+The Experience Compass should not become a long onboarding barrier. It should be built progressively.
+
+**Preliminary Compass** — created from the host's earliest answers. It may include initial drafts of Wonder, Purpose, desired Transformation, and Hospitality Promise.
+
+**Developing Compass** — strengthened by the Audit and Story Builder. The platform begins identifying patterns, such as: *"You repeatedly describe quiet, unhurried mornings. This may be an important part of your Wonder and Story."*
+
+**Confirmed Compass** — reviewed and approved by the host before it becomes the primary reasoning context for the Blueprint, Generator, and Guest Journey.
+
+**Evolving Compass** — refined as the host learns from real guests. The Compass should display when it was last updated and what contributed to a proposed change.
+
+### Information Should Flow in Both Directions
+
+The architecture should not work only from the Compass outward. It should also allow the product to learn inward.
+
+```
+COMPASS
+   ↓
+Guides recommendations
+   ↓
+HOST APPLIES IDEAS
+   ↓
+GUEST EXPERIENCES THEM
+   ↓
+REVIEWS + HOST OBSERVATIONS
+   ↓
+STAYSTORY IDENTIFIES PATTERNS
+   ↓
+HOST APPROVES REFINEMENTS
+   ↓
+COMPASS EVOLVES
+```
+
+This distinction matters. StayStory may suggest that a property's Signature Memory is its outdoor bath. But guest reviews may repeatedly mention conversations around the kitchen table instead. The software should notice that pattern and ask: *"Guests appear to remember the evenings spent gathering around the table more often than the bath. Does that moment belong more prominently in your Compass?"*
+
+StayStory reveals the pattern. The host decides what it means.
+
+### Shared Data, Distinct Conversations
+
+The modules should share context without feeling repetitive. A host should not have to repeatedly answer: What type of property is this? Who is your guest? What feeling are you creating? What makes this place special?
+
+That information should be available across the platform. However, each module may approach it from a different angle. For example: the Audit asks whether the arrival supports the intended feeling; the Story Builder asks why that feeling matters to the host; the Blueprint asks how anticipation should build toward it; the Generator creates a message that expresses it; the Guest Journey ensures the message is sent at the right time.
+
+Shared understanding should create depth — not repetition.
+
+### Every Output Needs Traceability
+
+Hosts should be able to understand why StayStory made a recommendation. A recommendation may display:
+
+> **Inspired by your Compass**
+> - Purpose: Help families reconnect
+> - Transformation: Distracted → Present
+> - Hospitality Promise: Everyone feels included
+>
+> **Recommendation**
+> Create a simple first-night conversation deck rather than adding another television-based activity.
+>
+> **Why this fits**
+> It gives families an easy way to reconnect without making the experience feel scheduled or forced.
+
+Traceability builds trust and teaches the host how to think.
+
+### Human Approval Is Required at Meaningful Moments
+
+AI may identify themes, draft language, and suggest Compass refinements. It should not make identity-level decisions without the host. Human confirmation is especially important when: defining Wonder, defining Purpose, stating the host's point of view, establishing the Hospitality Promise, choosing the Signature Memory, changing the Compass based on guest feedback, publishing guest-facing stories.
+
+StayStory helps hosts articulate their truth. It does not manufacture one for them.
+
+### The Architecture Should Reduce Overwhelm
+
+The internal system may be sophisticated. The visible experience should feel simple. A host should not need to understand the entire architecture to use StayStory. At any moment, they should know what they are working on, why it matters, how it connects to their experience, and what the next useful step is.
+
+The product should reveal depth gradually. Complexity belongs in the system. Clarity belongs in the experience.
+
+### The Architecture Test
+
+When reviewing any feature or workflow, ask:
+
+1. What is this module's single responsibility?
+2. Does it contribute to, apply, or refine the Experience Compass?
+3. Is it duplicating another module?
+4. Does information flow into the rest of the system?
+5. Does it teach the host something meaningful?
+6. Can the host understand why the output was generated?
+7. Is human approval preserved where identity or meaning is involved?
+8. Does it make the platform feel more connected or more fragmented?
+9. Does it help StayStory learn without overriding the host?
+10. Is it unmistakably StayStory?
+
+### The Architectural Principle
+
+**One philosophy. One living Compass. Many connected conversations.**
+
+The Audit observes. The Story Builder uncovers. The Blueprint designs. The Generator creates. The Guest Journey delivers. The guest experience teaches. The Compass evolves.
+
+Together, they create one continuous system for intentional hospitality.
