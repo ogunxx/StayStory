@@ -7,10 +7,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import type { GeneratorFormData, SuggestionContent } from '@/types'
+import type { CompassField, GeneratorFormData, SuggestionContent } from '@/types'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { LEGENDARY_PRICE } from '@/lib/config'
+import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 
 const BUDGET_OPTIONS: { value: GeneratorFormData['budget']; label: string; desc: string }[] = [
   { value: 'zero', label: '$0', desc: 'Time & intention only' },
@@ -35,6 +36,7 @@ export default function GeneratorPage() {
   const [error, setError] = useState<string | null>(null)
   const [limitReached, setLimitReached] = useState(false)
   const [result, setResult] = useState<SuggestionContent | null>(null)
+  const [compassUsed, setCompassUsed] = useState<CompassField[]>([])
 
   const [importMessage, setImportMessage] = useState('')
   const [importLoading, setImportLoading] = useState(false)
@@ -100,6 +102,7 @@ export default function GeneratorPage() {
       }
       if (!res.ok) throw new Error(data.error || 'Generation failed')
       setResult(data.suggestion)
+      setCompassUsed(data.compassElementsUsed ?? [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -333,6 +336,18 @@ export default function GeneratorPage() {
             ))}
           </div>
 
+          {/* Compass traceability */}
+          {compassUsed.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span>Informed by your Compass:</span>
+              {compassUsed.map((field) => (
+                <Badge key={field} variant="outline">
+                  {COMPASS_FIELD_LABELS[field] ?? field}
+                </Badge>
+              ))}
+            </div>
+          )}
+
           {/* Why it works */}
           <div className="bg-secondary rounded-xl p-5">
             <h3 className="font-semibold text-foreground mb-2">Why this works</h3>
@@ -346,7 +361,7 @@ export default function GeneratorPage() {
           </div>
 
           <div className="flex gap-3 flex-wrap">
-            <Button onClick={() => { setResult(null); setForm({ guestName: '', whyVisiting: '', hostNotes: '', occasion: '', emotionalState: '', hasKids: false, hasPets: false, interests: '', budget: 'under_10' }) }} variant="outline">
+            <Button onClick={() => { setResult(null); setCompassUsed([]); setForm({ guestName: '', whyVisiting: '', hostNotes: '', occasion: '', emotionalState: '', hasKids: false, hasPets: false, interests: '', budget: 'under_10' }) }} variant="outline">
               Generate for another guest
             </Button>
             <a href="/story" className={cn(buttonVariants({ variant: 'outline' }))}>Turn this into a story →</a>
