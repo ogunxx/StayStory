@@ -63,12 +63,16 @@ export default function AuditPage() {
     one_thing: '',
   })
   const [results, setResults] = useState<{ score: number; fixes: string[]; strengths: string[] } | null>(null)
+  const [comparing, setComparing] = useState(false)
+  const [observations, setObservations] = useState<
+    { message: string; compass_field: string | null; suggested_refinement: string | null }[]
+  >([])
 
   function setRating(field: keyof AuditState, value: Rating) {
     setAudit((prev) => ({ ...prev, [field]: value }))
   }
 
-  function calculateResults() {
+  async function calculateResults() {
     const ratings = [
       audit.arrival_rating, audit.lighting_rating, audit.temperature_rating,
       audit.sleep_rating, audit.bathroom_rating, audit.kitchen_rating,
@@ -94,12 +98,22 @@ export default function AuditPage() {
     const strengths = labelMap.filter(([k]) => (audit[k] as Rating | null) !== null && (audit[k] as Rating) >= 4).map(([, l]) => l)
 
     setResults({ score, fixes, strengths })
+    setObservations([])
+    setComparing(true)
 
-    fetch('/api/audit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ score, responses: audit }),
-    }).catch(() => {})
+    try {
+      const res = await fetch('/api/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score, responses: audit }),
+      })
+      const data = await res.json()
+      if (res.ok) setObservations(data.observations ?? [])
+    } catch {
+      // Saving/comparing quietly fails without blocking the score already shown.
+    } finally {
+      setComparing(false)
+    }
   }
 
   const categories = [
@@ -232,6 +246,25 @@ export default function AuditPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {comparing && (
+            <p className="text-xs text-muted-foreground italic">Comparing with your Experience Compass…</p>
+          )}
+
+          {observations.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <p className="text-sm font-semibold text-foreground">Worth noticing</p>
+              {observations.map((o, i) => (
+                <div key={i} className="bg-secondary rounded-xl p-4">
+                  <p className="text-sm text-foreground leading-relaxed">{o.message}</p>
+                </div>
+              ))}
+              <p className="text-xs text-muted-foreground">
+                Any suggested refinements from this are waiting for your review on your{' '}
+                <a href="/compass" className="text-primary hover:underline">Experience Compass</a>.
+              </p>
             </div>
           )}
 
