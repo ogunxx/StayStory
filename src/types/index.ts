@@ -19,6 +19,58 @@ export interface Property {
   created_at: string
 }
 
+export type CompassStatus = 'preliminary' | 'developing' | 'confirmed' | 'evolving'
+
+export type CompassField =
+  | 'wonder'
+  | 'purpose'
+  | 'story'
+  | 'transformation_arrive'
+  | 'transformation_leave'
+  | 'hospitality_promise'
+  | 'signature_memory'
+  | 'story_theyll_tell'
+
+export interface CompassFieldProvenance {
+  source_module: string
+  contribution_id: string
+  updated_at: string
+}
+
+export interface ExperienceCompass {
+  id: string
+  user_id: string
+  property_id: string | null
+  status: CompassStatus
+  wonder: string | null
+  purpose: string | null
+  story: string | null
+  transformation_arrive: string | null
+  transformation_leave: string | null
+  hospitality_promise: string | null
+  signature_memory: string | null
+  story_theyll_tell: string | null
+  field_provenance: Partial<Record<CompassField, CompassFieldProvenance>>
+  confirmed_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CompassContribution {
+  id: string
+  compass_id: string
+  user_id: string
+  property_id: string | null
+  field: CompassField
+  suggested_value: string
+  source_module: string
+  source_ref: Record<string, unknown> | null
+  rationale: string | null
+  status: 'pending' | 'accepted' | 'rejected'
+  created_at: string
+  reviewed_at: string | null
+}
+
 export interface Guest {
   id: string
   user_id: string
