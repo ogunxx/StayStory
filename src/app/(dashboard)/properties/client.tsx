@@ -7,6 +7,16 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import type { Property, PropertyMember } from '@/lib/properties'
 
+const PROPERTY_TYPES: { value: string; label: string }[] = [
+  { value: 'rv', label: 'RV' },
+  { value: 'cabin', label: 'Cabin' },
+  { value: 'house', label: 'House' },
+  { value: 'apartment', label: 'Apartment' },
+  { value: 'tiny_house', label: 'Tiny house' },
+  { value: 'wellness', label: 'Wellness space' },
+  { value: 'other', label: 'Other' },
+]
+
 export default function PropertiesClient({
   properties: initialProperties,
   membersByProperty: initialMembers,
@@ -144,11 +154,18 @@ export default function PropertiesClient({
               placeholder="Property name (e.g. The Deck House)"
               required
             />
-            <Input
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              placeholder="Type (e.g. cabin, RV, apartment) — optional"
-            />
+            <div className="flex flex-wrap gap-2">
+              {PROPERTY_TYPES.map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => setType(type === t.value ? '' : t.value)}
+                  className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${type === t.value ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-muted-foreground hover:border-primary/50'}`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}

@@ -228,3 +228,13 @@ do $$ begin
     using (auth.uid() = user_id)
     with check (auth.uid() = user_id);
 exception when duplicate_object then null; end $$;
+
+-- ── FIX PROPERTY TYPE CHECK CONSTRAINT ──────────────────────────────────────
+-- The "Add property" form used to be free text, which could produce a type
+-- value outside whatever this constraint currently allows (observed failure:
+-- "violates check constraint properties_type_check"). Redefine it to exactly
+-- match the fixed set the UI now offers, so the two can never drift again.
+
+alter table properties drop constraint if exists properties_type_check;
+alter table properties add constraint properties_type_check
+  check (type is null or type in ('rv', 'cabin', 'house', 'apartment', 'tiny_house', 'wellness', 'other'));
