@@ -13,13 +13,6 @@ import { cn } from '@/lib/utils'
 import { LEGENDARY_PRICE } from '@/lib/config'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 
-const BUDGET_OPTIONS: { value: GeneratorFormData['budget']; label: string; desc: string }[] = [
-  { value: 'zero', label: '$0', desc: 'Time & intention only' },
-  { value: 'under_10', label: 'Under $10', desc: 'Low-hanging' },
-  { value: 'under_25', label: 'Under $25', desc: 'Achievable' },
-  { value: 'premium', label: 'Premium', desc: 'Audacious' },
-]
-
 export default function GeneratorPage() {
   const [form, setForm] = useState<GeneratorFormData>({
     guestName: '',
@@ -228,24 +221,6 @@ export default function GeneratorPage() {
             >
               Pets
             </button>
-          </div>
-        </div>
-
-        {/* Budget */}
-        <div className="flex flex-col gap-2">
-          <Label>Budget level</Label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {BUDGET_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => update('budget', opt.value)}
-                className={`flex flex-col items-center p-3 rounded-xl border text-sm transition-colors ${form.budget === opt.value ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-foreground hover:border-primary/50'}`}
-              >
-                <span className="font-semibold">{opt.label}</span>
-                <span className={`text-xs mt-0.5 ${form.budget === opt.value ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{opt.desc}</span>
-              </button>
-            ))}
           </div>
         </div>
 
