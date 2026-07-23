@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { generateHospitalityMoment } from '@/lib/anthropic'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
 import { resolveActivePropertyId } from '@/lib/active-property'
+import { buildCompassContext, getOrCreateCompass } from '@/lib/compass'
 import { NextResponse } from 'next/server'
 import type { GeneratorFormData } from '@/types'
 
@@ -43,9 +44,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const suggestion = await generateHospitalityMoment(body)
-
     const property_id = await resolveActivePropertyId(user.id)
+    const compass = await getOrCreateCompass(user.id, property_id)
+    const compassContext = buildCompassContext(compass)
+
+    const suggestion = await generateHospitalityMoment(body, compassContext?.text)
 
     const { data, error } = await supabase
       .from('suggestions')
@@ -63,7 +66,7 @@ export async function POST(request: Request) {
       console.error('DB error saving suggestion:', error)
     }
 
-    return NextResponse.json({ suggestion, id: data?.id })
+    return NextResponse.json({ suggestion, id: data?.id, compassElementsUsed: compassContext?.usedFields ?? [] })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('Generation error:', message)

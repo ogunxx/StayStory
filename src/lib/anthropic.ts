@@ -31,7 +31,6 @@ GUEST PROFILE:
 - Traveling with kids: ${data.hasKids ? 'Yes' : 'No'}
 - Traveling with pets: ${data.hasPets ? 'Yes' : 'No'}
 - Interests: ${data.interests || 'Not specified'}
-- Budget level: ${data.budget}
 ${propertyContext ? `\nPROPERTY CONTEXT:\n${propertyContext}` : ''}
 
 Your response must follow the Unreasonable Hospitality Field Guide framework. Return a JSON object with this exact structure:

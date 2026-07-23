@@ -112,7 +112,7 @@ export async function createProperty(input: {
     .insert({
       user_id: user.id,
       name,
-      type: input.type ?? null,
+      type: input.type?.trim() || null,
       description: input.description ?? null,
     })
     .select('*')

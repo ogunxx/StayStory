@@ -145,3 +145,96 @@ create index if not exists suggestions_property_id_idx      on suggestions (prop
 create index if not exists guest_stories_property_id_idx    on guest_stories (property_id);
 create index if not exists journey_sessions_property_id_idx on journey_sessions (property_id);
 create index if not exists playbooks_property_id_idx        on playbooks (property_id);
+
+-- ── EXPERIENCE COMPASS ───────────────────────────────────────────────────────
+-- One living per-property (or per-user, if no property yet) document holding
+-- the 7 Experience Compass elements. Values are only ever written through
+-- compass_contributions (below) so every change — AI-suggested or a direct
+-- host edit — has a recorded source and can be reviewed before being applied
+-- (no field here is ever silently decided by the AI). field_provenance is a
+-- small denormalized pointer to the *currently applied* source per field, kept
+-- in sync with compass_contributions so reads (e.g. the Generator) don't need
+-- a join on every call.
+
+create table if not exists experience_compass (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users on delete cascade not null,
+  property_id uuid references properties on delete set null,
+  status text not null default 'preliminary'
+    check (status in ('preliminary', 'developing', 'confirmed', 'evolving')),
+  wonder text,
+  purpose text,
+  story text,
+  transformation_arrive text,
+  transformation_leave text,
+  hospitality_promise text,
+  signature_memory text,
+  story_theyll_tell text,
+  field_provenance jsonb not null default '{}'::jsonb,
+  confirmed_at timestamptz,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+-- One compass per property; one per user for the "no property yet" case.
+create unique index if not exists experience_compass_property_uidx
+  on experience_compass (property_id) where property_id is not null;
+create unique index if not exists experience_compass_user_unassigned_uidx
+  on experience_compass (user_id) where property_id is null;
+create index if not exists experience_compass_user_id_idx on experience_compass (user_id);
+
+alter table experience_compass enable row level security;
+
+do $$ begin
+  create policy "Owners manage own compass"
+    on experience_compass for all
+    using (auth.uid() = user_id)
+    with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+-- ────────────────────────────────────────────────────────────────────────────
+-- compass_contributions is the append-only review queue AND audit trail: every
+-- proposed field value (source_module = 'story_builder', 'audit', ... or
+-- 'host' for a direct edit) lands here as 'pending' (or 'accepted' immediately
+-- for direct host edits), and is reviewed via accept/reject before it ever
+-- reaches the compass row itself.
+
+create table if not exists compass_contributions (
+  id uuid primary key default gen_random_uuid(),
+  compass_id uuid references experience_compass on delete cascade not null,
+  user_id uuid references auth.users on delete cascade not null,
+  property_id uuid references properties on delete set null,
+  field text not null check (field in (
+    'wonder', 'purpose', 'story', 'transformation_arrive', 'transformation_leave',
+    'hospitality_promise', 'signature_memory', 'story_theyll_tell'
+  )),
+  suggested_value text not null,
+  source_module text not null,
+  source_ref jsonb,
+  rationale text,
+  status text not null default 'pending' check (status in ('pending', 'accepted', 'rejected')),
+  created_at timestamptz default now() not null,
+  reviewed_at timestamptz
+);
+
+create index if not exists compass_contributions_compass_id_idx on compass_contributions (compass_id);
+create index if not exists compass_contributions_pending_idx on compass_contributions (compass_id, status) where status = 'pending';
+
+alter table compass_contributions enable row level security;
+
+do $$ begin
+  create policy "Owners manage own compass contributions"
+    on compass_contributions for all
+    using (auth.uid() = user_id)
+    with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+-- ── FIX PROPERTY TYPE CHECK CONSTRAINT ──────────────────────────────────────
+-- The "Add property" form used to be free text, which could produce a type
+-- value outside whatever this constraint currently allows (observed failure:
+-- "violates check constraint properties_type_check"). Redefine it to exactly
+-- match the fixed set the UI now offers, so the two can never drift again.
+
+alter table properties drop constraint if exists properties_type_check;
+alter table properties add constraint properties_type_check
+  check (type is null or type in ('rv', 'cabin', 'house', 'apartment', 'tiny_house', 'wellness', 'other'));

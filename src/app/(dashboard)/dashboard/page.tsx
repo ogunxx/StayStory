@@ -176,7 +176,7 @@ export default async function DashboardPage() {
             <h2 className="font-serif font-semibold text-lg">Guest Journey Playbook</h2>
             <p className="text-sm text-primary-foreground/80 mt-1">Your full property playbook — positioning, archetypes, touchpoint priorities, monthly rhythm.</p>
           </div>
-          <Link href="/legend" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'shrink-0 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10')}>
+          <Link href="/legend" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'shrink-0 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground')}>
             Open playbook →
           </Link>
         </div>

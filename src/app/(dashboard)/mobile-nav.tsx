@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/account', label: 'Account' },
   { href: '/properties', label: 'Properties' },
   { href: '/calendar', label: 'Calendar' },
+  { href: '/compass', label: 'Experience Compass' },
   { href: '/audit', label: 'Experience Audit' },
   { href: '/generator', label: 'Experience Generator' },
   { href: '/journey', label: 'Experience Blueprint' },
@@ -22,11 +23,14 @@ const NAV_ITEMS = [
 export function MobileNav({
   properties = [],
   activePropertyId = null,
+  isAdmin = false,
 }: {
   properties?: Property[]
   activePropertyId?: string | null
+  isAdmin?: boolean
 }) {
   const [open, setOpen] = useState(false)
+  const navItems = isAdmin ? [...NAV_ITEMS, { href: '/admin', label: 'Members' }] : NAV_ITEMS
 
   return (
     <div className="sm:hidden">
@@ -53,7 +57,7 @@ export function MobileNav({
               <PropertySwitcher properties={properties} activeId={activePropertyId} />
             </div>
           )}
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
