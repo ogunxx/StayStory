@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { listProperties } from '@/lib/properties'
 import { resolveActivePropertyId } from '@/lib/active-property'
+import { isAdminEmail } from '@/lib/admin'
 import { MobileNav } from './mobile-nav'
 import { PropertySwitcher } from './property-switcher'
 
@@ -11,6 +12,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) redirect('/login')
+
+  const isAdmin = isAdminEmail(user.email)
 
   // Only surface the property switcher when there's more than one to switch to.
   const properties = await listProperties()
@@ -29,6 +32,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: '/legend', label: 'Guest Journey Playbook' },
     { href: '/history', label: 'History' },
     { href: '/pricing', label: 'Upgrade' },
+    ...(isAdmin ? [{ href: '/admin', label: 'Members' }] : []),
   ]
 
   return (
@@ -58,7 +62,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </button>
           </form>
         </div>
-        <MobileNav properties={properties} activePropertyId={activePropertyId} />
+        <MobileNav properties={properties} activePropertyId={activePropertyId} isAdmin={isAdmin} />
       </header>
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-10">
         {children}
