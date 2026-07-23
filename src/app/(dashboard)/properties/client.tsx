@@ -93,30 +93,14 @@ export default function PropertiesClient({
           </p>
         )}
         {properties.map((p) => (
-          <div key={p.id} className="border border-border rounded-xl p-5 flex flex-col gap-3">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-serif font-semibold text-foreground">{p.name}</p>
-                {p.type && <p className="text-xs text-muted-foreground mt-0.5">{p.type}</p>}
-                {p.description && (
-                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{p.description}</p>
-                )}
-              </div>
-              {!p.is_owner && (
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground border border-border rounded-full px-2 py-0.5 shrink-0">
-                  Co-host
-                </span>
-              )}
-            </div>
-
-            {teamEnabled && p.is_owner && (
-              <CohostManager
-                property={p}
-                members={members[p.id] ?? []}
-                onChange={(next) => setMembers((prev) => ({ ...prev, [p.id]: next }))}
-              />
-            )}
-          </div>
+          <PropertyCard
+            key={p.id}
+            property={p}
+            members={members[p.id] ?? []}
+            teamEnabled={teamEnabled}
+            onUpdated={(next) => setProperties((prev) => prev.map((pr) => (pr.id === next.id ? next : pr)))}
+            onMembersChange={(next) => setMembers((prev) => ({ ...prev, [p.id]: next }))}
+          />
         ))}
       </div>
 
@@ -182,6 +166,118 @@ export default function PropertiesClient({
           </form>
         )}
       </div>
+    </div>
+  )
+}
+
+function PropertyCard({
+  property,
+  members,
+  teamEnabled,
+  onUpdated,
+  onMembersChange,
+}: {
+  property: Property
+  members: PropertyMember[]
+  teamEnabled: boolean
+  onUpdated: (next: Property) => void
+  onMembersChange: (next: PropertyMember[]) => void
+}) {
+  const [editing, setEditing] = useState(false)
+  const [name, setName] = useState(property.name)
+  const [type, setType] = useState(property.type ?? '')
+  const [description, setDescription] = useState(property.description ?? '')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function save() {
+    setError(null)
+    setSaving(true)
+    try {
+      const res = await fetch('/api/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', propertyId: property.id, name, type, description }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Something went wrong')
+      onUpdated({ ...data.property, is_owner: true })
+      setEditing(false)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  function cancel() {
+    setName(property.name)
+    setType(property.type ?? '')
+    setDescription(property.description ?? '')
+    setError(null)
+    setEditing(false)
+  }
+
+  return (
+    <div className="border border-border rounded-xl p-5 flex flex-col gap-3">
+      {editing ? (
+        <div className="flex flex-col gap-3">
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Property name" />
+          <div className="flex flex-wrap gap-2">
+            {PROPERTY_TYPES.map((t) => (
+              <button
+                key={t.value}
+                type="button"
+                onClick={() => setType(type === t.value ? '' : t.value)}
+                className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${type === t.value ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border text-muted-foreground hover:border-primary/50'}`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+          <Textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="A short description — optional"
+            rows={2}
+          />
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <div className="flex gap-2">
+            <Button type="button" size="sm" onClick={save} disabled={saving}>
+              {saving ? 'Saving…' : 'Save'}
+            </Button>
+            <Button type="button" size="sm" variant="ghost" onClick={cancel} disabled={saving}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="font-serif font-semibold text-foreground">{property.name}</p>
+            {property.type && <p className="text-xs text-muted-foreground mt-0.5">{property.type}</p>}
+            {property.description && (
+              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{property.description}</p>
+            )}
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            {property.is_owner && (
+              <button onClick={() => setEditing(true)} className="text-xs text-primary hover:underline">
+                Edit
+              </button>
+            )}
+            {!property.is_owner && (
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground border border-border rounded-full px-2 py-0.5">
+                Co-host
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {teamEnabled && property.is_owner && (
+        <CohostManager property={property} members={members} onChange={onMembersChange} />
+      )}
     </div>
   )
 }
