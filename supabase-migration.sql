@@ -238,3 +238,29 @@ exception when duplicate_object then null; end $$;
 alter table properties drop constraint if exists properties_type_check;
 alter table properties add constraint properties_type_check
   check (type is null or type in ('rv', 'cabin', 'house', 'apartment', 'tiny_house', 'wellness', 'other'));
+
+-- ── ADMIN: SUSPEND + AUDIT LOG ──────────────────────────────────────────────
+-- suspended_at is nullable (unsuspended = null). Checked at the top of the
+-- dashboard layout so a suspended user is signed out on their next request.
+
+alter table profiles add column if not exists suspended_at timestamptz;
+
+-- Append-only record of every admin write action (tier change, suspend,
+-- reactivate) — who did it, to whom, what changed, when. Only ever written
+-- via the service-role client from an already admin-gated route; RLS is
+-- enabled with no policies, so it's unreachable through the normal
+-- user-scoped client regardless.
+
+create table if not exists admin_actions (
+  id uuid primary key default gen_random_uuid(),
+  admin_user_id uuid references auth.users on delete set null,
+  target_user_id uuid references auth.users on delete set null,
+  action text not null check (action in ('tier_change', 'suspend', 'reactivate')),
+  previous_value text,
+  new_value text,
+  created_at timestamptz default now() not null
+);
+
+create index if not exists admin_actions_target_user_id_idx on admin_actions (target_user_id);
+
+alter table admin_actions enable row level security;

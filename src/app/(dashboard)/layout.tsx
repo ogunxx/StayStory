@@ -13,6 +13,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!user) redirect('/login')
 
+  const { data: profile } = await supabase.from('profiles').select('suspended_at').eq('id', user.id).single()
+  if (profile?.suspended_at) {
+    await supabase.auth.signOut()
+    redirect('/login')
+  }
+
   const isAdmin = isAdminEmail(user.email)
 
   // Only surface the property switcher when there's more than one to switch to.
