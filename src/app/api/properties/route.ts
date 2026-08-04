@@ -3,6 +3,7 @@ import {
   createProperty,
   inviteCohost,
   removeMember,
+  updateProperty,
 } from '@/lib/properties'
 
 export async function POST(request: Request) {
@@ -12,6 +13,16 @@ export async function POST(request: Request) {
 
     if (action === 'create') {
       const { property, error } = await createProperty({
+        name: body.name,
+        type: body.type,
+        description: body.description,
+      })
+      if (error) return NextResponse.json({ error }, { status: 400 })
+      return NextResponse.json({ property })
+    }
+
+    if (action === 'update') {
+      const { property, error } = await updateProperty(body.propertyId, {
         name: body.name,
         type: body.type,
         description: body.description,

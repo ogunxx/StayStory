@@ -122,6 +122,39 @@ export async function createProperty(input: {
   return { property: { ...data, is_owner: true } }
 }
 
+/**
+ * Update a property's name, type, or description. Owner only — scoped by
+ * user_id so a co-host can never edit a property they don't own.
+ */
+export async function updateProperty(
+  propertyId: string,
+  input: { name?: string; type?: string | null; description?: string | null }
+): Promise<{ property?: Property; error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Unauthorized' }
+
+  const update: Record<string, string | null> = {}
+  if (input.name !== undefined) {
+    const name = input.name.trim()
+    if (!name) return { error: 'Please give your property a name.' }
+    update.name = name
+  }
+  if (input.type !== undefined) update.type = input.type?.trim() || null
+  if (input.description !== undefined) update.description = input.description?.trim() || null
+
+  const { data, error } = await supabase
+    .from('properties')
+    .update(update)
+    .eq('id', propertyId)
+    .eq('user_id', user.id)
+    .select('*')
+    .single()
+
+  if (error) return { error: error.message }
+  return { property: { ...data, is_owner: true } }
+}
+
 export async function listMembers(propertyId: string): Promise<PropertyMember[]> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
