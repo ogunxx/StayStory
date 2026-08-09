@@ -201,12 +201,12 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="whyItWorked">Why did it work? <span className="text-muted-foreground text-xs">(optional)</span></Label>
+          <Label htmlFor="whyItWorked">What made you feel like it worked? <span className="text-muted-foreground text-xs">(optional)</span></Label>
           <Textarea
             id="whyItWorked"
             value={form.whyItWorked}
             onChange={(e) => update('whyItWorked', e.target.value)}
-            placeholder="Did they mention it? Leave a review? What feedback did you get?"
+            placeholder="Something they said, a reaction you noticed, a review they left..."
             rows={2}
           />
         </div>

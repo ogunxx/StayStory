@@ -257,7 +257,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="uniqueFeatures">What makes your property unique?</Label>
+            <Label htmlFor="uniqueFeatures">What do you hope guests notice that they might overlook anywhere else?</Label>
             <Textarea id="uniqueFeatures" value={form.uniqueFeatures} onChange={(e) => update('uniqueFeatures', e.target.value)} placeholder="Big deck, outdoor shower, movie nights, RV + wellness office, all on one property..." rows={3} required />
           </div>
 
@@ -272,7 +272,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="biggestChallenge">Your biggest hosting challenge right now</Label>
+            <Label htmlFor="biggestChallenge">Where do you feel like you&apos;re falling short of the experience you want to create?</Label>
             <Textarea id="biggestChallenge" value={form.biggestChallenge} onChange={(e) => update('biggestChallenge', e.target.value)} placeholder="Consistency, standing out, getting 5-star reviews, mid-week bookings..." rows={2} />
           </div>
 
