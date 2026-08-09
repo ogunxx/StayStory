@@ -58,17 +58,26 @@ Create a comprehensive custom guest journey playbook. Return JSON only:
     {
       "touchpoint": "Highest-priority touchpoint to elevate",
       "current_gap": "What's likely missing right now",
-      "recommendation": "Specific recommendation — Low-Hanging / Achievable / Audacious options"
+      "principle": "1 sentence teaching the hospitality principle behind prioritizing this touchpoint, before the recommendation.",
+      "recommendation": "Specific recommendation — Low-Hanging / Achievable / Audacious options",
+      "expected_guest_impact": "1 sentence: what the guest will likely feel or notice differently.",
+      "story_it_reinforces": "1 sentence: what this reinforces in the story guests tell about staying here."
     },
     {
       "touchpoint": "Second priority touchpoint",
       "current_gap": "...",
-      "recommendation": "..."
+      "principle": "...",
+      "recommendation": "...",
+      "expected_guest_impact": "...",
+      "story_it_reinforces": "..."
     },
     {
       "touchpoint": "Third priority touchpoint",
       "current_gap": "...",
-      "recommendation": "..."
+      "principle": "...",
+      "recommendation": "...",
+      "expected_guest_impact": "...",
+      "story_it_reinforces": "..."
     }
   ],
   "monthly_rhythm": "A practical monthly hosting rhythm — what to do the week before each guest, day of arrival, mid-stay, checkout, and 3 days after. Specific to this property and budget.",

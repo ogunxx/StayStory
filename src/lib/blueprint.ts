@@ -1,8 +1,18 @@
 import { createClient } from '@/lib/supabase/server'
 
+export interface BlueprintTouchpointIdeas {
+  principle: string
+  why_it_matters: string
+  low: string
+  achievable: string
+  audacious: string
+  expected_guest_impact: string
+  story_it_reinforces: string
+}
+
 export interface BlueprintTouchpointState {
   current: string
-  ideas: { low: string; achievable: string; audacious: string } | null
+  ideas: BlueprintTouchpointIdeas | null
 }
 
 export interface ExperienceBlueprint {

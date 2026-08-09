@@ -215,7 +215,8 @@ export default function HistoryClient({
                 subtitle={formatDate(m.created_at)}
                 propertyId={m.property_id}
               >
-                <Field label="Why it works" value={m.content?.why_it_works} />
+                <Field label="Principle" value={m.content?.principle} />
+                <Field label="Why it matters" value={m.content?.why_it_matters} />
                 {m.content?.setup_plan?.length ? (
                   <div>
                     <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Setup plan</p>

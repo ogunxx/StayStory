@@ -253,6 +253,12 @@ export default function GeneratorPage() {
             </p>
           </div>
 
+          {/* Principle — teach before recommend */}
+          <div className="flex flex-col gap-2">
+            <p className="text-sm text-foreground leading-relaxed">{result.principle}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{result.why_it_matters}</p>
+          </div>
+
           {/* Tiered gestures */}
           <div className="flex flex-col gap-3">
             <h3 className="font-semibold text-foreground">Gesture options</h3>
@@ -323,10 +329,16 @@ export default function GeneratorPage() {
             </div>
           )}
 
-          {/* Why it works */}
-          <div className="bg-secondary rounded-xl p-5">
-            <h3 className="font-semibold text-foreground mb-2">Why this works</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{result.why_it_works}</p>
+          {/* Expected guest impact + story it reinforces */}
+          <div className="bg-secondary rounded-xl p-5 flex flex-col gap-3">
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Expected guest impact</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{result.expected_guest_impact}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">The story it reinforces</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{result.story_it_reinforces}</p>
+            </div>
           </div>
 
           {/* Guardrail */}

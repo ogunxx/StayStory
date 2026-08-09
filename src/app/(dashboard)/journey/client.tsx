@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { FREE_BLUEPRINT_GENERATIONS } from '@/lib/config'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
-import type { BlueprintTouchpointState, ExperienceBlueprint } from '@/lib/blueprint'
+import type { BlueprintTouchpointIdeas, BlueprintTouchpointState, ExperienceBlueprint } from '@/lib/blueprint'
 import type { CompassField } from '@/types'
 
 interface Touchpoint {
@@ -21,7 +21,7 @@ interface Touchpoint {
 
 interface TouchpointState {
   current: string
-  ideas: { low: string; achievable: string; audacious: string } | null
+  ideas: BlueprintTouchpointIdeas | null
   loading: boolean
   expanded: boolean
   compassUsed: CompassField[]
@@ -365,6 +365,10 @@ export default function JourneyClient({
                             ))}
                           </div>
                         )}
+                        <div className="flex flex-col gap-1">
+                          <p className="text-sm text-foreground leading-relaxed">{s.ideas.principle}</p>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{s.ideas.why_it_matters}</p>
+                        </div>
                         {[
                           { label: 'Low-Hanging', value: s.ideas.low, bg: 'bg-secondary' },
                           { label: 'Achievable', value: s.ideas.achievable, bg: 'bg-accent' },
@@ -375,6 +379,16 @@ export default function JourneyClient({
                             <p className="text-sm text-foreground leading-relaxed">{idea.value}</p>
                           </div>
                         ))}
+                        <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-2">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Expected guest impact</p>
+                            <p className="text-sm text-foreground leading-relaxed">{s.ideas.expected_guest_impact}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Story it reinforces</p>
+                            <p className="text-sm text-foreground leading-relaxed">{s.ideas.story_it_reinforces}</p>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

@@ -33,9 +33,11 @@ GUEST PROFILE:
 - Interests: ${data.interests || 'Not specified'}
 ${propertyContext ? `\nPROPERTY CONTEXT:\n${propertyContext}` : ''}
 
-Your response must follow the Unreasonable Hospitality Field Guide framework. Return a JSON object with this exact structure:
+Your response must follow the Unreasonable Hospitality Field Guide framework, and the StayStory recommendation format: teach the principle before the how, and connect it back to what this recommendation actually does for the guest and the story. Return a JSON object with this exact structure:
 
 {
+  "principle": "1-2 sentences teaching the hospitality principle behind this recommendation, BEFORE describing what to do. Reference Guidara/French/Acunzo where relevant. Never generic — this should only make sense for this specific guest.",
+  "why_it_matters": "1-2 sentences connecting the principle to this specific guest and moment — why this matters here, not in general.",
   "gestures": {
     "zero": "A $0 gesture — purely thoughtful, no cost. Something the host can do with time and intention alone.",
     "under_10": "A gesture under $10. Specific, actionable, tied to this guest's context.",
@@ -57,7 +59,8 @@ Your response must follow the Unreasonable Hospitality Field Guide framework. Re
     "welcome_note": "A handwritten-style note to leave at the property. Short, warm, specific to this guest.",
     "follow_up": "A follow-up message to send 2-3 days after checkout. Extends the emotional arc. References something specific from their visit."
   },
-  "why_it_works": "2-3 sentences teaching the host WHY this approach works — the psychology behind it. Reference the Guidara/French/Acunzo principles where relevant.",
+  "expected_guest_impact": "1-2 sentences: specifically what this guest will likely feel or do differently because of this — not a vague 'they'll love it.'",
+  "story_it_reinforces": "1 sentence: what this guest will tell people about their stay because of this moment, or which part of the host's story it reinforces.",
   "dont_overdo_it": "A clear guardrail. What should the host NOT do? What would make this feel excessive or performative rather than genuine?"
 }
 
@@ -91,7 +94,7 @@ A host has created a meaningful moment for their guest. Help them turn this into
 GUEST: ${guestProfile.guestName || 'Guest'} — ${guestProfile.whyVisiting}
 OCCASION: ${guestProfile.occasion || 'None'}
 THE GESTURE: ${guestProfile.budget === 'zero' ? suggestion.gestures.zero : guestProfile.budget === 'under_10' ? suggestion.gestures.under_10 : guestProfile.budget === 'under_25' ? suggestion.gestures.under_25 : suggestion.gestures.premium}
-WHY IT WORKS: ${suggestion.why_it_works}
+WHY IT WORKS: ${suggestion.why_it_matters}
 
 Return a JSON object:
 {

@@ -16,7 +16,14 @@ interface PlaybookResult {
   property_positioning: string
   signature_experience: string
   guest_archetypes: { type: string; what_they_need: string; wow_gesture: string }[]
-  touchpoint_priorities: { touchpoint: string; current_gap: string; recommendation: string }[]
+  touchpoint_priorities: {
+    touchpoint: string
+    current_gap: string
+    principle: string
+    recommendation: string
+    expected_guest_impact: string
+    story_it_reinforces: string
+  }[]
   monthly_rhythm: string
   your_one_thing: string
 }
@@ -331,7 +338,10 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
                 <div key={i} className="bg-card border border-border rounded-xl p-5 flex flex-col gap-2">
                   <p className="font-semibold text-foreground">{t.touchpoint}</p>
                   <p className="text-sm text-muted-foreground"><span className="text-foreground font-medium">Gap:</span> {t.current_gap}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{t.principle}</p>
                   <p className="text-sm text-foreground leading-relaxed">{t.recommendation}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed"><span className="text-foreground font-medium">Expected impact:</span> {t.expected_guest_impact}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed"><span className="text-foreground font-medium">Story it reinforces:</span> {t.story_it_reinforces}</p>
                 </div>
               ))}
             </div>

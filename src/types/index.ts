@@ -98,6 +98,8 @@ export interface Suggestion {
 }
 
 export interface SuggestionContent {
+  principle: string
+  why_it_matters: string
   gestures: {
     zero: string
     under_10: string
@@ -112,7 +114,8 @@ export interface SuggestionContent {
     welcome_note: string
     follow_up: string
   }
-  why_it_works: string
+  expected_guest_impact: string
+  story_it_reinforces: string
   dont_overdo_it: string
 }
 

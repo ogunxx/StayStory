@@ -63,11 +63,15 @@ Generate three ideas for elevating this touchpoint using the Field Guide's three
 - Achievable: Slightly more effort/cost, worth planning
 - Audacious: Bold, memorable, the kind that creates a legend
 
-Return JSON only:
+Follow the StayStory recommendation format — teach the principle before the ideas, and connect the ideas back to guest impact and story. Return JSON only:
 {
+  "principle": "1-2 sentences teaching the hospitality principle behind elevating this specific touchpoint, before describing what to do.",
+  "why_it_matters": "1 sentence connecting that principle to this specific touchpoint and what the host currently does.",
   "low": "Specific, actionable Low-Hanging idea for this touchpoint",
   "achievable": "Specific, actionable Achievable idea for this touchpoint",
-  "audacious": "Bold, specific Audacious idea — the kind of thing Guidara would put in his book"
+  "audacious": "Bold, specific Audacious idea — the kind of thing Guidara would put in his book",
+  "expected_guest_impact": "1 sentence: what the guest will likely feel or notice differently because of this.",
+  "story_it_reinforces": "1 sentence: what this reinforces in the story guests tell about staying here."
 }`
 
   try {
