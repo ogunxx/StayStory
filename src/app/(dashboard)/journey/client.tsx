@@ -9,6 +9,7 @@ import { FREE_BLUEPRINT_GENERATIONS } from '@/lib/config'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 import type { BlueprintTouchpointIdeas, BlueprintTouchpointState, ExperienceBlueprint } from '@/lib/blueprint'
 import type { CompassField } from '@/types'
+import { Insight } from '@/components/insight'
 
 interface Touchpoint {
   id: string
@@ -273,6 +274,10 @@ export default function JourneyClient({
           Map every moment your guest experiences — from booking confirmation to what they discover after checkout. Get ridiculously granular; no touchpoint is too small. This is how a stay becomes one they never forget.
         </p>
       </div>
+
+      <Insight>
+        No touchpoint is too small to matter — guests remember whichever moment told them someone was thinking of them.
+      </Insight>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {Object.entries(KEY_MOMENT_LABELS).map(([, { label, color }]) => (

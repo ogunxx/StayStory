@@ -12,6 +12,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { LEGENDARY_PRICE } from '@/lib/config'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
+import { Insight } from '@/components/insight'
 
 export default function GeneratorPage() {
   const [form, setForm] = useState<GeneratorFormData>({
@@ -112,6 +113,10 @@ export default function GeneratorPage() {
           Tell us about your guest. The more specific you are, the more meaningful the moments — every detail unlocks a way to make them feel seen.
         </p>
       </div>
+
+      <Insight>
+        A generic gesture could go to any guest. A specific one could only go to this one — that&apos;s what makes it memorable.
+      </Insight>
 
       {/* Message import */}
       <div className="border border-border rounded-xl overflow-hidden">

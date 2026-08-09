@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { LEGENDARY_PRICE } from '@/lib/config'
+import { Insight } from '@/components/insight'
 
 interface StoryResult {
   narrative: string
@@ -154,6 +155,10 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
           The host is the guide, the guest is the hero. Express what you created as a story — so guests can anticipate it, feel it, and carry it home.
         </p>
       </div>
+
+      <Insight>
+        Guests don&apos;t remember amenities. They remember the moment they felt like someone had thought of them specifically.
+      </Insight>
 
       <div className="bg-accent rounded-xl p-5">
         <p className="text-sm text-foreground font-medium mb-2">The three questions to ask yourself first:</p>

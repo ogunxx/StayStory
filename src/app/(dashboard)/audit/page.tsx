@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Insight } from '@/components/insight'
 
 type Rating = 1 | 2 | 3 | 4 | 5
 
@@ -141,6 +142,10 @@ export default function AuditPage() {
           The first principle of great hosting: stay in your own rental before renting it out. This audit helps you see your stay through your guest&apos;s eyes — surfacing the emotional peaks, the missed moments, and the invisible things guests feel but rarely mention. It&apos;s where a stay they forget starts becoming one they never will.
         </p>
       </div>
+
+      <Insight>
+        The best hosts don&apos;t audit their property from a spreadsheet — they audit it from the guest&apos;s first ten minutes.
+      </Insight>
 
       {/* First principle */}
       <div className="bg-accent rounded-2xl p-6">

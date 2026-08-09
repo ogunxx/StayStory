@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { LEGENDARY_PRICE } from '@/lib/config'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 import type { CompassField } from '@/types'
+import { Insight } from '@/components/insight'
 
 interface PlaybookResult {
   executive_summary: string
@@ -225,6 +226,10 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
 
       {/* Playbook builder */}
       <div className="flex flex-col gap-8">
+        <Insight>
+          A playbook doesn&apos;t replace your instincts — it makes them repeatable, even on the nights you&apos;re too tired to think of everything yourself.
+        </Insight>
+
         <div>
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Your custom playbook</p>
           <h2 className="text-2xl font-serif font-semibold text-foreground mb-2">Generate your custom playbook</h2>
