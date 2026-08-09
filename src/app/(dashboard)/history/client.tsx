@@ -195,6 +195,8 @@ export default function HistoryClient({
                 subtitle={formatDate(a.created_at)}
                 propertyId={a.property_id}
               >
+                <Field label="Guests arrive feeling" value={a.responses?.transformation_arrive} />
+                <Field label="Guests leave feeling" value={a.responses?.transformation_leave} />
                 <Field label="Pain points" value={a.responses?.pain_points} />
                 <Field label="One thing to change" value={a.responses?.one_thing} />
               </Card>
@@ -213,7 +215,8 @@ export default function HistoryClient({
                 subtitle={formatDate(m.created_at)}
                 propertyId={m.property_id}
               >
-                <Field label="Why it works" value={m.content?.why_it_works} />
+                <Field label="Principle" value={m.content?.principle} />
+                <Field label="Why it matters" value={m.content?.why_it_matters} />
                 {m.content?.setup_plan?.length ? (
                   <div>
                     <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Setup plan</p>

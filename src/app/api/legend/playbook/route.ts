@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { anthropic } from '@/lib/anthropic'
 import { resolveActivePropertyId } from '@/lib/active-property'
+import { buildCompassContext, getOrCreateCompass, proposeCompassContribution } from '@/lib/compass'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -13,8 +14,12 @@ export async function POST(request: Request) {
 
   const form = await request.json()
 
-  const prompt = `You are a world-class hospitality consultant trained in the philosophies of Will Guidara (Unreasonable Hospitality), Isaac French (Experiential Hospitality), and Jay Acunzo (storytelling). You are creating a custom guest journey playbook for a Legend-tier host.
+  const property_id = await resolveActivePropertyId(user.id)
+  const compass = await getOrCreateCompass(user.id, property_id)
+  const compassContext = buildCompassContext(compass)
 
+  const prompt = `You are a world-class hospitality consultant trained in the philosophies of Will Guidara (Unreasonable Hospitality), Isaac French (Experiential Hospitality), and Jay Acunzo (storytelling). You are creating a custom guest journey playbook for a Legend-tier host.
+${compassContext ? `\n${compassContext.text}\nGround this playbook in the Compass above — it should feel like it could only have been written for this host, not a generic property.\n` : ''}
 PROPERTY DETAILS:
 - Name: ${form.propertyName}
 - Type: ${form.propertyType}
@@ -53,17 +58,26 @@ Create a comprehensive custom guest journey playbook. Return JSON only:
     {
       "touchpoint": "Highest-priority touchpoint to elevate",
       "current_gap": "What's likely missing right now",
-      "recommendation": "Specific recommendation — Low-Hanging / Achievable / Audacious options"
+      "principle": "1 sentence teaching the hospitality principle behind prioritizing this touchpoint, before the recommendation.",
+      "recommendation": "Specific recommendation — Low-Hanging / Achievable / Audacious options",
+      "expected_guest_impact": "1 sentence: what the guest will likely feel or notice differently.",
+      "story_it_reinforces": "1 sentence: what this reinforces in the story guests tell about staying here."
     },
     {
       "touchpoint": "Second priority touchpoint",
       "current_gap": "...",
-      "recommendation": "..."
+      "principle": "...",
+      "recommendation": "...",
+      "expected_guest_impact": "...",
+      "story_it_reinforces": "..."
     },
     {
       "touchpoint": "Third priority touchpoint",
       "current_gap": "...",
-      "recommendation": "..."
+      "principle": "...",
+      "recommendation": "...",
+      "expected_guest_impact": "...",
+      "story_it_reinforces": "..."
     }
   ],
   "monthly_rhythm": "A practical monthly hosting rhythm — what to do the week before each guest, day of arrival, mid-stay, checkout, and 3 days after. Specific to this property and budget.",
@@ -83,8 +97,6 @@ Create a comprehensive custom guest journey playbook. Return JSON only:
     const end = text.lastIndexOf('}')
     const playbook = JSON.parse(start !== -1 ? text.slice(start, end + 1) : text)
 
-    const property_id = await resolveActivePropertyId(user.id)
-
     await supabase.from('playbooks').insert({
       user_id: user.id,
       property_id,
@@ -92,7 +104,20 @@ Create a comprehensive custom guest journey playbook. Return JSON only:
       executive_summary: playbook.executive_summary || null,
     })
 
-    return NextResponse.json({ playbook })
+    // The one place this form asks a host to state their philosophy directly —
+    // the closest existing match to Purpose.
+    if (form.hostPhilosophy?.trim()) {
+      await proposeCompassContribution({
+        userId: user.id,
+        propertyId: property_id,
+        field: 'purpose',
+        suggestedValue: form.hostPhilosophy.trim(),
+        sourceModule: 'legend',
+        rationale: 'From your Guest Journey Playbook — your hosting philosophy in one sentence',
+      })
+    }
+
+    return NextResponse.json({ playbook, compassUsed: compassContext?.usedFields ?? [] })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('Playbook generation error:', message)

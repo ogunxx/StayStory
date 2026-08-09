@@ -6,6 +6,11 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { FREE_BLUEPRINT_GENERATIONS } from '@/lib/config'
+import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
+import type { BlueprintTouchpointIdeas, BlueprintTouchpointState, ExperienceBlueprint } from '@/lib/blueprint'
+import type { CompassField } from '@/types'
+import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 interface Touchpoint {
   id: string
@@ -18,9 +23,10 @@ interface Touchpoint {
 
 interface TouchpointState {
   current: string
-  ideas: { low: string; achievable: string; audacious: string } | null
+  ideas: BlueprintTouchpointIdeas | null
   loading: boolean
   expanded: boolean
+  compassUsed: CompassField[]
 }
 
 const TOUCHPOINTS: Touchpoint[] = [
@@ -144,22 +150,29 @@ const KEY_MOMENT_LABELS: Record<string, { label: string; color: string }> = {
 export default function JourneyClient({
   isPaid = false,
   generationsUsed = 0,
+  blueprint,
 }: {
   isPaid?: boolean
   generationsUsed?: number
+  blueprint?: ExperienceBlueprint
 }) {
+  const saved = blueprint?.touchpoints ?? {}
   const [states, setStates] = useState<Record<string, TouchpointState>>(() =>
     Object.fromEntries(
-      TOUCHPOINTS.map((t) => [t.id, { current: '', ideas: null, loading: false, expanded: false }])
+      TOUCHPOINTS.map((t) => {
+        const s: BlueprintTouchpointState | undefined = saved[t.id]
+        return [t.id, { current: s?.current ?? '', ideas: s?.ideas ?? null, loading: false, expanded: false, compassUsed: [] }]
+      })
     )
   )
-  const [propertyContext, setPropertyContext] = useState('')
+  const [propertyContext, setPropertyContext] = useState(blueprint?.property_context ?? '')
   const [used, setUsed] = useState(generationsUsed)
   const [limitReached, setLimitReached] = useState(
     !isPaid && generationsUsed >= FREE_BLUEPRINT_GENERATIONS
   )
 
   const freeRemaining = Math.max(0, FREE_BLUEPRINT_GENERATIONS - used)
+  const mappedCount = Object.values(states).filter((s) => s.current.trim()).length
 
   function toggle(id: string) {
     setStates((prev) => ({ ...prev, [id]: { ...prev[id], expanded: !prev[id].expanded } }))
@@ -167,6 +180,22 @@ export default function JourneyClient({
 
   function setCurrent(id: string, value: string) {
     setStates((prev) => ({ ...prev, [id]: { ...prev[id], current: value } }))
+  }
+
+  function saveTouchpointCurrent(id: string) {
+    fetch('/api/journey/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ field: 'touchpoint', touchpointId: id, current: states[id].current }),
+    }).catch(() => {})
+  }
+
+  function savePropertyContext() {
+    fetch('/api/journey/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ field: 'property_context', value: propertyContext }),
+    }).catch(() => {})
   }
 
   async function generateIdeas(touchpoint: Touchpoint) {
@@ -179,6 +208,7 @@ export default function JourneyClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           touchpoint: touchpoint.label,
+          touchpointId: touchpoint.id,
           question: touchpoint.question,
           guidara: touchpoint.guidara,
           current: states[touchpoint.id].current,
@@ -195,7 +225,7 @@ export default function JourneyClient({
       if (!res.ok) throw new Error(data.error)
       setStates((prev) => ({
         ...prev,
-        [touchpoint.id]: { ...prev[touchpoint.id], ideas: data.ideas, loading: false },
+        [touchpoint.id]: { ...prev[touchpoint.id], ideas: data.ideas, loading: false, compassUsed: data.compassUsed ?? [] },
       }))
       if (!isPaid) {
         setUsed((prev) => {
@@ -247,6 +277,10 @@ export default function JourneyClient({
         </p>
       </div>
 
+      <Insight>
+        No touchpoint is too small to matter — guests remember whichever moment told them someone was thinking of them.
+      </Insight>
+
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {Object.entries(KEY_MOMENT_LABELS).map(([, { label, color }]) => (
           <div key={label} className={`text-xs px-3 py-2 rounded-lg border ${color} text-center font-medium`}>
@@ -260,11 +294,18 @@ export default function JourneyClient({
         <Textarea
           value={propertyContext}
           onChange={(e) => setPropertyContext(e.target.value)}
+          onBlur={savePropertyContext}
           placeholder="e.g. RV + wellness office on a big deck, outdoor shower, movie nights, 4.99★. Guests tend to be couples looking to disconnect..."
           rows={2}
         />
         <p className="text-xs text-muted-foreground">Helps the AI generate ideas specific to your property.</p>
       </div>
+
+      {mappedCount >= 5 && (
+        <Encouragement>
+          You&apos;ve mapped {mappedCount} moments of the guest experience most hosts never think to look at. Come back anytime — nothing here needs to be finished today.
+        </Encouragement>
+      )}
 
       {grouped.map(({ phase, items }) => (
         <div key={phase} className="flex flex-col gap-3">
@@ -300,6 +341,7 @@ export default function JourneyClient({
                       <Textarea
                         value={s.current}
                         onChange={(e) => setCurrent(t.id, e.target.value)}
+                        onBlur={() => saveTouchpointCurrent(t.id)}
                         placeholder={t.question}
                         rows={2}
                       />
@@ -326,6 +368,20 @@ export default function JourneyClient({
 
                     {s.ideas && (
                       <div className="flex flex-col gap-3 mt-1">
+                        {s.compassUsed.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                            <span>Informed by your Compass:</span>
+                            {s.compassUsed.map((field) => (
+                              <Badge key={field} variant="outline">
+                                {COMPASS_FIELD_LABELS[field] ?? field}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                        <div className="flex flex-col gap-1">
+                          <p className="text-sm text-foreground leading-relaxed">{s.ideas.principle}</p>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{s.ideas.why_it_matters}</p>
+                        </div>
                         {[
                           { label: 'Low-Hanging', value: s.ideas.low, bg: 'bg-secondary' },
                           { label: 'Achievable', value: s.ideas.achievable, bg: 'bg-accent' },
@@ -336,6 +392,16 @@ export default function JourneyClient({
                             <p className="text-sm text-foreground leading-relaxed">{idea.value}</p>
                           </div>
                         ))}
+                        <div className="bg-card border border-border rounded-lg p-4 flex flex-col gap-2">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Expected guest impact</p>
+                            <p className="text-sm text-foreground leading-relaxed">{s.ideas.expected_guest_impact}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Story it reinforces</p>
+                            <p className="text-sm text-foreground leading-relaxed">{s.ideas.story_it_reinforces}</p>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

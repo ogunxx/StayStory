@@ -331,10 +331,10 @@ export default function AccountClient({ email, profile, suggestions, stories, au
                               <p className="text-sm text-foreground whitespace-pre-line">{s.content.messages.pre_arrival}</p>
                             </div>
                           )}
-                          {s.content.why_it_works && (
+                          {s.content.why_it_matters && (
                             <div className="bg-primary/10 rounded-lg p-3">
-                              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Why it works</p>
-                              <p className="text-sm text-foreground">{s.content.why_it_works}</p>
+                              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Why it matters</p>
+                              <p className="text-sm text-foreground">{s.content.why_it_matters}</p>
                             </div>
                           )}
                           <Link href="/generator" className="text-xs text-primary hover:underline underline-offset-2 w-fit">

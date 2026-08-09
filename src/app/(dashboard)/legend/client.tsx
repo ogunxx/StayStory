@@ -6,14 +6,26 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
 import { LEGENDARY_PRICE } from '@/lib/config'
+import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
+import type { CompassField } from '@/types'
+import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 interface PlaybookResult {
   executive_summary: string
   property_positioning: string
   signature_experience: string
   guest_archetypes: { type: string; what_they_need: string; wow_gesture: string }[]
-  touchpoint_priorities: { touchpoint: string; current_gap: string; recommendation: string }[]
+  touchpoint_priorities: {
+    touchpoint: string
+    current_gap: string
+    principle: string
+    recommendation: string
+    expected_guest_impact: string
+    story_it_reinforces: string
+  }[]
   monthly_rhythm: string
   your_one_thing: string
 }
@@ -55,6 +67,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [playbook, setPlaybook] = useState<PlaybookResult | null>(null)
+  const [compassUsed, setCompassUsed] = useState<CompassField[]>([])
 
   function update(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -75,6 +88,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setPlaybook(data.playbook)
+      setCompassUsed(data.compassUsed ?? [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -213,6 +227,10 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
 
       {/* Playbook builder */}
       <div className="flex flex-col gap-8">
+        <Insight>
+          A playbook doesn&apos;t replace your instincts — it makes them repeatable, even on the nights you&apos;re too tired to think of everything yourself.
+        </Insight>
+
         <div>
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Your custom playbook</p>
           <h2 className="text-2xl font-serif font-semibold text-foreground mb-2">Generate your custom playbook</h2>
@@ -245,7 +263,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="uniqueFeatures">What makes your property unique?</Label>
+            <Label htmlFor="uniqueFeatures">What do you hope guests notice that they might overlook anywhere else?</Label>
             <Textarea id="uniqueFeatures" value={form.uniqueFeatures} onChange={(e) => update('uniqueFeatures', e.target.value)} placeholder="Big deck, outdoor shower, movie nights, RV + wellness office, all on one property..." rows={3} required />
           </div>
 
@@ -260,7 +278,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="biggestChallenge">Your biggest hosting challenge right now</Label>
+            <Label htmlFor="biggestChallenge">Where do you feel like you&apos;re falling short of the experience you want to create?</Label>
             <Textarea id="biggestChallenge" value={form.biggestChallenge} onChange={(e) => update('biggestChallenge', e.target.value)} placeholder="Consistency, standing out, getting 5-star reviews, mid-week bookings..." rows={2} />
           </div>
 
@@ -282,6 +300,17 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-serif font-semibold text-foreground">Your Guest Journey Playbook</h2>
             </div>
+
+            {compassUsed.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>Informed by your Compass:</span>
+                {compassUsed.map((field) => (
+                  <Badge key={field} variant="outline">
+                    {COMPASS_FIELD_LABELS[field] ?? field}
+                  </Badge>
+                ))}
+              </div>
+            )}
 
             <div className="bg-primary text-primary-foreground rounded-xl p-6">
               <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-2">Executive Summary</p>
@@ -315,7 +344,10 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
                 <div key={i} className="bg-card border border-border rounded-xl p-5 flex flex-col gap-2">
                   <p className="font-semibold text-foreground">{t.touchpoint}</p>
                   <p className="text-sm text-muted-foreground"><span className="text-foreground font-medium">Gap:</span> {t.current_gap}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{t.principle}</p>
                   <p className="text-sm text-foreground leading-relaxed">{t.recommendation}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed"><span className="text-foreground font-medium">Expected impact:</span> {t.expected_guest_impact}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed"><span className="text-foreground font-medium">Story it reinforces:</span> {t.story_it_reinforces}</p>
                 </div>
               ))}
             </div>
@@ -330,6 +362,10 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
               <p className="text-xl font-serif font-semibold">{playbook.your_one_thing}</p>
               <p className="text-primary-foreground/70 text-sm mt-2">Do this so brilliantly that guests never forget it.</p>
             </div>
+
+            <Encouragement>
+              This didn&apos;t come from a template. It came from what you already know about your place — now it&apos;s written down.
+            </Encouragement>
           </div>
         )}
       </div>

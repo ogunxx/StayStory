@@ -264,3 +264,34 @@ create table if not exists admin_actions (
 create index if not exists admin_actions_target_user_id_idx on admin_actions (target_user_id);
 
 alter table admin_actions enable row level security;
+
+-- ── EXPERIENCE BLUEPRINT: PERSIST THE FULL MAP ──────────────────────────────
+-- Previously only individual idea-generation events were saved (journey_sessions,
+-- touchpoint + ideas only) — the host's "what you currently do" answers and the
+-- property-context note lived only in React state and were lost on refresh.
+-- This table holds the live, editable state of the whole Blueprint; journey_sessions
+-- remains as-is as the historical log of generation events (still used by History).
+
+create table if not exists experience_blueprint (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users on delete cascade not null,
+  property_id uuid references properties on delete set null,
+  property_context text,
+  touchpoints jsonb not null default '{}'::jsonb,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+create unique index if not exists experience_blueprint_property_uidx
+  on experience_blueprint (property_id) where property_id is not null;
+create unique index if not exists experience_blueprint_user_unassigned_uidx
+  on experience_blueprint (user_id) where property_id is null;
+
+alter table experience_blueprint enable row level security;
+
+do $$ begin
+  create policy "Owners manage own blueprint"
+    on experience_blueprint for all
+    using (auth.uid() = user_id)
+    with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;

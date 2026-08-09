@@ -12,6 +12,8 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { LEGENDARY_PRICE } from '@/lib/config'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
+import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 export default function GeneratorPage() {
   const [form, setForm] = useState<GeneratorFormData>({
@@ -112,6 +114,10 @@ export default function GeneratorPage() {
           Tell us about your guest. The more specific you are, the more meaningful the moments — every detail unlocks a way to make them feel seen.
         </p>
       </div>
+
+      <Insight>
+        A generic gesture could go to any guest. A specific one could only go to this one — that&apos;s what makes it memorable.
+      </Insight>
 
       {/* Message import */}
       <div className="border border-border rounded-xl overflow-hidden">
@@ -253,6 +259,12 @@ export default function GeneratorPage() {
             </p>
           </div>
 
+          {/* Principle — teach before recommend */}
+          <div className="flex flex-col gap-2">
+            <p className="text-sm text-foreground leading-relaxed">{result.principle}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{result.why_it_matters}</p>
+          </div>
+
           {/* Tiered gestures */}
           <div className="flex flex-col gap-3">
             <h3 className="font-semibold text-foreground">Gesture options</h3>
@@ -323,10 +335,16 @@ export default function GeneratorPage() {
             </div>
           )}
 
-          {/* Why it works */}
-          <div className="bg-secondary rounded-xl p-5">
-            <h3 className="font-semibold text-foreground mb-2">Why this works</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{result.why_it_works}</p>
+          {/* Expected guest impact + story it reinforces */}
+          <div className="bg-secondary rounded-xl p-5 flex flex-col gap-3">
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">Expected guest impact</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{result.expected_guest_impact}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">The story it reinforces</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{result.story_it_reinforces}</p>
+            </div>
           </div>
 
           {/* Guardrail */}
@@ -334,6 +352,10 @@ export default function GeneratorPage() {
             <h3 className="font-semibold text-foreground mb-2">Don't overdo it</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{result.dont_overdo_it}</p>
           </div>
+
+          <Encouragement>
+            That&apos;s not something a generic amenity list could have produced. It only works because you know this guest.
+          </Encouragement>
 
           <div className="flex gap-3 flex-wrap">
             <Button onClick={() => { setResult(null); setCompassUsed([]); setForm({ guestName: '', whyVisiting: '', hostNotes: '', occasion: '', emotionalState: '', hasKids: false, hasPets: false, interests: '', budget: 'under_10' }) }} variant="outline">

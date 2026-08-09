@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { LEGENDARY_PRICE } from '@/lib/config'
+import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 interface StoryResult {
   narrative: string
@@ -155,6 +157,10 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
         </p>
       </div>
 
+      <Insight>
+        Guests don&apos;t remember amenities. They remember the moment they felt like someone had thought of them specifically.
+      </Insight>
+
       <div className="bg-accent rounded-xl p-5">
         <p className="text-sm text-foreground font-medium mb-2">The three questions to ask yourself first:</p>
         <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
@@ -201,12 +207,12 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="whyItWorked">Why did it work? <span className="text-muted-foreground text-xs">(optional)</span></Label>
+          <Label htmlFor="whyItWorked">What made you feel like it worked? <span className="text-muted-foreground text-xs">(optional)</span></Label>
           <Textarea
             id="whyItWorked"
             value={form.whyItWorked}
             onChange={(e) => update('whyItWorked', e.target.value)}
-            placeholder="Did they mention it? Leave a review? What feedback did you get?"
+            placeholder="Something they said, a reaction you noticed, a review they left..."
             rows={2}
           />
         </div>
@@ -247,6 +253,10 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
             <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">What future guests should feel before they book</p>
             <p className="text-foreground leading-relaxed whitespace-pre-line">{result.listing_improvements}</p>
           </div>
+
+          <Encouragement>
+            You just wrote proof that thoughtful hospitality creates its own story.
+          </Encouragement>
 
           <Button onClick={() => { setResult(null); setForm({ guestName: '', whyVisiting: '', occasion: '', gesture: '', whyItWorked: '' }) }} variant="outline" className="w-fit">
             Build another story

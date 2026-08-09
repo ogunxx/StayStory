@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 type Rating = 1 | 2 | 3 | 4 | 5
 
@@ -18,6 +20,8 @@ interface AuditState {
   layout_rating: Rating | null
   sound_smell_rating: Rating | null
   instructions_rating: Rating | null
+  transformation_arrive: string
+  transformation_leave: string
   pain_points: string
   one_thing: string
 }
@@ -59,6 +63,8 @@ export default function AuditPage() {
     layout_rating: null,
     sound_smell_rating: null,
     instructions_rating: null,
+    transformation_arrive: '',
+    transformation_leave: '',
     pain_points: '',
     one_thing: '',
   })
@@ -138,6 +144,10 @@ export default function AuditPage() {
         </p>
       </div>
 
+      <Insight>
+        The best hosts don&apos;t audit their property from a spreadsheet — they audit it from the guest&apos;s first ten minutes.
+      </Insight>
+
       {/* First principle */}
       <div className="bg-accent rounded-2xl p-6">
         <Label className="text-sm font-semibold text-foreground mb-3 block">
@@ -176,6 +186,40 @@ export default function AuditPage() {
             onChange={(v) => setRating(field, v)}
           />
         ))}
+      </div>
+
+      {/* Transformation */}
+      <div className="flex flex-col gap-4">
+        <div>
+          <Label className="text-sm font-medium">The transformation you're designing for</Label>
+          <p className="text-xs text-muted-foreground mt-1">
+            Everything above is about the property. This is about the guest.
+          </p>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="transformation_arrive" className="text-xs text-muted-foreground">
+            Guests arrive feeling ___
+          </Label>
+          <Textarea
+            id="transformation_arrive"
+            value={audit.transformation_arrive}
+            onChange={(e) => setAudit((p) => ({ ...p, transformation_arrive: e.target.value }))}
+            placeholder="e.g. Overwhelmed, disconnected, rushed..."
+            rows={1}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="transformation_leave" className="text-xs text-muted-foreground">
+            Guests leave feeling ___
+          </Label>
+          <Textarea
+            id="transformation_leave"
+            value={audit.transformation_leave}
+            onChange={(e) => setAudit((p) => ({ ...p, transformation_leave: e.target.value }))}
+            placeholder="e.g. Restored, closer together, inspired..."
+            rows={1}
+          />
+        </div>
       </div>
 
       {/* Pain point */}
@@ -222,6 +266,10 @@ export default function AuditPage() {
               <p className="text-xs text-muted-foreground">out of 100</p>
             </div>
           </div>
+
+          <Encouragement>
+            However this looked, showing up to look honestly at your own place is what most hosts skip. That alone puts you ahead.
+          </Encouragement>
 
           {results.fixes.length > 0 && (
             <div>
