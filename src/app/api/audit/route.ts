@@ -43,6 +43,7 @@ async function compareAuditToCompass(
 This host just completed their Experience Audit. Here's what they reported:
 
 ${ratingLines}
+${responses.transformation_arrive || responses.transformation_leave ? `\nThe host says guests arrive feeling "${responses.transformation_arrive || 'unspecified'}" and leave feeling "${responses.transformation_leave || 'unspecified'}".` : ''}
 ${responses.pain_points ? `\nBiggest friction point: ${responses.pain_points}` : ''}
 ${responses.one_thing ? `\nWhat they do better than anywhere else: ${responses.one_thing}` : ''}
 
@@ -113,6 +114,31 @@ export async function POST(request: Request) {
     })
   }
 
+  // Transformation has no other producer anywhere in the app — this is the
+  // one place a host states it directly, in the Compass's own phrasing.
+  if (responses.transformation_arrive?.trim()) {
+    await proposeCompassContribution({
+      userId: user.id,
+      propertyId: property_id,
+      field: 'transformation_arrive',
+      suggestedValue: responses.transformation_arrive.trim(),
+      sourceModule: 'audit',
+      rationale: 'From your Audit — the transformation you\'re designing for',
+      sourceRef: auditRow?.id ? { table: 'audits', id: auditRow.id } : undefined,
+    })
+  }
+  if (responses.transformation_leave?.trim()) {
+    await proposeCompassContribution({
+      userId: user.id,
+      propertyId: property_id,
+      field: 'transformation_leave',
+      suggestedValue: responses.transformation_leave.trim(),
+      sourceModule: 'audit',
+      rationale: 'From your Audit — the transformation you\'re designing for',
+      sourceRef: auditRow?.id ? { table: 'audits', id: auditRow.id } : undefined,
+    })
+  }
+
   let observations: CompassObservation[] = []
   try {
     const compass = await getOrCreateCompass(user.id, property_id)
@@ -120,7 +146,9 @@ export async function POST(request: Request) {
     const hasAuditContent =
       Object.keys(RATING_LABELS).some((key) => typeof responses[key as keyof AuditResponses] === 'number') ||
       Boolean(responses.pain_points?.trim()) ||
-      Boolean(responses.one_thing?.trim())
+      Boolean(responses.one_thing?.trim()) ||
+      Boolean(responses.transformation_arrive?.trim()) ||
+      Boolean(responses.transformation_leave?.trim())
 
     if (compassContext && hasAuditContent) {
       observations = await compareAuditToCompass(responses, compassContext.text)

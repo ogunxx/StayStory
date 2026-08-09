@@ -18,6 +18,8 @@ interface AuditState {
   layout_rating: Rating | null
   sound_smell_rating: Rating | null
   instructions_rating: Rating | null
+  transformation_arrive: string
+  transformation_leave: string
   pain_points: string
   one_thing: string
 }
@@ -59,6 +61,8 @@ export default function AuditPage() {
     layout_rating: null,
     sound_smell_rating: null,
     instructions_rating: null,
+    transformation_arrive: '',
+    transformation_leave: '',
     pain_points: '',
     one_thing: '',
   })
@@ -176,6 +180,40 @@ export default function AuditPage() {
             onChange={(v) => setRating(field, v)}
           />
         ))}
+      </div>
+
+      {/* Transformation */}
+      <div className="flex flex-col gap-4">
+        <div>
+          <Label className="text-sm font-medium">The transformation you're designing for</Label>
+          <p className="text-xs text-muted-foreground mt-1">
+            Everything above is about the property. This is about the guest.
+          </p>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="transformation_arrive" className="text-xs text-muted-foreground">
+            Guests arrive feeling ___
+          </Label>
+          <Textarea
+            id="transformation_arrive"
+            value={audit.transformation_arrive}
+            onChange={(e) => setAudit((p) => ({ ...p, transformation_arrive: e.target.value }))}
+            placeholder="e.g. Overwhelmed, disconnected, rushed..."
+            rows={1}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="transformation_leave" className="text-xs text-muted-foreground">
+            Guests leave feeling ___
+          </Label>
+          <Textarea
+            id="transformation_leave"
+            value={audit.transformation_leave}
+            onChange={(e) => setAudit((p) => ({ ...p, transformation_leave: e.target.value }))}
+            placeholder="e.g. Restored, closer together, inspired..."
+            rows={1}
+          />
+        </div>
       </div>
 
       {/* Pain point */}

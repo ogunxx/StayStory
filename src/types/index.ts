@@ -136,6 +136,8 @@ export interface AuditResponses {
   layout_rating: number | null
   sound_smell_rating: number | null
   instructions_rating: number | null
+  transformation_arrive: string | null
+  transformation_leave: string | null
   pain_points: string | null
   one_thing: string | null
 }
