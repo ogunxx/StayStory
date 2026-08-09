@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { LEGENDARY_PRICE } from '@/lib/config'
 import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 interface StoryResult {
   narrative: string
@@ -252,6 +253,10 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
             <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">What future guests should feel before they book</p>
             <p className="text-foreground leading-relaxed whitespace-pre-line">{result.listing_improvements}</p>
           </div>
+
+          <Encouragement>
+            You just wrote proof that thoughtful hospitality creates its own story.
+          </Encouragement>
 
           <Button onClick={() => { setResult(null); setForm({ guestName: '', whyVisiting: '', occasion: '', gesture: '', whyItWorked: '' }) }} variant="outline" className="w-fit">
             Build another story

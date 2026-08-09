@@ -10,6 +10,7 @@ import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 import type { BlueprintTouchpointIdeas, BlueprintTouchpointState, ExperienceBlueprint } from '@/lib/blueprint'
 import type { CompassField } from '@/types'
 import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 interface Touchpoint {
   id: string
@@ -171,6 +172,7 @@ export default function JourneyClient({
   )
 
   const freeRemaining = Math.max(0, FREE_BLUEPRINT_GENERATIONS - used)
+  const mappedCount = Object.values(states).filter((s) => s.current.trim()).length
 
   function toggle(id: string) {
     setStates((prev) => ({ ...prev, [id]: { ...prev[id], expanded: !prev[id].expanded } }))
@@ -298,6 +300,12 @@ export default function JourneyClient({
         />
         <p className="text-xs text-muted-foreground">Helps the AI generate ideas specific to your property.</p>
       </div>
+
+      {mappedCount >= 5 && (
+        <Encouragement>
+          You&apos;ve mapped {mappedCount} moments of the guest experience most hosts never think to look at. Come back anytime — nothing here needs to be finished today.
+        </Encouragement>
+      )}
 
       {grouped.map(({ phase, items }) => (
         <div key={phase} className="flex flex-col gap-3">

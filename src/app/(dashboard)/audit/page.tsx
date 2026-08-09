@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 type Rating = 1 | 2 | 3 | 4 | 5
 
@@ -265,6 +266,10 @@ export default function AuditPage() {
               <p className="text-xs text-muted-foreground">out of 100</p>
             </div>
           </div>
+
+          <Encouragement>
+            However this looked, showing up to look honestly at your own place is what most hosts skip. That alone puts you ahead.
+          </Encouragement>
 
           {results.fixes.length > 0 && (
             <div>

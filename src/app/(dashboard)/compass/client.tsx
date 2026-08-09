@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { COMPASS_FIELDS } from '@/lib/compass-fields'
+import { Encouragement } from '@/components/encouragement'
 import type { CompassContribution, CompassField, CompassStatus, ExperienceCompass } from '@/types'
 
 const STATUS_LABEL: Record<CompassStatus, string> = {
@@ -28,6 +29,7 @@ export default function CompassClient({ initialCompass, initialPending }: Props)
   const [compass, setCompass] = useState(initialCompass)
   const [pending, setPending] = useState(initialPending)
   const [confirming, setConfirming] = useState(false)
+  const [justConfirmed, setJustConfirmed] = useState(false)
 
   function applyResult(data: { compass: ExperienceCompass; pending: CompassContribution[] }) {
     setCompass(data.compass)
@@ -35,11 +37,15 @@ export default function CompassClient({ initialCompass, initialPending }: Props)
   }
 
   async function handleConfirm() {
+    const isFirstConfirm = !compass.confirmed_at
     setConfirming(true)
     try {
       const res = await fetch('/api/compass/confirm', { method: 'POST' })
       const data = await res.json()
-      if (res.ok) applyResult(data)
+      if (res.ok) {
+        applyResult(data)
+        if (isFirstConfirm) setJustConfirmed(true)
+      }
     } finally {
       setConfirming(false)
     }
@@ -82,14 +88,19 @@ export default function CompassClient({ initialCompass, initialPending }: Props)
         )}
       </div>
 
-      <div>
+      <div className="flex flex-col gap-3">
         <Button onClick={handleConfirm} disabled={confirming}>
           {confirming ? 'Saving…' : compass.confirmed_at ? 'Re-confirm my Compass' : 'Confirm my Compass'}
         </Button>
         {compass.confirmed_at && (
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-xs text-muted-foreground">
             Confirming lets the Generator and other tools reference your Compass when creating recommendations.
           </p>
+        )}
+        {justConfirmed && (
+          <Encouragement>
+            This is now the lens every recommendation will pass through. You just gave your hospitality a shape most hosts never bother to find.
+          </Encouragement>
         )}
       </div>
     </div>

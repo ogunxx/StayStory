@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils'
 import { LEGENDARY_PRICE } from '@/lib/config'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 export default function GeneratorPage() {
   const [form, setForm] = useState<GeneratorFormData>({
@@ -351,6 +352,10 @@ export default function GeneratorPage() {
             <h3 className="font-semibold text-foreground mb-2">Don't overdo it</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{result.dont_overdo_it}</p>
           </div>
+
+          <Encouragement>
+            That&apos;s not something a generic amenity list could have produced. It only works because you know this guest.
+          </Encouragement>
 
           <div className="flex gap-3 flex-wrap">
             <Button onClick={() => { setResult(null); setCompassUsed([]); setForm({ guestName: '', whyVisiting: '', hostNotes: '', occasion: '', emotionalState: '', hasKids: false, hasPets: false, interests: '', budget: 'under_10' }) }} variant="outline">

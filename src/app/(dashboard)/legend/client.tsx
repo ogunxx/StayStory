@@ -11,6 +11,7 @@ import { LEGENDARY_PRICE } from '@/lib/config'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 import type { CompassField } from '@/types'
 import { Insight } from '@/components/insight'
+import { Encouragement } from '@/components/encouragement'
 
 interface PlaybookResult {
   executive_summary: string
@@ -361,6 +362,10 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
               <p className="text-xl font-serif font-semibold">{playbook.your_one_thing}</p>
               <p className="text-primary-foreground/70 text-sm mt-2">Do this so brilliantly that guests never forget it.</p>
             </div>
+
+            <Encouragement>
+              This didn&apos;t come from a template. It came from what you already know about your place — now it&apos;s written down.
+            </Encouragement>
           </div>
         )}
       </div>
