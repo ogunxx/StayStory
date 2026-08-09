@@ -3,6 +3,8 @@ import { anthropic } from '@/lib/anthropic'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
 import { resolveActivePropertyId } from '@/lib/active-property'
 import { FREE_BLUEPRINT_GENERATIONS } from '@/lib/config'
+import { saveTouchpointState } from '@/lib/blueprint'
+import { buildCompassContext, getOrCreateCompass, proposeCompassContribution } from '@/lib/compass'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -32,7 +34,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const { touchpoint, question, guidara, current, propertyContext, keyMoment } = await request.json()
+  const { touchpoint, touchpointId, question, guidara, current, propertyContext, keyMoment } = await request.json()
 
   const keyMomentMap: Record<string, string> = {
     start: 'This is a START STRONG moment — the single highest-ROI touchpoint. Make the welcome as warm and memorable as possible.',
@@ -42,17 +44,21 @@ export async function POST(request: Request) {
   }
   const keyMomentContext = keyMomentMap[keyMoment as string] ?? ''
 
+  const property_id = await resolveActivePropertyId(user.id)
+  const compass = await getOrCreateCompass(user.id, property_id)
+  const compassContext = buildCompassContext(compass)
+
   const prompt = `You are a hospitality advisor trained in Will Guidara's Unreasonable Hospitality Field Guide framework.
 
 A host wants to elevate a specific touchpoint in their guest's journey.
-
+${compassContext ? `\n${compassContext.text}\n` : ''}
 TOUCHPOINT: ${touchpoint}
 WHAT THE HOST CURRENTLY DOES: ${current || 'Nothing specific yet'}
 ${propertyContext ? `PROPERTY CONTEXT: ${propertyContext}` : ''}
 ${keyMomentContext ? `STRATEGY NOTE: ${keyMomentContext}` : ''}
 GUIDARA PRINCIPLE: ${guidara}
 
-Generate three ideas for elevating this touchpoint using the Field Guide's three tiers:
+Generate three ideas for elevating this touchpoint using the Field Guide's three tiers${compassContext ? ", each one clearly in service of this host's Compass above — not generic hospitality advice" : ''}:
 - Low-Hanging: Quick, cheap, doable immediately
 - Achievable: Slightly more effort/cost, worth planning
 - Audacious: Bold, memorable, the kind that creates a legend
@@ -77,11 +83,27 @@ Return JSON only:
     const end = text.lastIndexOf('}')
     const ideas = JSON.parse(start !== -1 ? text.slice(start, end + 1) : text)
 
-    const property_id = await resolveActivePropertyId(user.id)
-
     await supabase.from('journey_sessions').insert({ user_id: user.id, property_id, touchpoint, ideas })
 
-    return NextResponse.json({ ideas })
+    if (touchpointId) {
+      await saveTouchpointState(user.id, property_id, touchpointId, { current, ideas })
+    }
+
+    // The "signature moment" touchpoint is the Blueprint's one designated Compass
+    // contributor — a host describing their unique offering there is the same
+    // kind of signal as the Audit's "one thing you do best."
+    if (touchpointId === 'your_one_thing' && current?.trim()) {
+      await proposeCompassContribution({
+        userId: user.id,
+        propertyId: property_id,
+        field: 'signature_memory',
+        suggestedValue: current.trim(),
+        sourceModule: 'blueprint',
+        rationale: 'From your Experience Blueprint — your property\'s signature moment',
+      })
+    }
+
+    return NextResponse.json({ ideas, compassUsed: compassContext?.usedFields ?? [] })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('Journey generation error:', message)

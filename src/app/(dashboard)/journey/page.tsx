@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
+import { resolveActivePropertyId } from '@/lib/active-property'
+import { getOrCreateBlueprint } from '@/lib/blueprint'
 import JourneyClient from './client'
 
 export default async function JourneyPage() {
@@ -22,5 +24,8 @@ export default async function JourneyPage() {
     generationsUsed = count ?? 0
   }
 
-  return <JourneyClient isPaid={isPaid} generationsUsed={generationsUsed} />
+  const property_id = await resolveActivePropertyId(user.id)
+  const blueprint = await getOrCreateBlueprint(user.id, property_id)
+
+  return <JourneyClient isPaid={isPaid} generationsUsed={generationsUsed} blueprint={blueprint} />
 }
