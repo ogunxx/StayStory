@@ -6,7 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
 import { LEGENDARY_PRICE } from '@/lib/config'
+import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
+import type { CompassField } from '@/types'
 
 interface PlaybookResult {
   executive_summary: string
@@ -55,6 +58,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [playbook, setPlaybook] = useState<PlaybookResult | null>(null)
+  const [compassUsed, setCompassUsed] = useState<CompassField[]>([])
 
   function update(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -75,6 +79,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setPlaybook(data.playbook)
+      setCompassUsed(data.compassUsed ?? [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -282,6 +287,17 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-serif font-semibold text-foreground">Your Guest Journey Playbook</h2>
             </div>
+
+            {compassUsed.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>Informed by your Compass:</span>
+                {compassUsed.map((field) => (
+                  <Badge key={field} variant="outline">
+                    {COMPASS_FIELD_LABELS[field] ?? field}
+                  </Badge>
+                ))}
+              </div>
+            )}
 
             <div className="bg-primary text-primary-foreground rounded-xl p-6">
               <p className="text-xs uppercase tracking-widest text-primary-foreground/60 mb-2">Executive Summary</p>
