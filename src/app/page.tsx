@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
+import { SiteNav } from '@/components/marketing/site-nav'
+import { SiteFooter } from '@/components/marketing/site-footer'
 import { Hero } from '@/components/marketing/hero'
 import { PlatformOverview } from '@/components/marketing/platform-overview'
 import { Benefits } from '@/components/marketing/benefits'
@@ -64,39 +66,7 @@ export default async function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
 
-      {/* ─── Nav ──────────────────────────────────────────────────────────── */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-7xl mx-auto w-full">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <svg viewBox="0 0 20 20" fill="currentColor" className="size-3.5" aria-hidden>
-              <path d="M10 1.5l1.9 5.1 5.1 1.9-5.1 1.9L10 15.5l-1.9-5.1L3 8.5l5.1-1.9z" />
-            </svg>
-          </span>
-          <span className="text-xl font-serif font-semibold tracking-tight text-foreground">StayStory</span>
-        </Link>
-        <div className="hidden sm:flex items-center gap-8">
-          <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            StayStory Method
-          </a>
-          <a href="#origin" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            About
-          </a>
-          <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Pricing
-          </Link>
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Login
-          </Link>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors sm:hidden">
-            Login
-          </Link>
-          <Link href="/signup" className={cn(buttonVariants(), 'h-9 rounded-lg px-4')}>
-            Start Free
-          </Link>
-        </div>
-      </nav>
+      <SiteNav />
 
       {/* ─── Hero ─────────────────────────────────────────────────────────── */}
       <Hero />
@@ -697,18 +667,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Footer ───────────────────────────────────────────────────────── */}
-      <footer className="py-8 px-6 text-center text-xs text-muted-foreground border-t border-border">
-        © {new Date().getFullYear()} StayStory · Built by Ogun &amp; Evie ·{' '}
-        <a
-          href="https://laurelandlore.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-foreground transition-colors"
-        >
-          laurelandlore.com
-        </a>
-      </footer>
+      <SiteFooter />
 
     </div>
   )
