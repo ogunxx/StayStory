@@ -6,6 +6,7 @@ import { MethodProblem } from '@/components/marketing/method-problem'
 import { MethodShift } from '@/components/marketing/method-shift'
 import { MethodWhy } from '@/components/marketing/method-why'
 import { MethodSteps } from '@/components/marketing/method-steps'
+import { MethodThread } from '@/components/marketing/method-thread'
 
 export const metadata: Metadata = {
   title: 'The StayStory Method — StayStory',
@@ -23,6 +24,7 @@ export default function MethodPage() {
         <MethodShift />
         <MethodWhy />
         <MethodSteps />
+        <MethodThread />
       </main>
       <SiteFooter />
     </div>
