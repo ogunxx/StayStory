@@ -295,3 +295,29 @@ do $$ begin
     using (auth.uid() = user_id)
     with check (auth.uid() = user_id);
 exception when duplicate_object then null; end $$;
+
+-- ── SITE CONFIG ─────────────────────────────────────────────────────────────
+-- Small key/value store for figures the marketing site states publicly — right
+-- now the Airbnb rating and review count, which appear in the Proof section,
+-- the final CTA line, and the founder story. All three read this one row set,
+-- so updating a value here changes every claim on the site at once.
+--
+-- The table already exists in production (created by hand before this file
+-- tracked it); this block is idempotent so it's safe either way.
+--
+-- Written only through the admin-gated /api/admin/site-config route using the
+-- service-role client. RLS is enabled with no policies, so it is unreachable
+-- from the normal user-scoped client — reads happen server-side.
+
+create table if not exists site_config (
+  key text primary key,
+  value text,
+  updated_at timestamptz default now() not null
+);
+
+alter table site_config enable row level security;
+
+insert into site_config (key, value) values
+  ('airbnb_rating', '4.99'),
+  ('airbnb_review_count', '136')
+on conflict (key) do nothing;

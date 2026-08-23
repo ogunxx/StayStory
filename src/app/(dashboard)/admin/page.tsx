@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { getAdminClient, isAdminEmail } from '@/lib/admin'
 import AdminMembersTable from './client'
+import { SiteFigures } from './site-figures'
 
 function countByUser(rows: { user_id: string | null }[] | null): Map<string, number> {
   const counts = new Map<string, number>()
@@ -23,7 +24,7 @@ export default async function AdminPage() {
   // after the admin allowlist check above, never exposed to the browser.
   const admin = getAdminClient()
 
-  const [{ data: profiles }, { data: audits }, { data: suggestions }, { data: stories }, { data: journeys }, { data: playbooks }] =
+  const [{ data: profiles }, { data: audits }, { data: suggestions }, { data: stories }, { data: journeys }, { data: playbooks }, { data: config }] =
     await Promise.all([
       admin.from('profiles').select('id, email, full_name, tier, created_at, suspended_at').order('created_at', { ascending: false }),
       admin.from('audits').select('user_id'),
@@ -31,7 +32,10 @@ export default async function AdminPage() {
       admin.from('guest_stories').select('user_id'),
       admin.from('journey_sessions').select('user_id'),
       admin.from('playbooks').select('user_id'),
+      admin.from('site_config').select('key, value').in('key', ['airbnb_rating', 'airbnb_review_count']),
     ])
+
+  const configMap = Object.fromEntries((config ?? []).map((r) => [r.key, r.value]))
 
   const auditCounts = countByUser(audits)
   const momentCounts = countByUser(suggestions)
@@ -50,5 +54,13 @@ export default async function AdminPage() {
     },
   }))
 
-  return <AdminMembersTable initialMembers={members} currentAdminEmail={user.email ?? ''} />
+  return (
+    <div className="flex flex-col gap-8">
+      <SiteFigures
+        initialRating={configMap['airbnb_rating'] ?? '4.99'}
+        initialReviews={configMap['airbnb_review_count'] ?? '136'}
+      />
+      <AdminMembersTable initialMembers={members} currentAdminEmail={user.email ?? ''} />
+    </div>
+  )
 }
