@@ -4,6 +4,8 @@ import { SiteFooter } from '@/components/marketing/site-footer'
 import { MethodHero } from '@/components/marketing/method-hero'
 import { MethodProblem } from '@/components/marketing/method-problem'
 import { MethodShift } from '@/components/marketing/method-shift'
+import { MethodWhy } from '@/components/marketing/method-why'
+import { MethodSteps } from '@/components/marketing/method-steps'
 
 export const metadata: Metadata = {
   title: 'The StayStory Method — StayStory',
@@ -19,6 +21,8 @@ export default function MethodPage() {
         <MethodHero />
         <MethodProblem />
         <MethodShift />
+        <MethodWhy />
+        <MethodSteps />
       </main>
       <SiteFooter />
     </div>
