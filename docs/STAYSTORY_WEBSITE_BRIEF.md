@@ -107,11 +107,18 @@ startup website, like a generic AI product, or like a traditional hotel website.
 
 ### Core Visual Language
 
-- Clean white or warm off-white backgrounds
-- Deep navy typography
-- StayStory purple / indigo accents
-- Muted lavender
-- Soft aqua or teal accent details
+> **Palette note.** The concept mockups are rendered in navy / indigo / lavender / teal.
+> That is *mockup styling*, not the brand. The live StayStory palette is warm — cream
+> background, terracotta primary, sage secondary, warm gold accent — and it is what the
+> site is built in. When a mockup arrives in indigo, take its composition, spacing,
+> hierarchy, and interface treatment, and render it in the warm palette below.
+> Confirmed with Ogun, 23 Aug 2026.
+
+- Warm off-white / cream backgrounds
+- Deep warm-brown typography (the `foreground` token)
+- Terracotta primary accent
+- Muted sage secondary
+- Warm gold accent details
 - Subtle gradients when appropriate
 - Elegant editorial headline typography
 - Clean sans-serif supporting copy

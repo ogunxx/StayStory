@@ -50,10 +50,12 @@
 }
 
 :root {
-  /* --font-serif is the Montserrat variable set by next/font in layout.tsx.
-     Without this, --font-sans was undefined and every piece of body copy on
-     the site silently fell back to the browser default (Times New Roman). */
-  --font-sans: var(--font-serif), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* Both faces come from next/font in layout.tsx. Montserrat carries body copy
+     and UI; Fraunces carries headlines (every `font-serif` in the codebase).
+     Defining --font-sans here matters: without it the utility resolved to
+     nothing and all body copy fell back to the browser default. */
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
   --background: oklch(0.98 0.012 65);
   --foreground: oklch(0.18 0.03 50);
   --card: oklch(0.96 0.015 68);
