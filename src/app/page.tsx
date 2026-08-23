@@ -7,6 +7,7 @@ import { PlatformOverview } from '@/components/marketing/platform-overview'
 import { Benefits } from '@/components/marketing/benefits'
 import { Proof } from '@/components/marketing/proof'
 import { Audiences } from '@/components/marketing/audiences'
+import { FinalCta } from '@/components/marketing/final-cta'
 import { HomePricing } from './home-pricing'
 
 const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
@@ -111,6 +112,9 @@ export default async function LandingPage() {
 
       {/* ─── Built for the way you host ───────────────────────────────────── */}
       <Audiences />
+
+      {/* ─── Final CTA ────────────────────────────────────────────────────── */}
+      <FinalCta rating={rating} reviews={reviews} />
 
       {/* ─── Property hero image ──────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto w-full px-6 pb-24">
