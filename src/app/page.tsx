@@ -3,6 +3,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { Hero } from '@/components/marketing/hero'
+import { PlatformOverview } from '@/components/marketing/platform-overview'
 import { HomePricing } from './home-pricing'
 
 const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
@@ -128,6 +129,9 @@ export default async function LandingPage() {
 
       {/* ─── Hero ─────────────────────────────────────────────────────────── */}
       <Hero />
+
+      {/* ─── Platform Overview ────────────────────────────────────────────── */}
+      <PlatformOverview />
 
       {/* ─── Property hero image ──────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto w-full px-6 pb-24">
