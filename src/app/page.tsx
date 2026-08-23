@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
+import { Hero } from '@/components/marketing/hero'
 import { HomePricing } from './home-pricing'
 
 const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
@@ -92,44 +93,41 @@ export default async function LandingPage() {
     <div className="flex flex-col min-h-screen bg-background">
 
       {/* ─── Nav ──────────────────────────────────────────────────────────── */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full">
-        <span className="text-xl font-serif font-semibold tracking-tight text-foreground">StayStory</span>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Sign in
+      <nav className="flex items-center justify-between px-6 py-5 max-w-7xl mx-auto w-full">
+        <Link href="/" className="flex items-center gap-2">
+          <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="size-3.5" aria-hidden>
+              <path d="M10 1.5l1.9 5.1 5.1 1.9-5.1 1.9L10 15.5l-1.9-5.1L3 8.5l5.1-1.9z" />
+            </svg>
+          </span>
+          <span className="text-xl font-serif font-semibold tracking-tight text-foreground">StayStory</span>
+        </Link>
+        <div className="hidden sm:flex items-center gap-8">
+          <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            How It Works
+          </a>
+          <a href="#origin" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            About
+          </a>
+          <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Pricing
           </Link>
-          <Link href="/signup" className={cn(buttonVariants({ size: 'sm' }))}>
-            Start free
+          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Login
+          </Link>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors sm:hidden">
+            Login
+          </Link>
+          <Link href="/signup" className={cn(buttonVariants(), 'h-9 rounded-lg px-4')}>
+            Start Free
           </Link>
         </div>
       </nav>
 
-      {/* ─── Declaration ──────────────────────────────────────────────────── */}
-      <section className="flex flex-col items-center text-center px-6 pt-20 pb-24 max-w-4xl mx-auto">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-8">
-          A system for intentional hosting
-        </p>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-semibold leading-tight text-foreground mb-8">
-          The host is the guide.<br />
-          The guest is the hero.<br />
-          <span className="text-primary">StayStory is how you write<br className="hidden sm:block" /> the story they never forget.</span>
-        </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl">
-          StayStory is the system that helps hosts design unforgettable stays —
-          and put them into words guests carry home.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link href="/signup" className={cn(buttonVariants({ size: 'lg' }), 'px-8')}>
-            Start free — no card needed
-          </Link>
-          <a
-            href="#origin"
-            className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}
-          >
-            See where it was built ↓
-          </a>
-        </div>
-      </section>
+      {/* ─── Hero ─────────────────────────────────────────────────────────── */}
+      <Hero />
 
       {/* ─── Property hero image ──────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto w-full px-6 pb-24">
