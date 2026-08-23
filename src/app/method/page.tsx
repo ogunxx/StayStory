@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { SiteNav } from '@/components/marketing/site-nav'
 import { SiteFooter } from '@/components/marketing/site-footer'
 import { MethodHero } from '@/components/marketing/method-hero'
+import { MethodProblem } from '@/components/marketing/method-problem'
+import { MethodShift } from '@/components/marketing/method-shift'
 
 export const metadata: Metadata = {
   title: 'The StayStory Method — StayStory',
@@ -15,6 +17,8 @@ export default function MethodPage() {
       <SiteNav active="/method" />
       <main className="flex-1">
         <MethodHero />
+        <MethodProblem />
+        <MethodShift />
       </main>
       <SiteFooter />
     </div>
