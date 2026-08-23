@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { Hero } from '@/components/marketing/hero'
 import { PlatformOverview } from '@/components/marketing/platform-overview'
+import { Benefits } from '@/components/marketing/benefits'
 import { HomePricing } from './home-pricing'
 
 const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
@@ -132,6 +133,9 @@ export default async function LandingPage() {
 
       {/* ─── Platform Overview ────────────────────────────────────────────── */}
       <PlatformOverview />
+
+      {/* ─── Why hosts choose StayStory ───────────────────────────────────── */}
+      <Benefits />
 
       {/* ─── Property hero image ──────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto w-full px-6 pb-24">

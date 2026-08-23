@@ -1,30 +1,39 @@
 /**
  * Product previews for the "Why hosts choose StayStory" benefit stories.
  *
- * Each preview lives behind a key so a benefit can point at one by name. To
- * replace any of them with a real screenshot, set `image` on the benefit in
- * benefits.tsx — the frame, sizing and shadow stay identical, and nothing in
- * the surrounding layout has to change.
+ * Composition follows the section 3 mockup — one wide panel for the Audit,
+ * then side-by-side pairs for Compass + Blueprint and Generator + Story
+ * Builder. The *content* is what the product actually does today rather than
+ * the mockup's illustrative UI, so the marketing page doesn't promise screens
+ * the app doesn't have.
  *
- * These composites are built from the real shape of each tool (a real audit
- * score and categories, a real Compass field, real gesture tiers) rather than
- * invented metrics.
+ * Each preview sits behind a key so a benefit can point at one by name. To
+ * replace any of them with a real screenshot, set `image` on the benefit in
+ * benefits.tsx — the frame and sizing stay identical and the surrounding
+ * layout doesn't change.
  */
 
-function Frame({ children }: { children: React.ReactNode }) {
+function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_24px_70px_-34px_rgba(60,40,25,0.5)]">
+    <div
+      className={`overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_20px_60px_-34px_rgba(60,40,25,0.45)] ${className ?? ''}`}
+    >
       {children}
     </div>
   )
 }
 
-function Head({ title, badge }: { title: string; badge?: string }) {
+function PanelHead({ title, badge }: { title: string; badge?: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-border/60 px-5 py-3.5">
-      <p className="truncate font-serif text-[0.85rem] font-semibold text-foreground">{title}</p>
+    <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-3">
+      <p className="flex min-w-0 items-center gap-2">
+        <span className="size-1.5 shrink-0 rounded-full bg-primary" />
+        <span className="truncate font-serif text-[0.8rem] font-semibold text-foreground">
+          {title}
+        </span>
+      </p>
       {badge && (
-        <span className="shrink-0 rounded-full bg-secondary px-2.5 py-0.5 text-[0.62rem] font-medium text-secondary-foreground">
+        <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[0.6rem] font-medium text-secondary-foreground">
           {badge}
         </span>
       )}
@@ -32,7 +41,13 @@ function Head({ title, badge }: { title: string; badge?: string }) {
   )
 }
 
-/* ── Experience Audit ─────────────────────────────────────────────────── */
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[0.56rem] uppercase tracking-[0.14em] text-muted-foreground">{children}</p>
+  )
+}
+
+/* ── 01 · Experience Audit ────────────────────────────────────────────── */
 
 const AUDIT_ROWS = [
   { label: 'Arrival experience', score: 3 },
@@ -43,143 +58,168 @@ const AUDIT_ROWS = [
 
 function AuditPreview() {
   return (
-    <Frame>
-      <Head title="Experience Audit" badge="Complete" />
-      <div className="flex flex-col gap-4 p-5">
-        <div className="flex items-baseline gap-3">
-          <span className="font-serif text-4xl font-semibold text-foreground">72</span>
-          <span className="text-[0.72rem] leading-tight text-muted-foreground">
-            Hospitality Readiness
-            <br />
-            Score out of 100
-          </span>
-        </div>
-
-        <ul className="flex flex-col gap-2">
-          {AUDIT_ROWS.map((r) => (
-            <li key={r.label} className="flex items-center justify-between gap-3">
-              <span className="truncate text-[0.75rem] text-foreground">{r.label}</span>
-              <span className="flex shrink-0 gap-1">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <span
-                    key={n}
-                    className={`size-1.5 rounded-full ${n <= r.score ? 'bg-primary' : 'bg-border'}`}
-                  />
-                ))}
-              </span>
-            </li>
-          ))}
-        </ul>
-
-        <div className="rounded-xl border border-border/70 bg-background p-3">
-          <p className="text-[0.58rem] uppercase tracking-[0.14em] text-muted-foreground">
-            Worth noticing
-          </p>
-          <p className="mt-1 text-[0.72rem] leading-relaxed text-foreground">
-            Arrival asks guests to do five things before they can sit down.
-          </p>
-        </div>
-      </div>
-    </Frame>
-  )
-}
-
-/* ── Experience Compass + Blueprint ───────────────────────────────────── */
-
-const BLUEPRINT_PHASES = [
-  { phase: 'Before arrival', count: '3 moments', done: true },
-  { phase: 'Arrival', count: '3 moments', done: true },
-  { phase: 'The stay', count: '2 moments', done: true },
-  { phase: 'Departure', count: 'Not mapped', done: false },
-]
-
-function JourneyPreview() {
-  return (
-    <Frame>
-      <Head title="Experience Compass" badge="Confirmed" />
-      <div className="flex flex-col gap-4 p-5">
-        <div>
-          <p className="text-[0.58rem] uppercase tracking-[0.14em] text-muted-foreground">Purpose</p>
-          <p className="mt-1 text-[0.8rem] leading-snug text-foreground">
-            A place where busy couples remember how to slow down.
-          </p>
-        </div>
-        <div>
-          <p className="text-[0.58rem] uppercase tracking-[0.14em] text-muted-foreground">
-            Transformation
-          </p>
-          <p className="mt-1 flex items-center gap-2 text-[0.8rem] leading-snug text-foreground">
-            Overwhelmed <span className="text-primary">→</span> Restored
-          </p>
-        </div>
-
-        <div className="border-t border-border/60 pt-4">
-          <p className="mb-2.5 text-[0.58rem] uppercase tracking-[0.14em] text-muted-foreground">
-            Experience Blueprint
-          </p>
-          <ul className="flex flex-col gap-2">
-            {BLUEPRINT_PHASES.map((p) => (
-              <li key={p.phase} className="flex items-center gap-2.5">
-                <span
-                  className={`size-1.5 shrink-0 rounded-full ${p.done ? 'bg-primary' : 'bg-border'}`}
-                />
-                <span className="flex-1 truncate text-[0.75rem] text-foreground">{p.phase}</span>
-                <span className="shrink-0 text-[0.68rem] text-muted-foreground">{p.count}</span>
+    <Panel>
+      <PanelHead title="Experience Audit" badge="Complete" />
+      <div className="flex flex-col gap-4 p-4">
+        <div className="flex items-center gap-4">
+          <div className="flex items-baseline gap-2">
+            <span className="font-serif text-3xl font-semibold text-foreground">72</span>
+            <span className="text-[0.65rem] leading-tight text-muted-foreground">
+              Readiness
+              <br />
+              score
+            </span>
+          </div>
+          <ul className="flex min-w-0 flex-1 flex-col gap-1.5">
+            {AUDIT_ROWS.map((r) => (
+              <li key={r.label} className="flex items-center justify-between gap-3">
+                <span className="truncate text-[0.72rem] text-foreground">{r.label}</span>
+                <span className="flex shrink-0 gap-1">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <span
+                      key={n}
+                      className={`size-1.5 rounded-full ${n <= r.score ? 'bg-primary' : 'bg-border'}`}
+                    />
+                  ))}
+                </span>
               </li>
             ))}
           </ul>
         </div>
+
+        <div className="grid gap-2 sm:grid-cols-2">
+          <div className="rounded-xl border border-border/70 bg-background p-3">
+            <Eyebrow>Priority fixes</Eyebrow>
+            <ul className="mt-1.5 flex flex-col gap-1">
+              {['Sound & smell', 'Arrival experience'].map((f) => (
+                <li key={f} className="flex items-center gap-1.5 text-[0.7rem] text-foreground">
+                  <span className="text-destructive">→</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-xl border border-border/70 bg-background p-3">
+            <Eyebrow>Your strengths</Eyebrow>
+            <ul className="mt-1.5 flex flex-col gap-1">
+              {['Lighting & mood', 'Instructions'].map((s) => (
+                <li key={s} className="flex items-center gap-1.5 text-[0.7rem] text-foreground">
+                  <span className="text-primary">✓</span>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
-    </Frame>
+    </Panel>
   )
 }
 
-/* ── Generator + Story Builder ────────────────────────────────────────── */
+/* ── 02 · Experience Compass + Blueprint ──────────────────────────────── */
+
+const COMPASS_FIELDS = [
+  { label: 'Purpose', value: 'Help busy couples slow down.' },
+  { label: 'Transformation', value: 'Overwhelmed → Restored' },
+  { label: 'Hospitality promise', value: 'Feel expected, not processed.' },
+  { label: 'Signature memory', value: 'The fire, after dark.' },
+]
+
+const BLUEPRINT_PHASES = [
+  { phase: 'Before', moment: 'The week-before note' },
+  { phase: 'Arrival', moment: 'The first ten seconds' },
+  { phase: 'The stay', moment: 'Evening by the fire' },
+  { phase: 'After', moment: 'What they find later' },
+]
+
+function JourneyPreview() {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel>
+        {/* No badge here — the title needs the full width of a half-column panel. */}
+        <PanelHead title="Experience Compass" />
+        <div className="grid grid-cols-2 gap-3 p-4">
+          {COMPASS_FIELDS.map((f) => (
+            <div key={f.label}>
+              <Eyebrow>{f.label}</Eyebrow>
+              <p className="mt-1 text-[0.7rem] leading-snug text-foreground">{f.value}</p>
+            </div>
+          ))}
+        </div>
+      </Panel>
+
+      <Panel>
+        <PanelHead title="Experience Blueprint" />
+        <div className="flex flex-col gap-2.5 p-4">
+          {BLUEPRINT_PHASES.map((p, i) => (
+            <div key={p.phase} className="flex items-start gap-2.5">
+              <span className="mt-0.5 flex flex-col items-center">
+                <span
+                  className={`size-1.5 shrink-0 rounded-full ${i === 1 ? 'bg-primary' : 'bg-border'}`}
+                />
+                {i < BLUEPRINT_PHASES.length - 1 && <span className="mt-1 h-5 w-px bg-border" />}
+              </span>
+              <span className="min-w-0 flex-1">
+                <Eyebrow>{p.phase}</Eyebrow>
+                <p className="text-[0.72rem] leading-snug text-foreground">{p.moment}</p>
+              </span>
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </div>
+  )
+}
+
+/* ── 03 · Generator + Story Builder ───────────────────────────────────── */
 
 function CreatePreview() {
   return (
-    <Frame>
-      <Head title="Generator" badge="For Sarah & Marcus" />
-      <div className="flex flex-col gap-4 p-5">
-        <div>
-          <p className="text-[0.58rem] uppercase tracking-[0.14em] text-muted-foreground">
-            Principle
-          </p>
-          <p className="mt-1 text-[0.8rem] leading-snug text-foreground">
-            Guests decide how a stay feels long before they unpack.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-xl bg-secondary p-3">
-            <p className="text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-secondary-foreground">
-              $0
-            </p>
-            <p className="mt-1 text-[0.7rem] leading-snug text-foreground">
-              Kindling stacked by the fire pit.
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel>
+        <PanelHead title="Generator" badge="For Sarah" />
+        <div className="flex flex-col gap-3 p-4">
+          <div className="rounded-xl border border-border/70 bg-background p-3">
+            <Eyebrow>Why they&apos;re visiting</Eyebrow>
+            <p className="mt-1 text-[0.7rem] leading-snug text-muted-foreground">
+              First trip alone since the baby. Arriving late Friday.
             </p>
           </div>
-          <div className="rounded-xl bg-primary/10 p-3">
-            <p className="text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-primary">
-              Under $10
-            </p>
-            <p className="mt-1 text-[0.7rem] leading-snug text-foreground">
-              Coffee from the roaster in town.
+          <Eyebrow>Ideas</Eyebrow>
+          <ul className="flex flex-col gap-1.5">
+            {[
+              'Kindling stacked by the fire pit',
+              'Coffee from the roaster in town',
+              'A note that nothing is scheduled',
+            ].map((idea) => (
+              <li key={idea} className="flex items-start gap-2 text-[0.7rem] leading-snug text-foreground">
+                <span className="mt-0.5 text-primary">✓</span>
+                {idea}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Panel>
+
+      <Panel>
+        <PanelHead title="Story Builder" />
+        <div className="flex flex-col gap-2.5 p-4">
+          <p className="font-serif text-[0.9rem] leading-snug font-semibold text-foreground">
+            Our home, your stay story.
+          </p>
+          <p className="text-[0.7rem] leading-relaxed text-muted-foreground">
+            We made this place to slow people down. There&apos;s kindling by the fire and
+            nothing on your schedule — that part was on purpose.
+          </p>
+          <div className="mt-1 rounded-xl bg-secondary p-3">
+            <Eyebrow>Welcome note</Eyebrow>
+            <p className="mt-1 text-[0.7rem] leading-snug text-foreground italic">
+              &ldquo;You made it. Don&apos;t unpack yet — go sit outside.&rdquo;
             </p>
           </div>
         </div>
-
-        <div className="border-t border-border/60 pt-3.5">
-          <p className="mb-1.5 text-[0.58rem] uppercase tracking-[0.14em] text-muted-foreground">
-            Story Builder · welcome note
-          </p>
-          <p className="text-[0.72rem] leading-relaxed text-foreground italic">
-            &ldquo;There&apos;s kindling by the fire and nothing on your schedule. That was
-            on purpose.&rdquo;
-          </p>
-        </div>
-      </div>
-    </Frame>
+      </Panel>
+    </div>
   )
 }
 
