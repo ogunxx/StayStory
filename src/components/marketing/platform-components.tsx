@@ -58,17 +58,17 @@ export const PLATFORM_COMPONENTS: PlatformComponent[] = [
     accent: 'primary',
   },
   {
-    id: 'generator',
-    name: 'Generator',
-    description: 'Create the gesture that fits this guest.',
-    icon: 'generator',
-    accent: 'secondary',
-  },
-  {
     id: 'story',
     name: 'Story Builder',
     description: 'Turn the experience into a story guests carry.',
     icon: 'story',
+    accent: 'secondary',
+  },
+  {
+    id: 'generator',
+    name: 'Generator',
+    description: 'Create the gesture that fits this guest.',
+    icon: 'generator',
     accent: 'primary',
   },
 ]
