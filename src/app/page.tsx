@@ -76,7 +76,7 @@ export default async function LandingPage() {
         </Link>
         <div className="hidden sm:flex items-center gap-8">
           <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            How It Works
+            StayStory Method
           </a>
           <a href="#origin" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             About
