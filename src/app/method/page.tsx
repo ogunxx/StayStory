@@ -7,6 +7,9 @@ import { MethodShift } from '@/components/marketing/method-shift'
 import { MethodWhy } from '@/components/marketing/method-why'
 import { MethodSteps } from '@/components/marketing/method-steps'
 import { MethodThread } from '@/components/marketing/method-thread'
+import { MethodOutcome } from '@/components/marketing/method-outcome'
+import { MethodProof } from '@/components/marketing/method-proof'
+import { FinalCta } from '@/components/marketing/final-cta'
 
 export const metadata: Metadata = {
   title: 'The StayStory Method — StayStory',
@@ -25,6 +28,13 @@ export default function MethodPage() {
         <MethodWhy />
         <MethodSteps />
         <MethodThread />
+        <MethodOutcome />
+        <MethodProof />
+        <FinalCta
+          headline="Ready to design the experience intentionally?"
+          secondaryLabel="Explore the Platform"
+          secondaryHref="/#platform"
+        />
       </main>
       <SiteFooter />
     </div>
