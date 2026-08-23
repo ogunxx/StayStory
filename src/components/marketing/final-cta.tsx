@@ -73,6 +73,50 @@ function Decor() {
   )
 }
 
+function Reassurance({ items, className }: { items: string[]; className?: string }) {
+  return (
+    <ul className={className}>
+      {items.map((item) => (
+        <li key={item} className="flex items-center gap-1.5 text-[0.78rem] text-background/60">
+          <Check />
+          {item}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+/** The open-book mark that anchors the band layout, per the mockup. */
+function BookGlyph() {
+  return (
+    <span aria-hidden className="relative hidden shrink-0 text-background/70 lg:block">
+      <svg viewBox="0 0 24 24" fill="none" className="size-14">
+        <path
+          d="M4 4.8h5.5A2.5 2.5 0 0112 7.3v12a2 2 0 00-2-2H4zM20 4.8h-5.5A2.5 2.5 0 0012 7.3v12a2 2 0 012-2h6z"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <svg
+        viewBox="0 0 12 12"
+        fill="currentColor"
+        className="absolute -right-1.5 top-0 size-3 text-background/45"
+      >
+        <path d="M6 0l1.2 3.3L10.5 4.5 7.2 5.7 6 9 4.8 5.7 1.5 4.5l3.3-1.2z" />
+      </svg>
+      <svg
+        viewBox="0 0 12 12"
+        fill="currentColor"
+        className="absolute -left-2 top-7 size-2.5 text-background/30"
+      >
+        <path d="M6 0l1.2 3.3L10.5 4.5 7.2 5.7 6 9 4.8 5.7 1.5 4.5l3.3-1.2z" />
+      </svg>
+    </span>
+  )
+}
+
 export function FinalCta({
   headline = 'Ready to design stays your guests could never forget?',
   supporting,
@@ -83,6 +127,7 @@ export function FinalCta({
   reassurance = ['No credit card', 'Setup in minutes', 'Cancel anytime'],
   rating = '4.99',
   reviews = '136',
+  layout = 'split',
 }: {
   headline?: string
   supporting?: string
@@ -93,10 +138,59 @@ export function FinalCta({
   reassurance?: string[]
   rating?: string
   reviews?: string
+  /**
+   * 'split'  — homepage: message left, CTA stack right.
+   * 'band'   — Method page: glyph left, message centred, both buttons right.
+   * Same panel, decor and tokens either way; only the arrangement differs.
+   */
+  layout?: 'split' | 'band'
 }) {
   const supportingCopy =
     supporting ??
     `Start with the same system we built on our own property — now ${rating}★ across ${reviews} guest reviews.`
+
+  if (layout === 'band') {
+    return (
+      <section id="get-started" className="px-6 pb-20 lg:pb-28">
+        <div className="relative mx-auto w-full max-w-7xl overflow-hidden rounded-3xl bg-foreground px-8 py-12 text-background sm:px-12 lg:px-14">
+          <Decor />
+
+          <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
+            <BookGlyph />
+
+            <div className="flex-1 lg:text-center">
+              <h2 className="font-serif text-[1.7rem] leading-[1.15] font-semibold tracking-tight sm:text-[2rem]">
+                {headline}
+              </h2>
+              <p className="mt-3 text-[0.9rem] leading-relaxed text-background/70 lg:mx-auto lg:max-w-xl">
+                {supportingCopy}
+              </p>
+              {/* Desktop: sits under the headline, as in the mockup. */}
+              <Reassurance items={reassurance} className="mt-4 hidden flex-wrap items-center justify-center gap-x-6 gap-y-2 lg:flex" />
+            </div>
+
+            <div className="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+              <Link
+                href={primaryHref}
+                className="inline-flex h-11 items-center justify-center rounded-lg bg-background px-6 text-sm font-medium text-foreground transition-opacity hover:opacity-90"
+              >
+                {primaryLabel}
+              </Link>
+              <Link
+                href={secondaryHref}
+                className="inline-flex h-11 items-center justify-center rounded-lg border border-background/35 px-6 text-sm font-medium text-background transition-colors hover:bg-background/10"
+              >
+                {secondaryLabel}
+              </Link>
+            </div>
+
+            {/* Mobile keeps the brief's order: CTAs, then reassurance. */}
+            <Reassurance items={reassurance} className="flex flex-wrap items-center gap-x-5 gap-y-2 lg:hidden" />
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section id="get-started" className="px-6 pb-20 lg:pb-28">

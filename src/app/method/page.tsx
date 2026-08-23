@@ -31,7 +31,9 @@ export default function MethodPage() {
         <MethodOutcome />
         <MethodProof />
         <FinalCta
+          layout="band"
           headline="Ready to design the experience intentionally?"
+          supporting="Turn what you want guests to feel, remember, and talk about into an experience you can design on purpose and deliver consistently."
           secondaryLabel="Explore the Platform"
           secondaryHref="/#platform"
         />
