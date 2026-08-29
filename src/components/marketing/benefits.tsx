@@ -38,7 +38,7 @@ export const BENEFITS: Benefit[] = [
     description:
       'Use the Experience Audit to uncover friction, missed opportunities, emotional peaks, and invisible details.',
     ctaLabel: 'See how the Audit works',
-    ctaHref: '#platform',
+    ctaHref: '/platform',
     preview: 'audit',
   },
   {
@@ -47,7 +47,7 @@ export const BENEFITS: Benefit[] = [
     description:
       'Use the Experience Compass and Blueprint together to decide what the stay should feel like, and intentionally shape the moments before, during, and after it.',
     ctaLabel: 'Explore the Compass and Blueprint',
-    ctaHref: '#platform',
+    ctaHref: '/platform',
     preview: 'journey',
   },
   {

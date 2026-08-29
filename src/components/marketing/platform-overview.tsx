@@ -71,7 +71,7 @@ export function PlatformOverview() {
             use, share, and refine.
           </p>
           <a
-            href="#how-it-works"
+            href="/platform"
             className={cn(buttonVariants(), 'mt-8 h-12 rounded-full px-7 text-base')}
           >
             Explore the platform

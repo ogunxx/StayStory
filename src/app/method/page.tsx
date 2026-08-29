@@ -35,7 +35,7 @@ export default function MethodPage() {
           headline="Ready to design the experience intentionally?"
           supporting="Turn what you want guests to feel, remember, and talk about into an experience you can design on purpose and deliver consistently."
           secondaryLabel="Explore the Platform"
-          secondaryHref="/#platform"
+          secondaryHref="/platform"
         />
       </main>
       <SiteFooter />

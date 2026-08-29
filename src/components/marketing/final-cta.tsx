@@ -123,7 +123,7 @@ export function FinalCta({
   primaryLabel = 'Start Free',
   primaryHref = '/signup',
   secondaryLabel = 'See the Platform',
-  secondaryHref = '#platform',
+  secondaryHref = '/platform',
   reassurance = ['No credit card', 'Setup in minutes', 'Cancel anytime'],
   rating = '4.99',
   reviews = '136',

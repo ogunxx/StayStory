@@ -59,7 +59,7 @@ export function Hero() {
               <span aria-hidden className="ml-1">→</span>
             </Link>
             <a
-              href="#how-it-works"
+              href="/platform"
               className={cn(
                 buttonVariants({ variant: 'outline', size: 'lg' }),
                 'h-12 rounded-xl border-border px-7 text-base'

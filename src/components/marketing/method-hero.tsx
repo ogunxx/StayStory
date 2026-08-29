@@ -23,7 +23,7 @@ export const HERO = {
   primaryLabel: 'Explore the Method',
   primaryHref: '#the-problem',
   secondaryLabel: 'See the Platform',
-  secondaryHref: '/#platform',
+  secondaryHref: '/platform',
 }
 
 /** The guest journey shown across the middle. Reorder, rename, add or remove. */
