@@ -16,7 +16,7 @@ import { buttonVariants } from '@/components/ui/button'
 export const NAV_ITEMS: { href: string; label: string }[] = [
   { href: '/platform', label: 'Platform' },
   { href: '/method', label: 'The StayStory Method' },
-  { href: '/#origin', label: 'About' },
+  { href: '/about', label: 'About' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/login', label: 'Login' },
 ]
