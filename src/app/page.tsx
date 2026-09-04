@@ -2,6 +2,14 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
+import { SiteNav } from '@/components/marketing/site-nav'
+import { SiteFooter } from '@/components/marketing/site-footer'
+import { Hero } from '@/components/marketing/hero'
+import { PlatformOverview } from '@/components/marketing/platform-overview'
+import { Benefits } from '@/components/marketing/benefits'
+import { Proof } from '@/components/marketing/proof'
+import { Audiences } from '@/components/marketing/audiences'
+import { FinalCta } from '@/components/marketing/final-cta'
 import { HomePricing } from './home-pricing'
 
 const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
@@ -52,84 +60,31 @@ function Img({ src, alt, className, objectFit = 'cover' }: {
   )
 }
 
-const CURATED_REVIEWS = [
-  {
-    quote: 'Fantastic place! The details put into the place including the welcome sign with my name, whole bean coffee with Keurig grinder, and sparkling water with chilled glasses upon arrival were amazing! We are already planning on coming back.',
-    author: 'Heather',
-    detail: 'Douglasville, Georgia · April 2025 · 5★',
-  },
-  {
-    quote: 'The little details made it super homey. The fresh ground coffee maker was a hit in the AMs!! The cold Topo Chico in the fridge after the drive was so good. Might seem like something small — but the dish soap and complementary body wash was a lovely touch.',
-    author: 'Carolina',
-    detail: 'Hollywood, Florida · June 2025 · 5★',
-  },
-  {
-    quote: 'We had such a lovely time here, I would really recommend! This host had thought of everything to make our stay really comfortable. We especially liked the fire pit and campfire story book!',
-    author: 'Jo',
-    detail: '5 years on Airbnb · July 2024 · 5★',
-  },
-  {
-    quote: 'We were there when Hurricane Helene was passing by. The hosts were extremely proactive being sure we were okay and cared for. Throughout our stay they were so attentive that it made us feel very nurtured and safe. They had thought of every thing!',
-    author: 'Katie',
-    detail: 'Asheville, North Carolina · October 2024 · 5★',
-  },
-  {
-    quote: 'Their place truly felt like home — everything we needed and then some. It felt like we were in the middle of secluded wilderness and yet only 30 minutes from downtown Savannah. Perfect in every way and we will be back again.',
-    author: 'Sonia',
-    detail: 'Miami, Florida · March 2025 · 5★',
-  },
-  {
-    quote: "My family had such an incredible stay! The place was very clean and had such thoughtful touches throughout the space. Our toddler loved the books, games, and campfire! We can't say enough good things about this place.",
-    author: 'Victoria',
-    detail: '10 years on Airbnb · April 2025 · 5★',
-  },
-]
-
 export default async function LandingPage() {
   const { rating, reviews } = await getAirbnbStats()
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
 
-      {/* ─── Nav ──────────────────────────────────────────────────────────── */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full">
-        <span className="text-xl font-serif font-semibold tracking-tight text-foreground">StayStory</span>
-        <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Sign in
-          </Link>
-          <Link href="/signup" className={cn(buttonVariants({ size: 'sm' }))}>
-            Start free
-          </Link>
-        </div>
-      </nav>
+      <SiteNav />
 
-      {/* ─── Declaration ──────────────────────────────────────────────────── */}
-      <section className="flex flex-col items-center text-center px-6 pt-20 pb-24 max-w-4xl mx-auto">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-8">
-          A system for intentional hosting
-        </p>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-semibold leading-tight text-foreground mb-8">
-          The host is the guide.<br />
-          The guest is the hero.<br />
-          <span className="text-primary">StayStory is how you write<br className="hidden sm:block" /> the story they never forget.</span>
-        </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl">
-          StayStory is the system that helps hosts design unforgettable stays —
-          and put them into words guests carry home.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link href="/signup" className={cn(buttonVariants({ size: 'lg' }), 'px-8')}>
-            Start free — no card needed
-          </Link>
-          <a
-            href="#origin"
-            className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}
-          >
-            See where it was built ↓
-          </a>
-        </div>
-      </section>
+      {/* ─── Hero ─────────────────────────────────────────────────────────── */}
+      <Hero />
+
+      {/* ─── Platform Overview ────────────────────────────────────────────── */}
+      <PlatformOverview />
+
+      {/* ─── Why hosts choose StayStory ───────────────────────────────────── */}
+      <Benefits />
+
+      {/* ─── Proof ────────────────────────────────────────────────────────── */}
+      <Proof rating={rating} reviews={reviews} sourceHref={AIRBNB_URL} />
+
+      {/* ─── Built for the way you host ───────────────────────────────────── */}
+      <Audiences />
+
+      {/* ─── Final CTA ────────────────────────────────────────────────────── */}
+      <FinalCta rating={rating} reviews={reviews} />
 
       {/* ─── Property hero image ──────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto w-full px-6 pb-24">
@@ -460,47 +415,6 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Proof ────────────────────────────────────────────────────────── */}
-      <section className="py-24 px-6 bg-card border-y border-border">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-14">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
-                What guests say when the system is running
-              </p>
-              <h2 className="text-3xl font-serif font-semibold text-foreground max-w-md">
-                These aren&apos;t reviews.<br />They&apos;re evidence.
-              </h2>
-            </div>
-            <a
-              href={AIRBNB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-primary hover:underline shrink-0 pb-1"
-            >
-              {rating}★ · {reviews} reviews on Airbnb ↗
-            </a>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-5">
-            {CURATED_REVIEWS.map((r) => (
-              <div
-                key={r.author + r.detail}
-                className="bg-background rounded-2xl p-6 border border-border flex flex-col gap-4"
-              >
-                <p className="text-sm text-foreground leading-relaxed italic flex-1">
-                  &ldquo;{r.quote}&rdquo;
-                </p>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{r.author}</p>
-                  <p className="text-xs text-muted-foreground">{r.detail}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ─── Origin ───────────────────────────────────────────────────────── */}
       <section id="origin" className="py-24 px-6 max-w-5xl mx-auto w-full">
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4 text-center">
@@ -753,18 +667,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Footer ───────────────────────────────────────────────────────── */}
-      <footer className="py-8 px-6 text-center text-xs text-muted-foreground border-t border-border">
-        © {new Date().getFullYear()} StayStory · Built by Ogun &amp; Evie ·{' '}
-        <a
-          href="https://laurelandlore.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-foreground transition-colors"
-        >
-          laurelandlore.com
-        </a>
-      </footer>
+      <SiteFooter />
 
     </div>
   )

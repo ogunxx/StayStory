@@ -1,54 +1,42 @@
-import Link from 'next/link'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { createClient } from '@/lib/supabase/server'
-import PricingClient from './pricing-client'
+import type { Metadata } from 'next'
+import { SiteNav } from '@/components/marketing/site-nav'
+import { SiteFooter } from '@/components/marketing/site-footer'
+import { PricingHero } from '@/components/marketing/pricing-hero'
+import { PricingPlans } from '@/components/marketing/pricing-plans'
+import { PricingIncluded } from '@/components/marketing/pricing-included'
+import { PricingAudience } from '@/components/marketing/pricing-audience'
+import { PricingValue } from '@/components/marketing/pricing-value'
+import { PricingFaq } from '@/components/marketing/pricing-faq'
+import { FinalCta } from '@/components/marketing/final-cta'
 
-export default async function PricingPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const isLoggedIn = !!user
+export const metadata: Metadata = {
+  title: 'Pricing — StayStory',
+  description:
+    'Start free. The tools, structure and guidance to design a more intentional guest journey — without the guesswork.',
+}
 
+export default function PricingPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      {/* Marketing nav — pricing is public so non-members can compare plans. */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full">
-        <Link href="/" className="text-xl font-serif font-semibold tracking-tight text-foreground">
-          StayStory
-        </Link>
-        <div className="flex items-center gap-4">
-          {isLoggedIn ? (
-            <Link href="/dashboard" className={cn(buttonVariants({ size: 'sm' }))}>
-              Go to dashboard
-            </Link>
-          ) : (
-            <>
-              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Sign in
-              </Link>
-              <Link href="/signup" className={cn(buttonVariants({ size: 'sm' }))}>
-                Start free
-              </Link>
-            </>
-          )}
-        </div>
-      </nav>
-
-      <main className="flex-1 w-full px-6 py-12 sm:py-16">
-        <PricingClient isLoggedIn={isLoggedIn} />
+    <div className="flex min-h-screen flex-col bg-background">
+      <SiteNav active="/pricing" />
+      <main className="flex-1">
+        <PricingHero />
+        <PricingPlans />
+        <PricingIncluded />
+        <PricingAudience />
+        <PricingValue />
+        <PricingFaq />
+        <FinalCta
+          layout="band"
+          headline="Ready to create a stay that feels like yours?"
+          supporting="Start designing a guest experience that’s intentional, memorable and unmistakably yours."
+          primaryLabel="Explore the Platform"
+          primaryHref="/platform"
+          secondaryLabel="Start Free"
+          secondaryHref="/signup"
+        />
       </main>
-
-      <footer className="py-8 px-6 text-center text-xs text-muted-foreground border-t border-border">
-        © {new Date().getFullYear()} StayStory · Built by Ogun &amp; Evie ·{' '}
-        <a
-          href="https://laurelandlore.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-foreground transition-colors"
-        >
-          laurelandlore.com
-        </a>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }
