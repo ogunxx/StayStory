@@ -23,6 +23,20 @@ export const LAUREL_IMAGES = {
   /** Wellness corner. */
   wellness:
     'https://a0.muscache.com/im/pictures/hosting/Hosting-1602145313140364507/original/e5e36dce-a806-4a55-af47-4176f609851f.png?im_w=1200',
+  /** Movie night on the deck. */
+  movieNight:
+    'https://a0.muscache.com/im/pictures/hosting/Hosting-775430494188891274/original/e927b3f7-5a56-4502-860b-48c62c139429.png?im_w=1200',
+} as const
+
+/**
+ * Ogun and Evie. Kept here after the homepage origin section was removed, so
+ * the portraits are ready if the founder story is ever told on the About page.
+ */
+export const FOUNDER_IMAGES = {
+  ogun: '/images/ogun.jpg',
+  evie: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/07ed0151-1334-403c-abfe-5b40be6d44b5/20240704_110537.jpg?format=2500w',
+  together:
+    'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/87953ab6-87f5-479b-b95c-735a41c92e8b/Blue+Bird.png?format=2500w',
 } as const
 
 /** The live listing, used wherever the guest rating is stated. */

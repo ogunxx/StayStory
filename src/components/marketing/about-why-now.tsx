@@ -1,14 +1,23 @@
 /**
  * About — Section 7. Why guest experience design matters now.
  *
- * Copy left, a row of four figures right. Each figure is one entry in STATS.
+ * Copy left, a row of figures right.
  *
- * ⚠️ VERIFY BEFORE LAUNCH. These four figures and their attributions come from
- * the approved mockup, not from a source we've checked. The brief is explicit
- * that we don't publish unverified numbers, so either confirm each against the
- * cited report and add the report name to `source`, or replace it here. Note
- * that the homepage currently cites PwC at 86% for a closely related claim —
- * the two should not contradict each other once verified.
+ * ┌─ TO FILL IN LATER ─────────────────────────────────────────────────────┐
+ * │ All four figures below are placeholders, held with `placeholder: true`. │
+ * │ Nothing renders on the page while that flag is set — no numbers, no    │
+ * │ sources, no empty boxes; the section shows its copy on its own and     │
+ * │ reads as finished.                                                     │
+ * │                                                                        │
+ * │ To publish a figure: fill in `value`, `body` and `source`, then delete │
+ * │ that entry's `placeholder: true` line. The panel comes back the moment │
+ * │ one entry is real, and lays out for however many you turn on.          │
+ * │                                                                        │
+ * │ The values sitting here now came from the mockup and no source has     │
+ * │ been checked. Treat them as prompts for what to look up, not as facts. │
+ * │ Note the homepage cites PwC at 86% for a closely related claim — the   │
+ * │ two should not contradict each other once verified.                    │
+ * └────────────────────────────────────────────────────────────────────────┘
  */
 
 const ICONS = {
@@ -28,6 +37,8 @@ export type Stat = {
   /** Who published it. Add the report title once verified. */
   source: string
   icon: IconKey
+  /** While true, this figure is not published. Delete the line to show it. */
+  placeholder?: boolean
 }
 
 export const STATS: Stat[] = [
@@ -37,6 +48,7 @@ export const STATS: Stat[] = [
     body: 'of guests say the experience is as important as the property itself.',
     source: 'PwC',
     icon: 'people',
+    placeholder: true,
   },
   {
     id: 'reviews',
@@ -44,6 +56,7 @@ export const STATS: Stat[] = [
     body: 'of guests say reviews influence their booking decision most.',
     source: 'BrightLocal',
     icon: 'star',
+    placeholder: true,
   },
   {
     id: 'pay-more',
@@ -51,6 +64,7 @@ export const STATS: Stat[] = [
     body: 'of guests will pay more for a stay that feels personal and thoughtful.',
     source: 'Skift',
     icon: 'heart',
+    placeholder: true,
   },
   {
     id: 'rebook',
@@ -58,6 +72,7 @@ export const STATS: Stat[] = [
     body: 'more likely for guests to rebook a stay when they feel an emotional connection.',
     source: 'Deloitte',
     icon: 'chart',
+    placeholder: true,
   },
 ]
 
@@ -75,33 +90,52 @@ export function AboutWhyNow({
   paragraphs?: string[]
   stats?: Stat[]
 }) {
+  // Placeholders stay off the page until someone fills them in.
+  const published = stats.filter((stat) => !stat.placeholder)
+
   return (
     <section className="px-6 py-4">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[1fr_1.25fr] lg:items-center lg:gap-14">
+      <div
+        className={
+          published.length > 0
+            ? 'mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[1fr_1.25fr] lg:items-center lg:gap-14'
+            : 'mx-auto w-full max-w-7xl'
+        }
+      >
         <div className="min-w-0">
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-primary">
             {eyebrow}
           </p>
-          <h2 className="max-w-md font-serif text-[1.6rem] leading-[1.2] font-semibold tracking-tight text-foreground sm:text-[1.95rem]">
+          <h2
+            className={`font-serif text-[1.6rem] leading-[1.2] font-semibold tracking-tight text-foreground sm:text-[1.95rem] ${
+              published.length > 0 ? 'max-w-md' : 'max-w-2xl'
+            }`}
+          >
             {headline}
           </h2>
           <div className="mt-5 flex flex-col gap-3">
             {paragraphs.map((p) => (
-              <p key={p} className="max-w-sm text-[0.92rem] leading-relaxed text-muted-foreground">
+              <p
+                key={p}
+                className={`text-[0.92rem] leading-relaxed text-muted-foreground ${
+                  published.length > 0 ? 'max-w-sm' : 'max-w-xl'
+                }`}
+              >
                 {p}
               </p>
             ))}
           </div>
         </div>
 
+        {published.length === 0 ? null : (
         <div className="rounded-3xl bg-secondary/25 px-6 py-10 sm:px-8">
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
-            {stats.map((stat, i) => (
+            {published.map((stat, i) => (
               <div
                 key={stat.id}
                 className={`min-w-0 text-center lg:px-4 ${
                   i === 0 ? 'lg:pl-0' : 'lg:border-l lg:border-border/60'
-                } ${i === stats.length - 1 ? 'lg:pr-0' : ''}`}
+                } ${i === published.length - 1 ? 'lg:pr-0' : ''}`}
               >
                 <span className="mx-auto flex size-9 items-center justify-center rounded-xl border border-border bg-card">
                   <svg viewBox="0 0 24 24" fill="none" className="size-[1.1rem] text-primary" aria-hidden>
@@ -125,6 +159,7 @@ export function AboutWhyNow({
             ))}
           </div>
         </div>
+        )}
       </div>
     </section>
   )

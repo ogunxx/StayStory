@@ -10,9 +10,8 @@ import { Benefits } from '@/components/marketing/benefits'
 import { Proof } from '@/components/marketing/proof'
 import { Audiences } from '@/components/marketing/audiences'
 import { FinalCta } from '@/components/marketing/final-cta'
+import { AIRBNB_URL, LAUREL_IMAGES } from '@/components/marketing/laurel-images'
 import { HomePricing } from './home-pricing'
-
-const AIRBNB_URL = 'https://www.airbnb.com.mt/rooms/775430494188891274'
 
 async function getAirbnbStats() {
   try {
@@ -31,15 +30,12 @@ async function getAirbnbStats() {
   }
 }
 
+// The remaining photograph on this page. The rest of the Laurel & Lore
+// photography — including the founder portraits from the origin section that
+// used to sit here — now lives in laurel-images.ts, so nothing was lost when
+// that section came out.
 const IMAGES = {
-  propertyHero: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/c82788f2-21c5-482e-91ae-4c1a4267ff59/20241026_083649%7E2.jpg?format=2500w',
-  outdoorShower: 'https://a0.muscache.com/im/pictures/hosting/Hosting-1602145313140364507/original/ab43fe51-ba2a-44e8-b214-f86e288e85c2.png?im_w=1200',
-  deck: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/d6a3add4-6041-4731-ad96-76aaf6e87b61/WhatsApp+Image+2025-11-23+at+3.32.46+PM.jpeg?format=1500w',
-  movieNight: 'https://a0.muscache.com/im/pictures/hosting/Hosting-775430494188891274/original/e927b3f7-5a56-4502-860b-48c62c139429.png?im_w=480&im_q=medq',
-  wellness: 'https://a0.muscache.com/im/pictures/hosting/Hosting-1602145313140364507/original/e5e36dce-a806-4a55-af47-4176f609851f.png?im_w=720',
-  ogun: '/images/ogun.jpg',
-  evie: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/07ed0151-1334-403c-abfe-5b40be6d44b5/20240704_110537.jpg?format=2500w',
-  together: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/87953ab6-87f5-479b-b95c-735a41c92e8b/Blue+Bird.png?format=2500w',
+  propertyHero: LAUREL_IMAGES.exterior,
 }
 
 function Img({ src, alt, className, objectFit = 'cover' }: {
@@ -412,129 +408,6 @@ export default async function LandingPage() {
             Together, they move you from running a rental to guiding a hero
             through a story worth remembering.
           </p>
-        </div>
-      </section>
-
-      {/* ─── Origin ───────────────────────────────────────────────────────── */}
-      <section id="origin" className="py-24 px-6 max-w-5xl mx-auto w-full">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4 text-center">
-          Built by hosts, for hosts
-        </p>
-        <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-foreground text-center mb-16 max-w-2xl mx-auto">
-          This system wasn&apos;t invented.<br />It was lived.
-        </h2>
-
-        {/* Ogun */}
-        <div className="grid sm:grid-cols-2 gap-10 items-center mb-20">
-          <Img
-            src={IMAGES.ogun}
-            alt="Ogun — co-founder"
-            className="rounded-2xl h-80 sm:h-96 order-2 sm:order-1"
-          />
-          <div className="order-1 sm:order-2 flex flex-col gap-5">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Co-founder</p>
-              <h3 className="text-2xl font-serif font-semibold text-foreground">Ogun</h3>
-            </div>
-            <p className="text-muted-foreground leading-relaxed text-sm">
-              Ogun has spent his entire career in hospitality — from professional kitchens to executive
-              roles. He has spent decades studying what separates a stay guests forget from one they
-              recount for years. The answer is never the thread count. It is always the intention.
-            </p>
-            <p className="text-foreground font-medium italic text-sm border-l-2 border-primary pl-4">
-              &ldquo;The highest compliment a guest ever gave us wasn&apos;t about the food or the décor.
-              It was: &lsquo;you made me feel like the only person here.&rsquo; That&apos;s what we&apos;re chasing.&rdquo;
-            </p>
-          </div>
-        </div>
-
-        {/* Evie */}
-        <div className="grid sm:grid-cols-2 gap-10 items-center mb-20">
-          <div className="flex flex-col gap-5">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Co-founder</p>
-              <h3 className="text-2xl font-serif font-semibold text-foreground">Evie</h3>
-            </div>
-            <p className="text-muted-foreground leading-relaxed text-sm">
-              Long before sustainable care was fashionable, Evie was building her work around it.
-              She does not follow trends in hospitality. She creates the experience, then watches
-              the trends catch up. Her instinct for environment — the smell, the light, the temperature,
-              the thing nobody asked for — is in every part of how StayStory thinks.
-            </p>
-            <p className="text-foreground font-medium italic text-sm border-l-2 border-primary pl-4">
-              &ldquo;The way a space feels when you walk in — that&apos;s not an accident. That&apos;s a decision.
-              We just help hosts make better ones.&rdquo;
-            </p>
-          </div>
-          <Img
-            src={IMAGES.evie}
-            alt="Evie — co-founder"
-            className="rounded-2xl h-80 sm:h-[500px] bg-muted"
-            objectFit="contain"
-          />
-        </div>
-
-        {/* Together */}
-        <div className="grid sm:grid-cols-2 gap-10 items-center">
-          <Img
-            src={IMAGES.together}
-            alt="Ogun and Evie at Laurel & Lore"
-            className="rounded-2xl h-80 sm:h-96 order-2 sm:order-1"
-          />
-          <div className="order-1 sm:order-2 flex flex-col gap-5">
-            <h3 className="text-2xl font-serif font-semibold text-foreground">
-              Together, they built something rare.
-            </h3>
-            <p className="text-muted-foreground leading-relaxed text-sm">
-              Ogun and Evie are a married couple who brought their worlds together —
-              his hospitality craft, her legacy of intentional care — and applied it to their
-              Airbnb property, <strong className="text-foreground">Laurel &amp; Lore</strong>,
-              near Savannah, Georgia.
-            </p>
-            <p className="text-muted-foreground leading-relaxed text-sm">
-              The result:{' '}
-              <a
-                href={AIRBNB_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-foreground hover:underline"
-              >
-                {rating}★ across {reviews} reviews.
-              </a>{' '}
-              The word guests use more than any other to describe their stay:{' '}
-              <strong className="text-foreground italic">love.</strong>
-            </p>
-            <p className="text-muted-foreground leading-relaxed text-sm">
-              StayStory is the system they built and ran first. Everything in it was tested on
-              a real property, with real guests, before it was ever offered to anyone else.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <a
-                href={AIRBNB_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                See the property on Airbnb ↗
-              </a>
-              <a
-                href="https://laurelandlore.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                Visit laurelandlore.com ↗
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Property photo grid */}
-        <div className="mt-20 grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <Img src={IMAGES.deck} alt="The deck at golden hour" className="rounded-2xl h-56 sm:h-72 col-span-2 sm:col-span-2" />
-          <Img src={IMAGES.outdoorShower} alt="The outdoor shower" className="rounded-2xl h-56 sm:h-72" />
-          <Img src={IMAGES.wellness} alt="The wellness space" className="rounded-2xl h-48 sm:h-64" />
-          <Img src={IMAGES.movieNight} alt="Movie night on the deck" className="rounded-2xl h-48 sm:h-64 col-span-1 sm:col-span-2" />
         </div>
       </section>
 
