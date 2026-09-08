@@ -1,4 +1,5 @@
 import { PREVIEWS, type PreviewKey } from './benefit-previews'
+import { ctaTextLink } from './cta-styles'
 
 /**
  * Section 3 — Why hosts choose StayStory.
@@ -160,7 +161,7 @@ export function Benefits() {
             {/* One descriptive link out to the thinking behind the product. */}
             <a
               href="/method"
-              className="group mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary underline underline-offset-4"
+              className={`${ctaTextLink} group mt-4 inline-flex items-center gap-2`}
             >
               See how the StayStory Method works
               <span aria-hidden className="transition-transform group-hover:translate-x-0.5">

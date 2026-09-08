@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
+import { ctaHeroPrimary, ctaHeroSecondary, ctaPrimary } from './cta-styles'
 
 /**
  * The StayStory Method page — Hero.
@@ -170,7 +169,7 @@ function PlaybookCallout() {
       </p>
       <Link
         href={PLAYBOOK.ctaHref}
-        className={cn(buttonVariants(), 'mt-5 h-10 w-full rounded-lg px-4 text-sm')}
+        className={`${ctaPrimary} mt-5 w-full`}
       >
         {PLAYBOOK.ctaLabel}
       </Link>
@@ -196,16 +195,13 @@ export function MethodHero() {
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <a
               href={HERO.primaryHref}
-              className={cn(buttonVariants(), 'h-11 rounded-lg px-6 text-sm')}
+              className={ctaHeroPrimary}
             >
               {HERO.primaryLabel}
             </a>
             <Link
               href={HERO.secondaryHref}
-              className={cn(
-                buttonVariants({ variant: 'outline' }),
-                'h-11 rounded-lg border-border px-6 text-sm'
-              )}
+              className={ctaHeroSecondary}
             >
               {HERO.secondaryLabel}
             </Link>

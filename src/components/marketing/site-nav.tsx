@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { ctaCompact, ctaPrimary } from './cta-styles'
 
 /**
  * The one global header for the whole public site.
@@ -121,7 +122,7 @@ export function SiteNav({ active }: { active?: string }) {
                 href={item.href}
                 aria-current={active === item.href ? 'page' : undefined}
                 className={cn(
-                  'rounded-md text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
+                  'inline-flex items-center rounded-md py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
                   active === item.href ? ACTIVE_CLASS : INACTIVE_CLASS
                 )}
               >
@@ -136,7 +137,7 @@ export function SiteNav({ active }: { active?: string }) {
             href={LOGIN.href}
             aria-current={active === LOGIN.href ? 'page' : undefined}
             className={cn(
-              'hidden rounded-md text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:inline',
+              'hidden items-center rounded-md py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:inline-flex',
               active === LOGIN.href ? ACTIVE_CLASS : INACTIVE_CLASS
             )}
           >
@@ -145,7 +146,7 @@ export function SiteNav({ active }: { active?: string }) {
 
           <Link
             href={CTA.href}
-            className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className={ctaCompact}
           >
             {CTA.label}
           </Link>
@@ -194,7 +195,7 @@ export function SiteNav({ active }: { active?: string }) {
           <Link
             href={CTA.href}
             onClick={() => setOpen(false)}
-            className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className={`${ctaPrimary} h-12 w-full`}
           >
             {CTA.label}
           </Link>

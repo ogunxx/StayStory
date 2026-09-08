@@ -209,9 +209,9 @@ function StepArrow() {
   return (
     <span
       aria-hidden
-      className="flex shrink-0 items-center justify-center py-1 text-primary/45 lg:px-2.5 lg:py-0"
+      className="flex shrink-0 items-center justify-center py-1 text-primary/45 xl:px-2.5 xl:py-0"
     >
-      <svg viewBox="0 0 24 24" fill="none" className="size-4 rotate-90 lg:rotate-0">
+      <svg viewBox="0 0 24 24" fill="none" className="size-4 rotate-90 xl:rotate-0">
         <path
           d="M4 12h15m0 0l-5-5m5 5l-5 5"
           stroke="currentColor"
@@ -240,7 +240,7 @@ export function MethodSteps() {
           </p>
         </div>
 
-        <ol className="flex flex-col lg:flex-row lg:items-stretch">
+        <ol className="flex flex-col xl:flex-row xl:items-stretch">
           {STEPS.map((step, i) => {
             const Preview = PREVIEWS[step.preview]
             return (

@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
+import { ctaSecondary, ctaTextLink } from './cta-styles'
 
 /**
  * The StayStory Method page — Section 7, The Outcome.
@@ -204,17 +203,14 @@ export function MethodOutcome() {
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link
               href={OUTCOME.ctaHref}
-              className={cn(
-                buttonVariants({ variant: 'outline' }),
-                'h-11 rounded-lg border-border px-6 text-sm'
-              )}
+              className={ctaSecondary}
             >
               {OUTCOME.ctaLabel}
               <span aria-hidden className="ml-1.5">→</span>
             </Link>
             <Link
               href="/pricing"
-              className="text-sm font-medium text-primary underline underline-offset-4"
+              className={ctaTextLink}
             >
               Explore StayStory pricing
             </Link>

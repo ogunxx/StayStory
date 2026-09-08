@@ -154,7 +154,7 @@ export function AboutWhyNow({
                 <p className="mt-2 text-[0.8rem] leading-relaxed text-muted-foreground">
                   {stat.body}
                 </p>
-                <p className="mt-2 text-[0.72rem] text-muted-foreground/70">— {stat.source}</p>
+                <p className="mt-2 text-[0.72rem] text-muted-foreground">— {stat.source}</p>
               </div>
             ))}
           </div>

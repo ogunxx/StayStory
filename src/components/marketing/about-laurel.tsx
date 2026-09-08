@@ -53,7 +53,7 @@ export function AboutLaurel({
 }) {
   return (
     <section className="px-6 py-4">
-      <div className="mx-auto w-full max-w-7xl rounded-3xl bg-secondary/25 px-6 py-10 sm:px-10 lg:px-12 lg:py-14">
+      <div className="mx-auto w-full max-w-7xl rounded-3xl bg-secondary/25 px-6 py-12 sm:px-10 lg:px-12 lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.6fr] lg:items-center lg:gap-14">
           <div className="min-w-0">
             <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-primary">
@@ -103,6 +103,7 @@ export function AboutLaurel({
                   <img
                     src={img.src}
                     alt={img.alt}
+                    loading="lazy"
                     className="block h-32 w-full object-cover sm:h-44 lg:h-52"
                   />
                 </div>

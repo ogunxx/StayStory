@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ctaOnDarkPrimary, ctaOnDarkSecondary } from './cta-styles'
 
 /**
  * Section 6 — the closing call to action.
@@ -172,13 +173,13 @@ export function FinalCta({
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
               <Link
                 href={primaryHref}
-                className="inline-flex h-11 items-center justify-center rounded-lg bg-background px-6 text-sm font-medium text-foreground transition-opacity hover:opacity-90"
+                className={ctaOnDarkPrimary}
               >
                 {primaryLabel}
               </Link>
               <Link
                 href={secondaryHref}
-                className="inline-flex h-11 items-center justify-center rounded-lg border border-background/35 px-6 text-sm font-medium text-background transition-colors hover:bg-background/10"
+                className={ctaOnDarkSecondary}
               >
                 {secondaryLabel}
               </Link>
@@ -210,7 +211,7 @@ export function FinalCta({
           <div className="flex flex-col items-start gap-5 lg:items-center">
             <Link
               href={primaryHref}
-              className="inline-flex h-12 items-center justify-center rounded-full bg-background px-8 text-base font-medium text-foreground transition-opacity hover:opacity-90"
+              className={`${ctaOnDarkPrimary} h-12 px-8 text-base`}
             >
               {primaryLabel}
               <span aria-hidden className="ml-2">→</span>

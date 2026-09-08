@@ -83,7 +83,7 @@ export function MethodProof() {
           <p className="mt-4 max-w-sm text-[0.9rem] leading-relaxed text-muted-foreground">
             {METHOD_PROOF.supporting}
           </p>
-          <p className="mt-5 max-w-sm text-[0.78rem] leading-relaxed text-muted-foreground/80">
+          <p className="mt-5 max-w-sm text-[0.78rem] leading-relaxed text-muted-foreground">
             {METHOD_PROOF.attribution}
           </p>
         </div>
@@ -109,7 +109,7 @@ export function MethodProof() {
                 <p className="text-[0.72rem] leading-snug text-muted-foreground">
                   — {q.author}
                   <br />
-                  <span className="text-muted-foreground/75">{q.source}</span>
+                  <span className="text-muted-foreground">{q.source}</span>
                 </p>
                 <Heart />
               </div>

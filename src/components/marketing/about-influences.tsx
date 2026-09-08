@@ -110,7 +110,7 @@ export function AboutInfluences({
           ))}
         </div>
 
-        <p className="mt-8 text-[0.78rem] leading-relaxed text-muted-foreground/80">{note}</p>
+        <p className="mt-8 text-[0.78rem] leading-relaxed text-muted-foreground">{note}</p>
       </div>
     </section>
   )

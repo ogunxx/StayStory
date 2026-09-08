@@ -96,7 +96,7 @@ function Mark() {
 }
 
 const LINK_CLASS =
-  'rounded-sm text-[0.85rem] text-background/65 transition-colors hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-background/60'
+  'inline-flex min-h-11 items-center rounded-sm text-[0.85rem] text-background/65 transition-colors hover:text-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-background/60'
 
 function ColumnLink({ link }: { link: FooterLink }) {
   if (link.external) {
@@ -189,10 +189,8 @@ export function SiteFooter() {
                 </summary>
                 <ul className="flex flex-col gap-1 pb-4">
                   {column.links.map((link) => (
-                    <li key={link.label} className="flex">
-                      <span className="flex min-h-11 items-center">
-                        <ColumnLink link={link} />
-                      </span>
+                    <li key={link.label} className="flex min-h-11 items-center">
+                      <ColumnLink link={link} />
                     </li>
                   ))}
                 </ul>

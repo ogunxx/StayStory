@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
 import { ProductPreview } from './product-preview'
+import { ctaHeroPrimary, ctaHeroSecondary } from './cta-styles'
 
 const REASSURANCE = ['No credit card', 'Setup in minutes', 'Cancel anytime']
 
@@ -53,17 +52,14 @@ export function Hero() {
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/signup"
-              className={cn(buttonVariants({ size: 'lg' }), 'h-12 rounded-xl px-7 text-base')}
+              className={ctaHeroPrimary}
             >
               Start Free
               <span aria-hidden className="ml-1">→</span>
             </Link>
             <a
               href="/platform"
-              className={cn(
-                buttonVariants({ variant: 'outline', size: 'lg' }),
-                'h-12 rounded-xl border-border px-7 text-base'
-              )}
+              className={ctaHeroSecondary}
             >
               See the Platform
             </a>

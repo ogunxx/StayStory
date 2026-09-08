@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
+import { ctaHeroPrimary, ctaHeroSecondary } from './cta-styles'
 
 /**
  * Platform page — Section 1, Hero.
@@ -179,7 +178,9 @@ export function PlatformHero() {
   return (
     <section className="px-6 pt-14 pb-16 lg:pt-16 lg:pb-20">
       <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[0.95fr_1.15fr] lg:gap-16">
-        <div>
+        {/* min-w-0 so the preview's min-content width can't widen the grid —
+            without it the whole hero overflowed the viewport at 360px. */}
+        <div className="min-w-0">
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-primary">
             {HERO.label}
           </p>
@@ -193,17 +194,14 @@ export function PlatformHero() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href={HERO.primaryHref}
-              className={cn(buttonVariants(), 'h-12 rounded-xl px-7 text-base')}
+              className={ctaHeroPrimary}
             >
               {HERO.primaryLabel}
               <span aria-hidden className="ml-1">→</span>
             </Link>
             <a
               href={HERO.secondaryHref}
-              className={cn(
-                buttonVariants({ variant: 'outline' }),
-                'h-12 rounded-xl border-border px-7 text-base'
-              )}
+              className={ctaHeroSecondary}
             >
               {HERO.secondaryLabel}
             </a>
@@ -219,7 +217,7 @@ export function PlatformHero() {
           </ul>
         </div>
 
-        <div>
+        <div className="min-w-0">
           {HERO.image ? (
             <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_30px_80px_-38px_rgba(60,40,25,0.5)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}

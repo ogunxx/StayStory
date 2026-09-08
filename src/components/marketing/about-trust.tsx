@@ -117,7 +117,7 @@ export function AboutTrust({
           <Seal />
         </div>
 
-        <p className="mt-8 text-[0.8rem] leading-relaxed text-muted-foreground/80">
+        <p className="mt-8 text-[0.8rem] leading-relaxed text-muted-foreground">
           The one number we can show you is our own: {rating}★ across {reviews}{' '}
           guest reviews at Laurel &amp; Lore, the property where this system was built.
         </p>

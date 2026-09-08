@@ -1,3 +1,5 @@
+import { ctaTextLink } from './cta-styles'
+
 /**
  * Platform page — Section 9, Everything Stays Connected.
  *
@@ -69,10 +71,10 @@ export function PlatformConnected() {
         {/* The two natural next questions from this page: how the thinking
             works, and what it costs. */}
         <p className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium">
-          <a href="/method" className="text-primary underline underline-offset-4">
+          <a href="/method" className={ctaTextLink}>
             See how the StayStory Method works
           </a>
-          <a href="/pricing" className="text-primary underline underline-offset-4">
+          <a href="/pricing" className={ctaTextLink}>
             Explore StayStory pricing
           </a>
         </p>

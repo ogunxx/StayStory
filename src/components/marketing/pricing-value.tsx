@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ctaPrimary, ctaTextLink } from './cta-styles'
 
 /**
  * Pricing — Section 5. Why it's worth it.
@@ -93,13 +94,13 @@ export function PricingValue({
           <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link
               href={ctaHref}
-              className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+              className={ctaPrimary}
             >
               {ctaLabel}
             </Link>
             <Link
               href="/method"
-              className="text-sm font-medium text-primary underline underline-offset-4"
+              className={ctaTextLink}
             >
               See how the StayStory Method works
             </Link>
