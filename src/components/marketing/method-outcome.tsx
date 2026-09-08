@@ -201,16 +201,24 @@ export function MethodOutcome() {
             {OUTCOME.aside}
           </p>
 
-          <Link
-            href={OUTCOME.ctaHref}
-            className={cn(
-              buttonVariants({ variant: 'outline' }),
-              'mt-6 h-11 rounded-lg border-border px-6 text-sm'
-            )}
-          >
-            {OUTCOME.ctaLabel}
-            <span aria-hidden className="ml-1.5">→</span>
-          </Link>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link
+              href={OUTCOME.ctaHref}
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'h-11 rounded-lg border-border px-6 text-sm'
+              )}
+            >
+              {OUTCOME.ctaLabel}
+              <span aria-hidden className="ml-1.5">→</span>
+            </Link>
+            <Link
+              href="/pricing"
+              className="text-sm font-medium text-primary underline underline-offset-4"
+            >
+              Explore StayStory pricing
+            </Link>
+          </div>
         </div>
 
         <div>

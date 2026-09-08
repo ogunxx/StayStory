@@ -10,16 +10,32 @@ import { MethodThread } from '@/components/marketing/method-thread'
 import { MethodOutcome } from '@/components/marketing/method-outcome'
 import { MethodProof } from '@/components/marketing/method-proof'
 import { FinalCta } from '@/components/marketing/final-cta'
+import { JsonLd, webPageSchema } from '@/lib/seo'
+
+const DESCRIPTION =
+  'Great hospitality isn’t accidental. It’s designed. The StayStory Method is a repeatable way to design the guest journey and shape what guests notice, feel and remember.'
 
 export const metadata: Metadata = {
-  title: 'The StayStory Method — StayStory',
-  description:
-    'Great hospitality isn’t accidental. It’s designed. A repeatable way to shape what guests notice, feel, and remember.',
+  title: { absolute: 'The StayStory Method — Guest Experience Design' },
+  description: DESCRIPTION,
+  alternates: { canonical: '/method' },
+  openGraph: {
+    title: 'The StayStory Method — Guest Experience Design',
+    description: DESCRIPTION,
+    url: '/method',
+  },
 }
 
 export default function MethodPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <JsonLd
+        data={webPageSchema({
+          path: '/method',
+          name: 'The StayStory Method — Guest Experience Design',
+          description: DESCRIPTION,
+        })}
+      />
       <SiteNav active="/method" />
       <main className="flex-1">
         <MethodHero />

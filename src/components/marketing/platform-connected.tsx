@@ -66,6 +66,16 @@ export function PlatformConnected() {
         <p className="mx-auto mt-5 max-w-2xl text-[0.92rem] leading-relaxed text-muted-foreground">
           {CONNECTED.supporting}
         </p>
+        {/* The two natural next questions from this page: how the thinking
+            works, and what it costs. */}
+        <p className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium">
+          <a href="/method" className="text-primary underline underline-offset-4">
+            See how the StayStory Method works
+          </a>
+          <a href="/pricing" className="text-primary underline underline-offset-4">
+            Explore StayStory pricing
+          </a>
+        </p>
 
         <ul className="mt-12 grid gap-8 text-left sm:grid-cols-2 lg:mt-14 lg:grid-cols-4 lg:gap-6">
           {QUALITIES.map((q) => (

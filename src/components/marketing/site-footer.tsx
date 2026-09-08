@@ -145,10 +145,13 @@ export function SiteFooter() {
               column doesn't leave a gap where one used to be. */}
           <div className="hidden lg:flex lg:flex-wrap lg:gap-x-16 lg:gap-y-10">
             {columns.map((column) => (
-              <div key={column.title} className="min-w-[9rem]">
-                <h2 className="mb-4 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-background/45">
+              // A nav landmark with its own label, rather than an <h2> — these
+              // are navigation groups, not sections of the page's content, and
+              // as headings they sat at the same level as real page sections.
+              <nav key={column.title} aria-label={column.title} className="min-w-[9rem]">
+                <p className="mb-4 text-[0.68rem] font-medium uppercase tracking-[0.16em] text-background/45">
                   {column.title}
-                </h2>
+                </p>
                 <ul className="flex flex-col gap-2.5">
                   {column.links.map((link) => (
                     <li key={link.label}>
@@ -156,7 +159,7 @@ export function SiteFooter() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </nav>
             ))}
           </div>
 

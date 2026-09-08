@@ -159,9 +159,12 @@ function PlaybookCallout() {
         </span>
       )}
 
-      <h2 className="font-serif text-lg leading-snug font-semibold text-foreground">
+      {/* A label on the hero's preview card, not a section of the page — so
+          it keeps its look but stops sitting above the page's real headings
+          in the outline. */}
+      <p className="font-serif text-lg leading-snug font-semibold text-foreground">
         {PLAYBOOK.title}
-      </h2>
+      </p>
       <p className="mt-2 text-[0.82rem] leading-relaxed text-muted-foreground">
         {PLAYBOOK.supporting}
       </p>

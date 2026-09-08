@@ -71,9 +71,12 @@ export function AboutInfluences({
   return (
     <section className="px-6 py-16 lg:py-24">
       <div className="mx-auto w-full max-w-7xl">
-        <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-primary">
+        {/* This is the section's real heading — the three names below are its
+            subheadings. Styled as the eyebrow it looks like, tagged as the
+            heading it is. */}
+        <h2 className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-primary">
           {eyebrow}
-        </p>
+        </h2>
         <p className="max-w-2xl text-[0.95rem] leading-relaxed text-muted-foreground">{intro}</p>
 
         <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-0">

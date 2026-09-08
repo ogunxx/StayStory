@@ -1,4 +1,6 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+import { JsonLd, webPageSchema } from '@/lib/seo'
 import { SiteNav } from '@/components/marketing/site-nav'
 import { SiteFooter } from '@/components/marketing/site-footer'
 import { Hero } from '@/components/marketing/hero'
@@ -16,6 +18,22 @@ import { AIRBNB_URL } from '@/components/marketing/laurel-images'
  * and imagery are edited there rather than here. This file only decides which
  * sections appear and in what order.
  */
+
+const DESCRIPTION =
+  'StayStory helps hosts design the guest journey on purpose — uncover what makes your place meaningful, shape every moment, and deliver stays guests remember.'
+
+export const metadata: Metadata = {
+  // Absolute, so the root layout's "— StayStory" template doesn't double the
+  // brand name on the page that already carries it.
+  title: { absolute: 'StayStory — Guest Experience Design for Hospitality' },
+  description: DESCRIPTION,
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'StayStory — Guest Experience Design for Hospitality',
+    description: DESCRIPTION,
+    url: '/',
+  },
+}
 
 /** The live guest figures, shared by the proof section and the closing CTA. */
 async function getAirbnbStats() {
@@ -40,6 +58,13 @@ export default async function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
+      <JsonLd
+        data={webPageSchema({
+          path: '/',
+          name: 'StayStory — Guest Experience Design for Hospitality',
+          description: DESCRIPTION,
+        })}
+      />
 
       <SiteNav />
 

@@ -157,6 +157,16 @@ export function Benefits() {
               StayStory helps you uncover friction, shape meaningful moments, and turn ideas
               into repeatable guest experiences.
             </p>
+            {/* One descriptive link out to the thinking behind the product. */}
+            <a
+              href="/method"
+              className="group mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary underline underline-offset-4"
+            >
+              See how the StayStory Method works
+              <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
+            </a>
           </div>
           <div className="hidden shrink-0 pt-6 lg:block">
             <Sparkle />
