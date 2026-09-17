@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { href: '/properties', label: 'Properties' },
   { href: '/compass', label: 'Experience Compass' },
   { href: '/audit', label: 'Experience Audit' },
-  { href: '/generator', label: 'Experience Generator' },
+  { href: '/generator', label: 'Generator' },
   { href: '/journey', label: 'Experience Blueprint' },
   { href: '/story', label: 'Story Builder' },
   { href: '/legend', label: 'Guest Journey Playbook' },
