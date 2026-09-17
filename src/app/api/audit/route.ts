@@ -3,21 +3,42 @@ import { anthropic } from '@/lib/anthropic'
 import { resolveActivePropertyId } from '@/lib/active-property'
 import { buildCompassContext, getOrCreateCompass, proposeCompassContribution } from '@/lib/compass'
 import { COMPASS_FIELDS } from '@/lib/compass-fields'
+import {
+  AUDIT_STEPS,
+  allQuestions,
+  labelFor,
+  scoreFromAnswers,
+  visibleQuestions,
+  type AuditAnswers,
+} from '@/lib/audit-questions'
 import { NextResponse } from 'next/server'
-import type { AuditResponses, CompassField } from '@/types'
+import type { CompassField } from '@/types'
 
 const VALID_COMPASS_FIELDS = new Set<string>(COMPASS_FIELDS.map((f) => f.field))
 
-const RATING_LABELS: Record<string, string> = {
-  arrival_rating: 'Arrival experience (first 10 minutes)',
-  lighting_rating: 'Lighting — warm, layered, intentional?',
-  temperature_rating: 'Temperature control',
-  sleep_rating: 'Sleep quality',
-  bathroom_rating: 'Bathroom experience',
-  kitchen_rating: 'Kitchen / kitchenette usability',
-  layout_rating: 'Layout & flow',
-  sound_smell_rating: 'Sound & smell',
-  instructions_rating: 'Instructions & clarity',
+/**
+ * Turn the saved answers into readable lines for the Compass comparison, using
+ * the question prompts and option labels from audit-questions.ts. Only visible
+ * questions are included, so a skipped branch never reaches the model.
+ */
+function summariseAnswers(answers: AuditAnswers): string {
+  const lines: string[] = []
+  for (const step of AUDIT_STEPS) {
+    const rows = visibleQuestions(step, answers)
+      .map((q) => {
+        const value = answers[q.id]
+        if (Array.isArray(value)) {
+          if (value.length === 0) return null
+          return `- ${q.prompt} ${value.map((v) => labelFor(q.id, v)).join(', ')}`
+        }
+        if (typeof value !== 'string' || !value.trim()) return null
+        const label = q.options ? labelFor(q.id, value) : value.trim()
+        return `- ${q.prompt} ${label}`
+      })
+      .filter(Boolean)
+    if (rows.length) lines.push(`${step.title}\n${rows.join('\n')}`)
+  }
+  return lines.join('\n\n')
 }
 
 interface CompassObservation {
@@ -27,25 +48,14 @@ interface CompassObservation {
 }
 
 async function compareAuditToCompass(
-  responses: AuditResponses,
+  answers: AuditAnswers,
   compassText: string
 ): Promise<CompassObservation[]> {
-  const ratingLines = Object.entries(RATING_LABELS)
-    .map(([key, label]) => {
-      const value = responses[key as keyof AuditResponses]
-      return typeof value === 'number' ? `${label}: ${value}/5` : null
-    })
-    .filter(Boolean)
-    .join('\n')
-
   const prompt = `${compassText}
 
 This host just completed their Experience Audit. Here's what they reported:
 
-${ratingLines}
-${responses.transformation_arrive || responses.transformation_leave ? `\nThe host says guests arrive feeling "${responses.transformation_arrive || 'unspecified'}" and leave feeling "${responses.transformation_leave || 'unspecified'}".` : ''}
-${responses.pain_points ? `\nBiggest friction point: ${responses.pain_points}` : ''}
-${responses.one_thing ? `\nWhat they do better than anywhere else: ${responses.one_thing}` : ''}
+${summariseAnswers(answers)}
 
 Gently compare this against their Compass above. Where does the current reality clearly support, or clearly fall short of, what they said they want guests to feel? Only note it if there's a real, specific connection — do not manufacture a contradiction that isn't there.
 
@@ -88,53 +98,58 @@ export async function POST(request: Request) {
 
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { score, responses }: { score: number; responses: AuditResponses } = await request.json()
+  const { answers }: { answers: AuditAnswers } = await request.json()
+
+  if (typeof answers !== 'object' || answers === null || Array.isArray(answers)) {
+    return NextResponse.json({ error: 'answers must be an object' }, { status: 400 })
+  }
 
   const property_id = await resolveActivePropertyId(user.id)
 
+  // The host never sees a 1–5 scale any more, but `audits.score` still exists
+  // and other parts of the app read it, so it's derived from the descriptive
+  // answers that carry a quality rating.
+  const score = scoreFromAnswers(answers)
+
   const { data: auditRow, error } = await supabase
     .from('audits')
-    .insert({ user_id: user.id, property_id, score, responses })
+    .insert({ user_id: user.id, property_id, score, responses: answers })
     .select('id')
     .single()
 
   if (error) console.error('Audit save error:', error)
 
-  // "The one thing you do best" is already the closest existing question to
-  // Signature Memory — propose it as-is, no rewording needed.
-  if (responses.one_thing?.trim()) {
-    await proposeCompassContribution({
-      userId: user.id,
-      propertyId: property_id,
-      field: 'signature_memory',
-      suggestedValue: responses.one_thing.trim(),
-      sourceModule: 'audit',
-      rationale: 'From your Audit — the one thing your property does better than anywhere else',
-      sourceRef: auditRow?.id ? { table: 'audits', id: auditRow.id } : undefined,
-    })
-  }
+  // The Audit is finished, so the in-progress draft is no longer needed.
+  const draftQuery = supabase.from('audit_drafts').delete().eq('user_id', user.id)
+  await (property_id
+    ? draftQuery.eq('property_id', property_id)
+    : draftQuery.is('property_id', null))
 
-  // Transformation has no other producer anywhere in the app — this is the
-  // one place a host states it directly, in the Compass's own phrasing.
-  if (responses.transformation_arrive?.trim()) {
+  // ── Compass contributions ────────────────────────────────────────────────
+  // Which answers feed which Compass field is declared on the questions
+  // themselves, so adding a new contributing question is an edit in
+  // audit-questions.ts and nothing here changes.
+  for (const question of allQuestions()) {
+    if (!question.compass) continue
+    const value = answers[question.id]
+
+    const suggested = Array.isArray(value)
+      ? value.map((v) => labelFor(question.id, v)).join(', ')
+      : typeof value === 'string' && question.options
+        ? labelFor(question.id, value)
+        : typeof value === 'string'
+          ? value.trim()
+          : ''
+
+    if (!suggested) continue
+
     await proposeCompassContribution({
       userId: user.id,
       propertyId: property_id,
-      field: 'transformation_arrive',
-      suggestedValue: responses.transformation_arrive.trim(),
+      field: question.compass,
+      suggestedValue: suggested,
       sourceModule: 'audit',
-      rationale: 'From your Audit — the transformation you\'re designing for',
-      sourceRef: auditRow?.id ? { table: 'audits', id: auditRow.id } : undefined,
-    })
-  }
-  if (responses.transformation_leave?.trim()) {
-    await proposeCompassContribution({
-      userId: user.id,
-      propertyId: property_id,
-      field: 'transformation_leave',
-      suggestedValue: responses.transformation_leave.trim(),
-      sourceModule: 'audit',
-      rationale: 'From your Audit — the transformation you\'re designing for',
+      rationale: `From your Experience Audit — ${question.prompt}`,
       sourceRef: auditRow?.id ? { table: 'audits', id: auditRow.id } : undefined,
     })
   }
@@ -143,15 +158,12 @@ export async function POST(request: Request) {
   try {
     const compass = await getOrCreateCompass(user.id, property_id)
     const compassContext = buildCompassContext(compass)
-    const hasAuditContent =
-      Object.keys(RATING_LABELS).some((key) => typeof responses[key as keyof AuditResponses] === 'number') ||
-      Boolean(responses.pain_points?.trim()) ||
-      Boolean(responses.one_thing?.trim()) ||
-      Boolean(responses.transformation_arrive?.trim()) ||
-      Boolean(responses.transformation_leave?.trim())
+    const hasAuditContent = Object.values(answers).some((v) =>
+      Array.isArray(v) ? v.length > 0 : typeof v === 'string' && v.trim().length > 0
+    )
 
     if (compassContext && hasAuditContent) {
-      observations = await compareAuditToCompass(responses, compassContext.text)
+      observations = await compareAuditToCompass(answers, compassContext.text)
 
       for (const observation of observations) {
         if (
@@ -172,7 +184,7 @@ export async function POST(request: Request) {
       }
     }
   } catch (err) {
-    // Never let the Compass comparison break the Audit's core save/score flow.
+    // Never let the Compass comparison break the Audit's core save flow.
     console.error('[audit] Compass comparison failed:', err)
   }
 

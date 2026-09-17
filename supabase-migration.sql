@@ -321,3 +321,37 @@ insert into site_config (key, value) values
   ('airbnb_rating', '4.99'),
   ('airbnb_review_count', '136')
 on conflict (key) do nothing;
+
+-- ── EXPERIENCE AUDIT: IN-PROGRESS DRAFTS ────────────────────────────────────
+-- The Audit is now eight guided steps rather than one form, so a host needs to
+-- be able to leave and come back. `audits` still stores completed runs; this
+-- holds the one unfinished draft per property while it's being worked on, and
+-- is deleted when the Audit is submitted.
+--
+-- Same shape as experience_compass: one row per property, plus one per user
+-- for the "no property yet" case.
+
+create table if not exists audit_drafts (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users on delete cascade not null,
+  property_id uuid references properties on delete cascade,
+  step_index int not null default 0,
+  answers jsonb not null default '{}'::jsonb,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+create unique index if not exists audit_drafts_property_uidx
+  on audit_drafts (property_id) where property_id is not null;
+create unique index if not exists audit_drafts_user_unassigned_uidx
+  on audit_drafts (user_id) where property_id is null;
+create index if not exists audit_drafts_user_id_idx on audit_drafts (user_id);
+
+alter table audit_drafts enable row level security;
+
+do $$ begin
+  create policy "Owners manage own audit drafts"
+    on audit_drafts for all
+    using (auth.uid() = user_id)
+    with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
