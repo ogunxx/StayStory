@@ -30,3 +30,18 @@ export const PROPERTY_LIMITS: Record<string, number> = {
   legendary: 1,
   portfolio: 5,
 }
+
+// ── FOCUSED FIRST-RUN PATH ───────────────────────────────────────────────────
+// Whether a brand-new host is guided along the focused path (/start) instead
+// of landing straight in the full six-tool product.
+//
+// OFF on purpose. The path's structure exists and stages 1 and 2 work, but
+// stages 3 to 5 — the three recommendations, the starter playbook and the
+// feedback step — have not been built yet, so nobody should be routed into it.
+// Turn this on only once those exist.
+//
+// This is one constant rather than a feature-flag framework because one
+// boolean is all that's needed. Nothing about it is stored per user and
+// nothing is user-facing; flipping it back to false fully restores today's
+// behaviour with no data to unwind.
+export const FOCUSED_FIRST_RUN = false
