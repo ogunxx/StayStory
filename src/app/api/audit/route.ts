@@ -6,6 +6,7 @@ import { COMPASS_FIELDS } from '@/lib/compass-fields'
 import {
   AUDIT_STEPS,
   allQuestions,
+  compassValueFor,
   labelFor,
   scoreFromAnswers,
   visibleQuestions,
@@ -133,14 +134,7 @@ export async function POST(request: Request) {
     if (!question.compass) continue
     const value = answers[question.id]
 
-    const suggested = Array.isArray(value)
-      ? value.map((v) => labelFor(question.id, v)).join(', ')
-      : typeof value === 'string' && question.options
-        ? labelFor(question.id, value)
-        : typeof value === 'string'
-          ? value.trim()
-          : ''
-
+    const suggested = compassValueFor(question, value)
     if (!suggested) continue
 
     await proposeCompassContribution({

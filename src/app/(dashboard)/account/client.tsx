@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { SuggestionContent } from '@/types'
+import { auditHeadline, auditSummary } from '@/lib/audit-questions'
 
 const TIER_LABELS: Record<string, string> = {
   free: 'Free',
@@ -55,10 +56,8 @@ interface AuditRecord {
   id: string
   created_at: string
   score: number
-  responses?: {
-    pain_points?: string | null
-    one_thing?: string | null
-  } | null
+  /** Free-form jsonb: the old Audit's fields or the current eight-step shape. */
+  responses?: Record<string, unknown> | null
 }
 
 interface JourneySession {
@@ -238,9 +237,9 @@ export default function AccountClient({ email, profile, suggestions, stories, au
                         <span className="text-sm text-foreground">
                           Score: <strong>{a.score}/100</strong>
                         </span>
-                        {a.responses?.pain_points && (
+                        {auditHeadline(a.responses as Record<string, unknown> | null) && (
                           <span className="text-xs text-muted-foreground truncate hidden sm:block">
-                            {a.responses.pain_points.slice(0, 60)}
+                            {auditHeadline(a.responses as Record<string, unknown> | null)!.slice(0, 60)}
                           </span>
                         )}
                       </div>
@@ -258,18 +257,14 @@ export default function AccountClient({ email, profile, suggestions, stories, au
                             <p className="text-xs text-muted-foreground">out of 100</p>
                           </div>
                         </div>
-                        {a.responses?.pain_points && (
-                          <div className="bg-secondary rounded-lg p-3">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Biggest friction point</p>
-                            <p className="text-sm text-foreground">{a.responses.pain_points}</p>
+                        {/* Same helper as the History page, so an audit from
+                            either Audit version reads back correctly. */}
+                        {auditSummary(a.responses as Record<string, unknown> | null).map((row) => (
+                          <div key={row.label} className="bg-secondary rounded-lg p-3">
+                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">{row.label}</p>
+                            <p className="text-sm text-foreground">{row.value}</p>
                           </div>
-                        )}
-                        {a.responses?.one_thing && (
-                          <div className="bg-primary/10 rounded-lg p-3">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Your one thing</p>
-                            <p className="text-sm text-foreground italic">"{a.responses.one_thing}"</p>
-                          </div>
-                        )}
+                        ))}
                         <Link href="/audit" className="text-xs text-primary hover:underline underline-offset-2 w-fit">
                           Run another audit →
                         </Link>

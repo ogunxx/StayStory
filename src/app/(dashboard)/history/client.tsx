@@ -1,10 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import type {
-  AuditResponses,
-  SuggestionContent,
-} from '@/types'
+import type { AuditResponses, SuggestionContent } from '@/types'
+import { auditSummary } from '@/lib/audit-questions'
 
 type AuditRow = {
   id: string
@@ -195,10 +193,11 @@ export default function HistoryClient({
                 subtitle={formatDate(a.created_at)}
                 propertyId={a.property_id}
               >
-                <Field label="Guests arrive feeling" value={a.responses?.transformation_arrive} />
-                <Field label="Guests leave feeling" value={a.responses?.transformation_leave} />
-                <Field label="Pain points" value={a.responses?.pain_points} />
-                <Field label="One thing to change" value={a.responses?.one_thing} />
+                {/* Reads both the old Audit's fields and the current eight-step
+                    shape, so historical records keep rendering. */}
+                {auditSummary(a.responses as Record<string, unknown> | null).map((row) => (
+                  <Field key={row.label} label={row.label} value={row.value} />
+                ))}
               </Card>
             ))
           ))}

@@ -25,6 +25,12 @@ export type AuditOption = {
   label: string
   /** 0 = needs work … 3 = intentionally designed. Omitted where not a quality judgement. */
   quality?: 0 | 1 | 2 | 3
+  /**
+   * Never send this option to the Compass. "Something else" and "Not really
+   * yet" are valid answers but meaningless as a Hospitality Promise or a
+   * Story, and a Compass field is the host's own words about their property.
+   */
+  compassExclude?: true
 }
 
 export type AuditQuestion = {
@@ -82,7 +88,7 @@ const FEELINGS: AuditOption[] = [
   { value: 'luxurious', label: 'Luxurious' },
   { value: 'adventurous', label: 'Adventurous' },
   { value: 'romantic', label: 'Romantic' },
-  { value: 'something_else', label: 'Something else' },
+  { value: 'something_else', label: 'Something else', compassExclude: true },
 ]
 
 const UNSURE: AuditOption = { value: 'unsure', label: 'I’m not sure' }
@@ -782,7 +788,7 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'landscape', label: 'The landscape' },
           { value: 'nature', label: 'Nature' },
           { value: 'why_exists', label: 'Why this property exists' },
-          { value: 'not_yet', label: 'Not really yet' },
+          { value: 'not_yet', label: 'Not really yet', compassExclude: true },
         ],
         compass: 'story',
       },
@@ -880,7 +886,7 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'overstimulated', label: 'Overstimulated' },
           { value: 'ready_explore', label: 'Ready to explore' },
           { value: 'ready_rest', label: 'Ready to rest' },
-          { value: 'something_else', label: 'Something else' },
+          { value: 'something_else', label: 'Something else', compassExclude: true },
         ],
         compass: 'transformation_arrive',
       },
@@ -901,7 +907,7 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'delighted', label: 'Delighted' },
           { value: 'curious', label: 'Curious' },
           { value: 'reconnected', label: 'Reconnected' },
-          { value: 'something_else', label: 'Something else' },
+          { value: 'something_else', label: 'Something else', compassExclude: true },
         ],
         compass: 'transformation_leave',
       },
@@ -1019,4 +1025,99 @@ export function labelFor(questionId: string, value: string): string {
 /** Every question, flattened — used by the API route when mapping answers. */
 export function allQuestions(): AuditQuestion[] {
   return AUDIT_STEPS.flatMap((s) => s.questions)
+}
+
+/* ── Reading back a saved audit ───────────────────────────────────────────── */
+
+/**
+ * Field names used by the Audit before it became eight guided steps. Records
+ * saved by the old version are still in `audits`, so anything that displays a
+ * past audit has to understand both shapes.
+ */
+const LEGACY_LABELS: Record<string, string> = {
+  transformation_arrive: 'Guests arrive feeling',
+  transformation_leave: 'Guests leave feeling',
+  pain_points: 'Biggest friction point',
+  one_thing: 'What this place does best',
+}
+
+/** The questions worth showing when looking back at a completed audit. */
+const SUMMARY_QUESTION_IDS = [
+  'desired_feelings',
+  'desired_memory',
+  'arrive_feeling',
+  'leave_feeling',
+  'biggest_friction',
+  'does_better',
+  'where_to_begin',
+]
+
+/** True when this record came from the current eight-step Audit. */
+function isCurrentShape(responses: Record<string, unknown>): boolean {
+  return SUMMARY_QUESTION_IDS.some((id) => id in responses)
+}
+
+/**
+ * A readable summary of a saved audit, whichever Audit version produced it.
+ * Used by the History and Account pages so old records keep rendering and new
+ * ones don't come back blank.
+ */
+export function auditSummary(
+  responses: Record<string, unknown> | null | undefined
+): { label: string; value: string }[] {
+  if (!responses) return []
+
+  if (!isCurrentShape(responses)) {
+    return Object.entries(LEGACY_LABELS)
+      .map(([key, label]) => ({ label, value: String(responses[key] ?? '').trim() }))
+      .filter((row) => row.value.length > 0)
+  }
+
+  const rows: { label: string; value: string }[] = []
+  for (const id of SUMMARY_QUESTION_IDS) {
+    const question = allQuestions().find((q) => q.id === id)
+    if (!question) continue
+    const raw = responses[id]
+    const value = Array.isArray(raw)
+      ? raw.map((v) => labelFor(id, String(v))).join(', ')
+      : typeof raw === 'string' && question.options
+        ? labelFor(id, raw)
+        : typeof raw === 'string'
+          ? raw.trim()
+          : ''
+    if (value) rows.push({ label: question.prompt, value })
+  }
+  return rows
+}
+
+/** One line for a compact list — the friction point, from either shape. */
+export function auditHeadline(responses: Record<string, unknown> | null | undefined): string | null {
+  if (!responses) return null
+  const value = responses['biggest_friction'] ?? responses['pain_points']
+  return typeof value === 'string' && value.trim() ? value.trim() : null
+}
+
+/**
+ * What this question should contribute to its Compass field, or an empty
+ * string when there is nothing worth proposing. Options marked
+ * `compassExclude` are dropped, and a question whose only answers were
+ * excluded proposes nothing at all.
+ */
+export function compassValueFor(
+  question: AuditQuestion,
+  value: string | string[] | undefined
+): string {
+  const excluded = new Set(
+    (question.options ?? []).filter((o) => o.compassExclude).map((o) => o.value)
+  )
+
+  if (Array.isArray(value)) {
+    return value
+      .filter((v) => !excluded.has(v))
+      .map((v) => labelFor(question.id, v))
+      .join(', ')
+  }
+  if (typeof value !== 'string' || !value.trim()) return ''
+  if (excluded.has(value)) return ''
+  return question.options ? labelFor(question.id, value) : value.trim()
 }
