@@ -115,3 +115,81 @@ Return a JSON object:
   const text = response.content[0].type === 'text' ? response.content[0].text : ''
   return JSON.parse(text)
 }
+
+/* ── Focused path: three contextual recommendations ───────────────────────── */
+
+export type FocusedRecommendation = {
+  /** A short, specific name for the idea. */
+  title: string
+  /** What the host could actually do, concretely, at this property. */
+  recommendation: string
+  /** Which of their own answers led here, in hospitality language. */
+  why_it_fits: string
+  /** The intended effect on the guest, stated as a possibility. */
+  what_this_could_change: string
+}
+
+/**
+ * Three recommendations for a property, drawn from the host's confirmed
+ * Compass and their completed Audit.
+ *
+ * This sits alongside generateHospitalityMoment rather than replacing or
+ * wrapping it: that function designs one moment for one named guest, with
+ * gestures at price tiers, and its inputs are a guest profile. Feeding it a
+ * fabricated guest to get property-level advice would produce exactly the
+ * generic output this is meant to avoid. Same module, same client, same
+ * model, same JSON handling, same philosophy — different question.
+ */
+export async function generateFocusedRecommendations(
+  contextText: string
+): Promise<FocusedRecommendation[]> {
+  const prompt = `You are a hospitality experience designer working in the tradition of Will Guidara (Unreasonable Hospitality), Isaac French (experiential hospitality) and Jay Acunzo (storytelling).
+
+A host has completed an Experience Audit of their property and confirmed their Experience Compass. Everything below is in their own words.
+
+${contextText}
+
+Give this host exactly THREE recommendations.
+
+The strongest recommendations come from the tension between where the experience IS today (the Audit) and where the host wants it to GO (the Compass). Look for that tension first.
+
+Aim for three meaningfully different ideas. Where the context supports it, a useful spread is: one that removes friction or effort, one that strengthens a meaningful or emotional moment, and one that makes the place more distinctly itself. Do not force that split if this property's context points somewhere better — context wins over formula.
+
+Hard rules:
+- Be specific to THIS property. If a recommendation could be given unchanged to almost any vacation rental, it is not good enough — start again.
+- Do not suggest a handwritten note, a welcome basket, a list of local recommendations, champagne, string lights or robes unless this host's specific context genuinely calls for it.
+- Assume no renovation, no staff, no large budget, no food service and no amenity that was not mentioned. The goal is not to do more; it is to make what they already do matter more.
+- Never state a fact about the property that the host did not tell you. If you don't know, design around what you do know.
+- Never promise results. Write "this could", "this gives you the chance to", "this may".
+
+Return JSON only:
+
+{
+  "recommendations": [
+    {
+      "title": "A short, concrete name for the idea — 3 to 7 words",
+      "recommendation": "2-4 sentences. What they could actually do, specific enough to picture at this property. Not 'create a welcoming arrival' but what that means here.",
+      "why_it_fits": "1-2 sentences naming what in their Audit and their Compass led you here. Refer to what they told you in human language — never mention fields, data or a model. Something like: 'Your Audit suggests arriving after dark may take extra effort, while your Compass keeps returning to ease and feeling cared for.'",
+      "what_this_could_change": "1-2 sentences on the intended effect for the guest. Possibility, never promise."
+    }
+  ]
+}
+
+Exactly three. No preamble, no markdown.`
+
+  const response = await anthropic.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 2000,
+    system:
+      'You are a hospitality mentor. Warm, specific, never generic, never salesy. Always respond with valid JSON only, no markdown.',
+    messages: [{ role: 'user', content: prompt }],
+  })
+
+  const text = response.content[0].type === 'text' ? response.content[0].text : ''
+  const parsed = JSON.parse(extractJSON(text)) as { recommendations?: FocusedRecommendation[] }
+
+  const recommendations = Array.isArray(parsed.recommendations) ? parsed.recommendations : []
+  // Exactly three is the product decision, so trim a long answer rather than
+  // surfacing four. A short answer is surfaced as-is and handled upstream.
+  return recommendations.slice(0, 3)
+}

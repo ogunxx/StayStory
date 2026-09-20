@@ -281,7 +281,14 @@ export default function AccountClient({ email, profile, suggestions, stories, au
             {suggestions.length === 0 ? <EmptyState href="/generator" /> : (
               <ul className="flex flex-col">
                 {suggestions.map((s) => {
-                  const preview = s.content?.touchpoint_focus
+                  // A focused-path row stores three recommendations rather
+                  // than one guest moment, so it gets its own preview line.
+                  const focused = s.content?.kind === 'focused_recommendations'
+                    ? (s.content as unknown as { recommendations?: { title: string }[] }).recommendations
+                    : null
+                  const preview = focused?.length
+                    ? `${focused.length} recommendations · ${focused.map((r) => r.title).join(' · ')}`
+                    : s.content?.touchpoint_focus
                     ?? s.content?.gestures?.zero
                     ?? 'Hospitality moment'
                   return (

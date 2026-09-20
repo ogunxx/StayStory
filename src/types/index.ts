@@ -98,6 +98,12 @@ export interface Suggestion {
 }
 
 export interface SuggestionContent {
+  /**
+   * Present only on rows written by the focused path, which store three
+   * recommendations in this same jsonb column instead of one guest moment.
+   * Absent on every Generator row, so `content.kind` is what tells them apart.
+   */
+  kind?: 'focused_recommendations'
   principle: string
   why_it_matters: string
   gestures: {

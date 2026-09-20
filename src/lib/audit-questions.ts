@@ -1121,3 +1121,114 @@ export function compassValueFor(
   if (excluded.has(value)) return ''
   return question.options ? labelFor(question.id, value) : value.trim()
 }
+
+/* ── Turning a completed audit into experience-design signals ─────────────── */
+
+export type AuditSignals = {
+  /** Things the host judged well-designed already. */
+  strengths: string[]
+  /** Where the experience is working against the host. */
+  friction: string[]
+  /** How they want guests to feel, in their own chosen words. */
+  desiredFeeling: string[]
+  /** What is specific to this property and no other. */
+  distinctive: string[]
+  /** Named gaps the host already sees. */
+  opportunities: string[]
+}
+
+/** Free-text questions whose answers describe what makes this place itself. */
+const DISTINCTIVE_IDS = [
+  'focal_feature',
+  'natural_feature',
+  'bathroom_specific',
+  'food_moment',
+  'best_day',
+  'desired_memory',
+  'does_better',
+]
+
+/** Free-text questions that name a gap rather than a strength. */
+const OPPORTUNITY_IDS = ['biggest_friction', 'friction_where', 'undersold_what', 'first_sight']
+
+/**
+ * Read a completed audit and pull out only what is useful for designing the
+ * experience — never the whole questionnaire.
+ *
+ * Quality-scored answers sort themselves: 0 or 1 is friction, 3 is a strength.
+ * Free-text answers are grouped by what the question was asking. Nothing is
+ * inferred; every line here is something the host actually said.
+ */
+export function auditSignals(
+  responses: Record<string, unknown> | null | undefined
+): AuditSignals {
+  const empty: AuditSignals = {
+    strengths: [], friction: [], desiredFeeling: [], distinctive: [], opportunities: [],
+  }
+  if (!responses) return empty
+
+  const answers = responses as AuditAnswers
+  const out: AuditSignals = { ...empty, strengths: [], friction: [], desiredFeeling: [], distinctive: [], opportunities: [] }
+
+  for (const question of allQuestions()) {
+    // Skip questions the host never saw — a hidden branch is not a finding.
+    if (!isVisible(question, answers)) continue
+    const raw = responses[question.id]
+
+    if (question.id === 'desired_feelings' || question.id === 'leave_feeling') {
+      if (Array.isArray(raw)) {
+        out.desiredFeeling.push(
+          ...raw.map((v) => labelFor(question.id, String(v))).filter((v) => v !== 'Something else')
+        )
+      }
+      continue
+    }
+
+    if (typeof raw === 'string' && raw.trim()) {
+      const option = question.options?.find((o) => o.value === raw)
+      if (option?.quality !== undefined) {
+        const line = `${question.prompt} — ${option.label}`
+        if (option.quality <= 1) out.friction.push(line)
+        else if (option.quality === 3) out.strengths.push(line)
+        continue
+      }
+      // Free text.
+      if (DISTINCTIVE_IDS.includes(question.id)) out.distinctive.push(`${question.prompt} ${raw.trim()}`)
+      else if (OPPORTUNITY_IDS.includes(question.id)) out.opportunities.push(`${question.prompt} ${raw.trim()}`)
+      continue
+    }
+
+    if (Array.isArray(raw) && raw.length) {
+      if (question.id === 'negative_surprise' && !raw.includes('none')) {
+        out.opportunities.push(
+          `Guests may find the stay ${raw.map((v) => labelFor(question.id, String(v))).join(', ').toLowerCase()}`
+        )
+      }
+      if (question.id === 'tells_about_place' && !raw.includes('not_yet')) {
+        out.distinctive.push(
+          `The stay already reflects: ${raw.map((v) => labelFor(question.id, String(v))).join(', ')}`
+        )
+      }
+    }
+  }
+
+  // Keep the context tight — the strongest few of each, not everything.
+  // Feelings are deduped: two questions feed them (how you want guests to
+  // feel, and how you want them to leave feeling), and they overlap by design.
+  const cap = (xs: string[], n: number) => xs.slice(0, n)
+  return {
+    strengths: cap(out.strengths, 6),
+    friction: cap(out.friction, 8),
+    desiredFeeling: cap([...new Set(out.desiredFeeling)], 6),
+    distinctive: cap(out.distinctive, 6),
+    opportunities: cap(out.opportunities, 5),
+  }
+}
+
+/** How much the audit actually gave us — used to decide if generation is worthwhile. */
+export function auditSignalCount(signals: AuditSignals): number {
+  return (
+    signals.strengths.length + signals.friction.length + signals.desiredFeeling.length +
+    signals.distinctive.length + signals.opportunities.length
+  )
+}

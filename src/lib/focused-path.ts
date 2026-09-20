@@ -11,11 +11,11 @@ import { getJourneyState } from '@/lib/journey-state'
  *
  *   1  Tell us about the stay        → the existing Experience Audit
  *   2  See what we're learning       → the existing Experience Compass
- *   3  Three things you could create → not built yet
+ *   3  Three things you could create → the Generator, fed Audit + Compass
  *   4  Your starter playbook         → not built yet
  *   5  Tell us what was useful       → not built yet
  *
- * Stages 3 to 5 are declared here but marked unavailable. Declaring them is
+ * Stages 4 and 5 are declared here but marked unavailable. Declaring them is
  * the point: the shape of the path is settled, and each one becomes reachable
  * by building it and flipping `available`. Nothing here duplicates the Audit,
  * the Compass, the Generator or the Playbook — stages 1 and 2 link straight
@@ -109,9 +109,9 @@ export function buildFocusedStages(p: FocusedProgress): {
       title: 'Discover three things you could create',
       summary:
         'Three specific ideas drawn from your own property and the experience you said you want guests to have.',
-      status: 'upcoming',
-      href: null,
-      available: false,
+      status: !auditDone || !compassConfirmed ? 'upcoming' : 'active',
+      href: '/start/recommendations',
+      available: true,
     },
     {
       id: 'starter_playbook',
