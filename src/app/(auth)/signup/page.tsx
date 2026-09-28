@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { isDisposableEmail } from '@/lib/disposable-domains'
@@ -20,6 +20,7 @@ function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
+  const router = useRouter()
   const supabase = createClient()
 
   async function handleSignup(e: React.FormEvent) {
@@ -49,7 +50,7 @@ function SignupForm() {
       ? `${window.location.origin}/api/auth/callback?plan=legendary`
       : `${window.location.origin}/api/auth/callback`
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -65,6 +66,17 @@ function SignupForm() {
     }
 
     fetch('/api/auth/record-signup', { method: 'POST' }).catch(() => {})
+
+    // When the project doesn't require email confirmation, signUp hands back a
+    // live session — the account already works, so telling someone to check
+    // their inbox would leave them waiting for an email that never comes. Go
+    // where the confirmation link would have taken them instead.
+    if (data.session) {
+      router.push(isLegendary ? '/pricing' : '/dashboard')
+      router.refresh()
+      return
+    }
+
     setDone(true)
   }
 
