@@ -45,6 +45,61 @@ export async function findExistingSet(
 }
 
 /**
+ * Whether a focused set exists at all, without pulling its contents back.
+ *
+ * The Dashboard and the focused path both need this to decide what a host
+ * should do next, and both get it from here so the `kind` predicate that
+ * identifies these rows is written in exactly one place.
+ */
+export async function hasFocusedSet(userId: string, propertyId: string | null): Promise<boolean> {
+  const supabase = await createClient()
+  const query = supabase
+    .from('suggestions')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('content->>kind', FOCUSED_KIND)
+
+  const { count } = await (propertyId
+    ? query.eq('property_id', propertyId)
+    : query.is('property_id', null))
+
+  return (count ?? 0) > 0
+}
+
+/**
+ * How many Generator suggestions this host has created since `sinceIso`,
+ * not counting focused recommendation sets.
+ *
+ * Focused sets share the `suggestions` table but are not Generator work, so a
+ * host walking the focused path shouldn't quietly spend a monthly credit on
+ * them. Counted as "everything minus focused" rather than with a `neq` filter,
+ * because `content->>kind` is null on every Generator row and `null <> 'x'` is
+ * null in SQL — a neq would silently exclude exactly the rows we want.
+ *
+ * Both the limit check in /api/generate and the figure shown on the Dashboard
+ * come from here, so they can't drift apart.
+ */
+export async function countGeneratorUsageSince(
+  userId: string,
+  sinceIso: string
+): Promise<number> {
+  const supabase = await createClient()
+  const base = () =>
+    supabase
+      .from('suggestions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .gte('created_at', sinceIso)
+
+  const [all, focused] = await Promise.all([
+    base(),
+    base().eq('content->>kind', FOCUSED_KIND),
+  ])
+
+  return Math.max(0, (all.count ?? 0) - (focused.count ?? 0))
+}
+
+/**
  * The saved set for this property, generating one if there isn't one yet.
  *
  * Both the page and the API route call this, so "reuse before generating"
@@ -90,6 +145,7 @@ export async function getOrCreateFocusedSet(
       desired_feeling: context.signals.desiredFeeling.length,
       distinctive: context.signals.distinctive.length,
       opportunities: context.signals.opportunities.length,
+      host_notes: context.signals.hostNotes.length,
     },
     source_audit_id: context.auditId,
     recommendations,

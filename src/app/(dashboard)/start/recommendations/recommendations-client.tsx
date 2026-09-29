@@ -38,6 +38,19 @@ const NOT_READY: Record<NotReady, { title: string; body: string; href: string; c
   },
 }
 
+/**
+ * One recommendation, read in the order the thinking happened.
+ *
+ * The stored shape is unchanged — this is presentation only, so sets generated
+ * before this change display the same way with nothing regenerated. What moved
+ * is the order and the labels: the observation comes first, because a host
+ * should see what StayStory noticed before being handed an idea. Leading with
+ * the idea made the reasoning look like justification after the fact.
+ *
+ *   why_it_fits             → What we noticed
+ *   recommendation          → The opportunity
+ *   what_this_could_change  → What this could change for your guest
+ */
 function RecommendationCard({ item, index }: { item: FocusedRecommendation; index: number }) {
   return (
     <article className="rounded-2xl border border-border bg-card p-6 sm:p-7">
@@ -47,22 +60,30 @@ function RecommendationCard({ item, index }: { item: FocusedRecommendation; inde
       <h2 className="mt-2 font-serif text-xl font-semibold leading-snug text-foreground">
         {item.title}
       </h2>
-      <p className="mt-3 text-[0.95rem] leading-relaxed text-foreground">{item.recommendation}</p>
 
-      <div className="mt-5 border-t border-border pt-5">
-        <h3 className="text-xs uppercase tracking-widest text-muted-foreground">
-          Why this fits your stay
+      <div className="mt-5 border-l-2 border-primary/30 pl-4">
+        <h3 className="text-[0.7rem] font-semibold uppercase tracking-widest text-primary">
+          What we noticed
         </h3>
-        <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
+        <p className="mt-1.5 text-[0.9rem] leading-relaxed text-muted-foreground">
           {item.why_it_fits}
         </p>
       </div>
 
-      <div className="mt-4">
-        <h3 className="text-xs uppercase tracking-widest text-muted-foreground">
-          What this could change for the guest
+      <div className="mt-5">
+        <h3 className="text-[0.7rem] font-semibold uppercase tracking-widest text-muted-foreground">
+          The opportunity
         </h3>
-        <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
+        <p className="mt-1.5 text-[0.95rem] leading-relaxed text-foreground">
+          {item.recommendation}
+        </p>
+      </div>
+
+      <div className="mt-5 border-t border-border pt-4">
+        <h3 className="text-[0.7rem] font-semibold uppercase tracking-widest text-muted-foreground">
+          What this could change for your guest
+        </h3>
+        <p className="mt-1.5 text-[0.9rem] leading-relaxed text-muted-foreground">
           {item.what_this_could_change}
         </p>
       </div>
@@ -142,19 +163,32 @@ export default function RecommendationsClient({
         ))}
       </div>
 
-      <footer className="border-t border-border pt-6">
-        <p className="text-sm text-muted-foreground">
-          Next, this comes together in your Starter Playbook.
-        </p>
-        <div className="mt-4 flex flex-wrap items-center gap-4">
+      <footer className="flex flex-col gap-5">
+        {/* Stage 4 doesn't exist yet, so this says what's coming without
+            offering a button that would go nowhere. It becomes the
+            continuation CTA once the Starter Playbook is built. */}
+        <div className="rounded-2xl border border-dashed border-border p-6">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-muted-foreground">
+            Next
+          </p>
+          <p className="mt-2 font-serif text-lg font-semibold text-foreground">
+            Turn these opportunities into your Starter Playbook
+          </p>
+          <p className="mt-1.5 max-w-xl text-[0.9rem] leading-relaxed text-muted-foreground">
+            Your Starter Playbook will turn these ideas into practical moments you can actually
+            design and deliver. We’re building it now.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4 border-t border-border pt-5">
           <Link href="/start" className="text-sm font-medium text-primary underline underline-offset-4">
-            Back to your path
+            Back to your journey
           </Link>
           <Link
             href="/compass"
             className="text-sm font-medium text-primary underline underline-offset-4"
           >
-            Adjust your Compass
+            Adjust my Compass
           </Link>
         </div>
       </footer>

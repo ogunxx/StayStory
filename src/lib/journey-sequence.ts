@@ -4,7 +4,14 @@
 // compass-fields.ts. It keeps this importable from a client component later,
 // and it makes decideNextStep testable without a database.
 
-export type StepId = 'audit' | 'compass' | 'blueprint' | 'generator' | 'story' | 'playbook'
+export type StepId =
+  | 'audit'
+  | 'compass'
+  | 'recommendations'
+  | 'blueprint'
+  | 'generator'
+  | 'story'
+  | 'playbook'
 
 export type StepStatus =
   | 'not_started'
@@ -41,6 +48,12 @@ export type JourneyProgress = {
   suggestionCount: number
   storyCount: number
   playbookCount: number
+  /**
+   * Whether this host already has a set of focused recommendations. Only used
+   * to decide whether a host who has done nothing beyond the Audit and Compass
+   * should be pointed at those three ideas before the Blueprint.
+   */
+  focusedSetExists: boolean
 }
 
 /**
@@ -92,6 +105,28 @@ export function decideNextStep(s: JourneyProgress): NextStep {
       why: 'Your Compass is taking shape. Confirming it is what lets the Generator and your Playbook work from it — until then they are designing without your direction.',
       ctaLabel: 'Review and confirm',
       href: '/compass',
+    }
+  }
+
+  // A host who has confirmed their Compass and has gone no further than that
+  // is still at the front door. Three recommendations drawn from their own
+  // Audit is a shorter, more useful next move than mapping a whole journey —
+  // and the Blueprint is waiting for them either way.
+  //
+  // "Still at the front door" is read from the same state the focused path
+  // reads, not stored anywhere: no Blueprint, no Story, no Playbook. As soon
+  // as a host starts any of those they are working in the full product, and
+  // the full sequence below takes over untouched.
+  const stillAtFrontDoor =
+    s.blueprintTouchpoints === 0 && s.storyCount === 0 && s.playbookCount === 0
+
+  if (stillAtFrontDoor && !s.focusedSetExists) {
+    return {
+      stepId: 'recommendations',
+      title: 'See the three opportunities StayStory found',
+      why: 'Your Audit and your Compass are in place, which is everything StayStory needs to be specific. Before you design the whole journey, look at three things worth creating in your own property.',
+      ctaLabel: 'See my recommendations',
+      href: '/start/recommendations',
     }
   }
 

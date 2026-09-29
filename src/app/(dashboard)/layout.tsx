@@ -6,6 +6,7 @@ import { resolveActivePropertyId } from '@/lib/active-property'
 import { isAdminEmail } from '@/lib/admin'
 import { MobileNav } from './mobile-nav'
 import { PropertySwitcher } from './property-switcher'
+import { DashboardNav } from './dashboard-nav'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -46,17 +47,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <Link href="/dashboard" className="font-serif font-semibold text-lg text-foreground">
           StayStory
         </Link>
-        <nav className="hidden sm:flex items-center gap-6">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <DashboardNav items={navItems} />
         <div className="hidden sm:flex items-center gap-4">
           {properties.length > 1 && (
             <PropertySwitcher properties={properties} activeId={activePropertyId} />

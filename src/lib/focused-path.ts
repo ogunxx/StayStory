@@ -62,6 +62,7 @@ export type FocusedPath = {
 export type FocusedProgress = {
   auditDone: boolean
   compassConfirmed: boolean
+  recommendationsReady: boolean
   blueprintStarted: boolean
   storyStarted: boolean
   playbookBuilt: boolean
@@ -80,6 +81,8 @@ export function buildFocusedStages(p: FocusedProgress): {
 
   // A host is in their first run until they've gone beyond the first two
   // tools. Nothing is written to decide this — it's read from what exists.
+  // getJourneyState derives the same thing from the same three counts; this
+  // stays here so buildFocusedStages remains pure and testable on its own.
   const isFirstRun = !p.blueprintStarted && !p.storyStarted && !p.playbookBuilt
 
   const stages: FocusedStage[] = [
@@ -109,7 +112,11 @@ export function buildFocusedStages(p: FocusedProgress): {
       title: 'Discover three things you could create',
       summary:
         'Three specific ideas drawn from your own property and the experience you said you want guests to have.',
-      status: !auditDone || !compassConfirmed ? 'upcoming' : 'active',
+      status: !auditDone || !compassConfirmed
+        ? 'upcoming'
+        : p.recommendationsReady
+          ? 'done'
+          : 'active',
       href: '/start/recommendations',
       available: true,
     },
@@ -149,6 +156,7 @@ export async function getFocusedPath(
   const { stages, isFirstRun } = buildFocusedStages({
     auditDone: byId.audit?.status === 'completed',
     compassConfirmed: Boolean(journey.compass.confirmed_at),
+    recommendationsReady: journey.focusedSetExists,
     blueprintStarted: byId.blueprint?.status !== 'not_started',
     storyStarted: byId.story?.status !== 'not_started',
     playbookBuilt: byId.playbook?.status === 'completed',
@@ -163,16 +171,6 @@ export async function getFocusedPath(
   }
 }
 
-/**
- * The navigation a host sees while they're on the focused path: the two tools
- * the path actually uses, plus their account.
- *
- * Every other route stays exactly where it is and keeps working — this only
- * decides what the header lists. Nothing is removed, and the full navigation
- * in the dashboard layout is untouched and still the default.
- */
-export const FOCUSED_NAV_HREFS = ['/dashboard', '/audit', '/compass', '/account']
-
-export function focusedNav<T extends { href: string }>(items: T[]): T[] {
-  return items.filter((item) => FOCUSED_NAV_HREFS.includes(item.href))
-}
+// The navigation and the FOCUSED_FIRST_RUN switch live in focused-nav.ts,
+// which has no server imports and so can be used from client components.
+export { FOCUSED_NAV, isFocusedRoute, shouldGuideToFocusedPath } from '@/lib/focused-nav'

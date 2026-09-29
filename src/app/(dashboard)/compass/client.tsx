@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { COMPASS_FIELDS } from '@/lib/compass-fields'
-import { Encouragement } from '@/components/encouragement'
+import { COMPASS_FIELDS, type CompassTier } from '@/lib/compass-fields'
 import type { CompassContribution, CompassField, CompassStatus, ExperienceCompass } from '@/types'
 
 const STATUS_LABEL: Record<CompassStatus, string> = {
@@ -61,8 +61,10 @@ export default function CompassClient({ initialCompass, initialPending }: Props)
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
-          This isn&apos;t a form to fill out all at once. Answer what you know today — your Audit, Story
-          Builder, and Guest Journey answers will help fill in the rest as you use them.
+          This is what StayStory understood about the experience you&apos;re creating — in your own
+          words, drawn from your Audit. Read it, change anything that doesn&apos;t sound like you,
+          and leave the rest. <span className="text-foreground">You don&apos;t need to complete
+          every field before continuing.</span>
         </p>
         <p className="text-xs text-muted-foreground mt-2">Last updated {formatDate(compass.updated_at)}</p>
       </div>
@@ -78,32 +80,123 @@ export default function CompassClient({ initialCompass, initialPending }: Props)
         </div>
       )}
 
-      <div className="flex flex-col gap-4">
-        {COMPASS_FIELDS.filter((f) => f.field !== 'transformation_leave').map(({ field, label, prompt }) =>
-          field === 'transformation_arrive' ? (
-            <TransformationCard key="transformation" compass={compass} onSaved={applyResult} />
-          ) : (
-            <FieldCard key={field} field={field} label={label} prompt={prompt} compass={compass} onSaved={applyResult} />
-          )
-        )}
+      {/* Two groups, so nobody assumes every card is a prerequisite. The
+          split is by tier in compass-fields.ts, not hard-coded here. */}
+      <FieldGroup
+        heading="Enough to continue"
+        blurb="These come from your Audit. Together they’re a strong enough direction for StayStory to work from."
+        tier="core"
+        compass={compass}
+        onSaved={applyResult}
+      />
+
+      <FieldGroup
+        heading="Deepens over time"
+        blurb="Nothing here blocks you. These are the parts that usually become clearer after a few more stays, or when you sit down with Story Builder."
+        tier="evolving"
+        compass={compass}
+        onSaved={applyResult}
+      />
+
+      {justConfirmed ? (
+        <ConfirmedNextStep />
+      ) : (
+        <div className="flex flex-col gap-4 border-t border-border pt-6">
+          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+            <span className="font-medium text-foreground">What confirming does.</span> It tells
+            StayStory this is a strong enough direction to guide what comes next. Your Compass
+            isn’t locked — you can change any of it whenever you like, and it’s meant to keep
+            evolving as you learn from real guests.
+          </p>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button onClick={handleConfirm} disabled={confirming} className="sm:self-start">
+              {confirming ? 'Saving…' : compass.confirmed_at ? 'Re-confirm my Compass' : 'Confirm my Compass'}
+            </Button>
+            {/* A host who confirmed on an earlier visit still needs a way
+                forward from this page — otherwise the only route to their
+                recommendations is knowing the URL. */}
+            {compass.confirmed_at && (
+              <Link
+                href="/start/recommendations"
+                className="text-sm font-medium text-primary underline underline-offset-4"
+              >
+                See my recommendations →
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * The moment after a first confirmation. Previously this said something
+ * encouraging and then left the host on the page with nothing to do — the
+ * clearest failure in the user test. The encouragement stays; a way forward
+ * is now attached to it.
+ */
+function ConfirmedNextStep() {
+  return (
+    <div className="flex flex-col gap-5 rounded-2xl border border-primary/25 bg-primary/[0.06] p-6 sm:p-7">
+      <div>
+        <p className="flex items-center gap-2 text-sm font-semibold text-primary">
+          <svg viewBox="0 0 20 20" fill="none" className="size-4" aria-hidden>
+            <circle cx="10" cy="10" r="8.2" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M6.4 10.3l2.4 2.3 4.7-5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Compass confirmed
+        </p>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-foreground">
+          This is now the lens every recommendation passes through. You just gave your hospitality
+          a shape most hosts never bother to find — and you can keep changing it whenever you like.
+        </p>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <Button onClick={handleConfirm} disabled={confirming}>
-          {confirming ? 'Saving…' : compass.confirmed_at ? 'Re-confirm my Compass' : 'Confirm my Compass'}
-        </Button>
-        {compass.confirmed_at && (
-          <p className="text-xs text-muted-foreground">
-            Confirming lets the Generator and other tools reference your Compass when creating recommendations.
-          </p>
-        )}
-        {justConfirmed && (
-          <Encouragement>
-            This is now the lens every recommendation will pass through. You just gave your hospitality a shape most hosts never bother to find.
-          </Encouragement>
-        )}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <Link href="/start/recommendations" className="sm:w-auto">
+          <Button className="h-11 w-full px-6 sm:w-auto">See my recommendations →</Button>
+        </Link>
+        <span className="text-sm text-muted-foreground">
+          or keep refining your Compass above
+        </span>
       </div>
     </div>
+  )
+}
+
+function FieldGroup({
+  heading,
+  blurb,
+  tier,
+  compass,
+  onSaved,
+}: {
+  heading: string
+  blurb: string
+  tier: CompassTier
+  compass: ExperienceCompass
+  onSaved: (data: { compass: ExperienceCompass; pending: CompassContribution[] }) => void
+}) {
+  const fields = COMPASS_FIELDS.filter((f) => f.tier === tier && f.field !== 'transformation_leave')
+
+  return (
+    <section className="flex flex-col gap-4">
+      <div>
+        <h2 className="text-sm font-medium uppercase tracking-widest text-muted-foreground">
+          {heading}
+        </h2>
+        <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground">{blurb}</p>
+      </div>
+      {fields.map(({ field, label, prompt }) =>
+        field === 'transformation_arrive' ? (
+          <TransformationCard key="transformation" compass={compass} onSaved={onSaved} />
+        ) : (
+          <FieldCard key={field} field={field} label={label} prompt={prompt} compass={compass} onSaved={onSaved} />
+        )
+      )}
+    </section>
   )
 }
 

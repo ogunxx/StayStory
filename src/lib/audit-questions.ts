@@ -50,6 +50,13 @@ export type AuditQuestion = {
   showIf?: { questionId: string; anyOf: string[] }
   /** Feeds this Compass field when answered. */
   compass?: CompassField
+  /**
+   * Never counted towards a step being complete. The "tell us what you mean"
+   * follow-ups and the open question at the end are invitations, not
+   * requirements — without this a host who selects "Something else" and skips
+   * the box could never finish the step.
+   */
+  optional?: true
 }
 
 export type AuditStep = {
@@ -58,6 +65,14 @@ export type AuditStep = {
   navLabel: string
   title: string
   intro: string
+  /**
+   * Why this step is being asked, in the host's language — never which field
+   * an answer feeds. One or two sentences, shown once at the top of the step
+   * rather than repeated beside every question, so the Audit teaches without
+   * getting longer. It says what StayStory is listening for; it never hints
+   * at the answer it hopes to hear.
+   */
+  why?: string
   questions: AuditQuestion[]
   /** One teaching moment per step at most — placed where it becomes useful. */
   insight?: string
@@ -103,6 +118,7 @@ export const AUDIT_STEPS: AuditStep[] = [
     title: 'Your Vision',
     intro:
       'Let’s start with the big picture. These questions help us understand the experience you want to create for your guests.',
+    why: 'Everything else in StayStory is built on what you say here. These answers shape the direction your Experience Compass takes — the feeling you’re designing for, and what you hope guests carry home.',
     questions: [
       {
         id: 'stayed_yourself',
@@ -123,6 +139,14 @@ export const AUDIT_STEPS: AuditStep[] = [
         max: 3,
         options: FEELINGS,
         compass: 'hospitality_promise',
+      },
+      {
+        id: 'desired_feelings_other',
+        optional: true,
+        kind: 'text',
+        prompt: 'Tell us what you mean.',
+        helper: 'Optional — the feeling you’re after, in your own words.',
+        showIf: { questionId: 'desired_feelings', anyOf: ['something_else'] },
       },
       {
         id: 'best_day',
@@ -155,6 +179,14 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'something_else', label: 'Something else' },
         ],
       },
+      {
+        id: 'strongest_asset_other',
+        optional: true,
+        kind: 'text',
+        prompt: 'Tell us what you mean.',
+        helper: 'Optional.',
+        showIf: { questionId: 'strongest_asset', anyOf: ['something_else'] },
+      },
     ],
   },
 
@@ -165,6 +197,7 @@ export const AUDIT_STEPS: AuditStep[] = [
     title: 'Arrival',
     intro:
       'The stay begins before the door opens. Let’s look at the first impressions and the details that help guests feel welcome from the moment they arrive.',
+    why: 'Arrival sets the emotional tone for everything that follows. These questions help us understand where guests feel confident, where they hesitate, and what you want the beginning of the stay to communicate.',
     insight:
       'Clear directions and visible identifying details reduce stress and help guests begin their stay feeling calm and confident.',
     questions: [
@@ -282,6 +315,17 @@ export const AUDIT_STEPS: AuditStep[] = [
         ],
       },
       {
+        // Both of the answers above mean "not this" without saying what
+        // instead. What a host would rather guests noticed first is one of
+        // the most useful things they can tell us, so we ask.
+        id: 'first_sight_preferred',
+        optional: true,
+        kind: 'text',
+        prompt: 'What would you rather they noticed first?',
+        helper: 'Optional.',
+        showIf: { questionId: 'first_sight_intended', anyOf: ['partly', 'no'] },
+      },
+      {
         id: 'door_opens',
         kind: 'multi',
         prompt: 'When the door opens, what does the guest experience first?',
@@ -298,6 +342,14 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'amenity', label: 'A special amenity' },
           { value: 'something_else', label: 'Something else' },
         ],
+      },
+      {
+        id: 'door_opens_other',
+        optional: true,
+        kind: 'text',
+        prompt: 'Tell us what you mean.',
+        helper: 'Optional.',
+        showIf: { questionId: 'door_opens', anyOf: ['something_else'] },
       },
       {
         id: 'first_moment_supports',
@@ -319,6 +371,7 @@ export const AUDIT_STEPS: AuditStep[] = [
     navLabel: 'Living & Flow',
     title: 'Living & Flow',
     intro: 'Good flow quietly answers questions before guests have to ask them.',
+    why: 'This helps us spot where the experience may be asking too much effort from the guest — the small puzzles and hesitations that quietly compete with the feeling you want them to have.',
     insight:
       'When a guest has to stop and work something out, the space has asked them to do the hosting. Every answer you place in advance is one less small effort.',
     questions: [
@@ -409,6 +462,7 @@ export const AUDIT_STEPS: AuditStep[] = [
     title: 'Light & Senses',
     intro:
       'Good lighting and sensory details help set the mood, support different moments, and make a space feel truly lived in.',
+    why: 'Light, sound and scent are how a space tells guests how to feel without saying anything. These answers help us understand which moments of the day your property already supports, and which ones it leaves to chance.',
     insight:
       'Layers of light — from bright to soft — help a space shift from arrival, to conversation, to winding down.',
     questions: [
@@ -523,6 +577,7 @@ export const AUDIT_STEPS: AuditStep[] = [
     title: 'Sleep & Bath',
     intro:
       'Rest and refresh are essential to a great stay. Let’s look at the details that help guests feel comfortable, cared for, and at ease.',
+    why: 'How well someone sleeps shapes how they remember everything else. These questions help us understand how much of your guests’ comfort is designed, and how much they currently have to solve for themselves.',
     insight:
       'Rest is more than the mattress. Darkness, sound, temperature and bedside convenience all shape how well a guest settles in.',
     questions: [
@@ -648,6 +703,7 @@ export const AUDIT_STEPS: AuditStep[] = [
     title: 'Kitchen & Amenities',
     intro:
       'What guests actually do with a space matters more than what it contains. Let’s look at how this one is really used.',
+    why: 'Gathering spaces are where guests spend time together, and where the stay often becomes memorable. This helps us understand what your space invites people to do, rather than what it happens to contain.',
     questions: [
       {
         id: 'kitchen_uses',
@@ -740,6 +796,7 @@ export const AUDIT_STEPS: AuditStep[] = [
     title: 'Story & Meaning',
     intro:
       'The details that make a place feel specific and personal are often the ones guests remember most.',
+    why: 'This is where we look for what only your place has. These answers help us understand what makes the stay distinctly yours, so nothing we suggest later could have been suggested to anyone else.',
     insight:
       'Guests remember places that feel specific. Meaning usually comes from a few thoughtful details — not from adding more décor.',
     questions: [
@@ -868,6 +925,7 @@ export const AUDIT_STEPS: AuditStep[] = [
     title: 'The Guest Transformation',
     intro:
       'Finally, let’s look at the big picture — the change you hope guests experience from arrival to departure.',
+    why: 'This helps us understand what guests should remember about the stay, and the change you hope it creates in them. It’s the part of your Compass every later recommendation is measured against.',
     questions: [
       {
         id: 'arrive_feeling',
@@ -891,6 +949,14 @@ export const AUDIT_STEPS: AuditStep[] = [
         compass: 'transformation_arrive',
       },
       {
+        id: 'arrive_feeling_other',
+        optional: true,
+        kind: 'text',
+        prompt: 'Tell us what you mean.',
+        helper: 'Optional — how they arrive, in your own words.',
+        showIf: { questionId: 'arrive_feeling', anyOf: ['something_else'] },
+      },
+      {
         id: 'leave_feeling',
         kind: 'pills',
         prompt: 'How do you want guests to feel when they leave?',
@@ -910,6 +976,14 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'something_else', label: 'Something else', compassExclude: true },
         ],
         compass: 'transformation_leave',
+      },
+      {
+        id: 'leave_feeling_other',
+        optional: true,
+        kind: 'text',
+        prompt: 'Tell us what you mean.',
+        helper: 'Optional — how they leave, in your own words.',
+        showIf: { questionId: 'leave_feeling', anyOf: ['something_else'] },
       },
       {
         id: 'what_creates_change',
@@ -951,6 +1025,32 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'help_decide', label: 'I’m not sure — help me decide' },
         ],
       },
+      {
+        id: 'where_to_begin_other',
+        optional: true,
+        kind: 'text',
+        prompt: 'Tell us what you mean.',
+        helper: 'Optional.',
+        showIf: { questionId: 'where_to_begin', anyOf: ['something_else'] },
+      },
+      {
+        // No structured Audit can cover everything about a property, and
+        // adding more questions to try is the wrong answer. One open door at
+        // the end lets a host say the thing the questions didn't reach.
+        //
+        // Deliberately not mapped to a Compass field: this is free-form and
+        // could be about anything, so guessing which element it belongs to
+        // would put words in the host's mouth. It reaches the recommendations
+        // through auditSignals instead, where it needs no interpretation.
+        id: 'anything_else',
+        optional: true,
+        kind: 'textarea',
+        prompt:
+          'Is there anything about your stay we haven’t asked about that would help us understand it better?',
+        helper: 'Optional. Anything the questions above didn’t reach.',
+        placeholder:
+          'A detail guests always mention, something you’re working on, a constraint we should know about…',
+      },
     ],
   },
 ]
@@ -984,7 +1084,9 @@ export function visibleQuestions(step: AuditStep, answers: AuditAnswers): AuditQ
 
 /** How many visible questions in this step have an answer. */
 export function stepProgress(step: AuditStep, answers: AuditAnswers): { answered: number; total: number } {
-  const visible = visibleQuestions(step, answers)
+  // Optional questions are excluded from the count entirely, so skipping one
+  // never leaves a step looking unfinished.
+  const visible = visibleQuestions(step, answers).filter((q) => !q.optional)
   return {
     answered: visible.filter((q) => isAnswered(answers[q.id])).length,
     total: visible.length,
@@ -1135,6 +1237,12 @@ export type AuditSignals = {
   distinctive: string[]
   /** Named gaps the host already sees. */
   opportunities: string[]
+  /**
+   * What the host told us in their own words when the questions didn't reach
+   * it — the open question at the end of the Audit. Carried through verbatim
+   * and unlabelled, because it could be about anything.
+   */
+  hostNotes: string[]
 }
 
 /** Free-text questions whose answers describe what makes this place itself. */
@@ -1149,7 +1257,23 @@ const DISTINCTIVE_IDS = [
 ]
 
 /** Free-text questions that name a gap rather than a strength. */
-const OPPORTUNITY_IDS = ['biggest_friction', 'friction_where', 'undersold_what', 'first_sight']
+const OPPORTUNITY_IDS = [
+  'biggest_friction',
+  'friction_where',
+  'undersold_what',
+  'first_sight',
+  'where_to_begin_other',
+  'first_sight_preferred',
+]
+
+/**
+ * The "tell us what you mean" follow-ups, routed to the same group as the
+ * question they belong to. Without this a host who chose "Something else" and
+ * explained it would have had that explanation stored and then ignored — the
+ * exact problem the structured options created in the first place.
+ */
+const FEELING_OTHER_IDS = ['desired_feelings_other', 'arrive_feeling_other', 'leave_feeling_other']
+const DISTINCTIVE_OTHER_IDS = ['strongest_asset_other', 'door_opens_other']
 
 /**
  * Read a completed audit and pull out only what is useful for designing the
@@ -1163,12 +1287,14 @@ export function auditSignals(
   responses: Record<string, unknown> | null | undefined
 ): AuditSignals {
   const empty: AuditSignals = {
-    strengths: [], friction: [], desiredFeeling: [], distinctive: [], opportunities: [],
+    strengths: [], friction: [], desiredFeeling: [], distinctive: [], opportunities: [], hostNotes: [],
   }
   if (!responses) return empty
 
   const answers = responses as AuditAnswers
-  const out: AuditSignals = { ...empty, strengths: [], friction: [], desiredFeeling: [], distinctive: [], opportunities: [] }
+  const out: AuditSignals = {
+    strengths: [], friction: [], desiredFeeling: [], distinctive: [], opportunities: [], hostNotes: [],
+  }
 
   for (const question of allQuestions()) {
     // Skip questions the host never saw — a hidden branch is not a finding.
@@ -1185,6 +1311,22 @@ export function auditSignals(
     }
 
     if (typeof raw === 'string' && raw.trim()) {
+      // The open question at the end, and the "tell us what you mean"
+      // follow-ups. Handled before the option lookup because these are always
+      // free text and belong with the question that revealed them.
+      if (question.id === 'anything_else') {
+        out.hostNotes.push(raw.trim())
+        continue
+      }
+      if (FEELING_OTHER_IDS.includes(question.id)) {
+        out.desiredFeeling.push(raw.trim())
+        continue
+      }
+      if (DISTINCTIVE_OTHER_IDS.includes(question.id)) {
+        out.distinctive.push(raw.trim())
+        continue
+      }
+
       const option = question.options?.find((o) => o.value === raw)
       if (option?.quality !== undefined) {
         const line = `${question.prompt} — ${option.label}`
@@ -1222,11 +1364,15 @@ export function auditSignals(
     desiredFeeling: cap([...new Set(out.desiredFeeling)], 6),
     distinctive: cap(out.distinctive, 6),
     opportunities: cap(out.opportunities, 5),
+    hostNotes: cap(out.hostNotes, 2),
   }
 }
 
 /** How much the audit actually gave us — used to decide if generation is worthwhile. */
 export function auditSignalCount(signals: AuditSignals): number {
+  // hostNotes is deliberately not counted. It's the open question at the end,
+  // and it shouldn't be able to carry an otherwise-empty Audit past the
+  // "enough to work from" guard on its own.
   return (
     signals.strengths.length + signals.friction.length + signals.desiredFeeling.length +
     signals.distinctive.length + signals.opportunities.length

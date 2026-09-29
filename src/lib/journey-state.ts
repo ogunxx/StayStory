@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getOrCreateCompass, getPendingContributions } from '@/lib/compass'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 import { decideNextStep, type NextStep, type StepId, type StepStatus } from '@/lib/journey-sequence'
+import { hasFocusedSet } from '@/lib/focused-recommendations'
 import type { CompassField, ExperienceCompass } from '@/types'
 
 export { STATUS_LABEL } from '@/lib/journey-sequence'
@@ -48,6 +49,14 @@ export type JourneyState = {
   /** How many of the eight Compass fields have been answered. */
   compassFilled: number
   compassTotal: number
+  /** Whether the focused path's three recommendations have been generated. */
+  focusedSetExists: boolean
+  /**
+   * True until the host has opened any of the tools past the Compass. Derived
+   * from stored work, not a flag on the user, and defined here once so the
+   * Dashboard and the focused path can never disagree about it.
+   */
+  isFirstRun: boolean
 }
 
 /**
@@ -101,7 +110,7 @@ export async function getJourneyState(
     .eq('user_id', userId)
     .limit(1)
 
-  const [audits, suggestions, stories, playbooks, blueprint] = await Promise.all([
+  const [audits, suggestions, stories, playbooks, blueprint, focusedSetExists] = await Promise.all([
     countFor('audits'),
     countFor('suggestions'),
     countFor('guest_stories'),
@@ -109,6 +118,7 @@ export async function getJourneyState(
     propertyId
       ? blueprintQuery.eq('property_id', propertyId)
       : blueprintQuery.is('property_id', null),
+    hasFocusedSet(userId, propertyId),
   ])
 
   const auditCount = audits.count ?? 0
@@ -206,6 +216,7 @@ export async function getJourneyState(
     suggestionCount,
     storyCount,
     playbookCount,
+    focusedSetExists,
   })
 
   return {
@@ -216,5 +227,7 @@ export async function getJourneyState(
     highlights,
     compassFilled,
     compassTotal: ALL_COMPASS_FIELDS.length,
+    focusedSetExists,
+    isFirstRun: blueprintTouchpoints === 0 && storyCount === 0 && playbookCount === 0,
   }
 }

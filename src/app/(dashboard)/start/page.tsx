@@ -32,7 +32,7 @@ function StageRow({ stage }: { stage: FocusedStage }) {
         <span
           aria-hidden
           className={cn(
-            'flex size-8 shrink-0 items-center justify-center rounded-full border text-xs font-medium',
+            'flex size-8 shrink-0 items-center justify-center rounded-full border text-[0.7rem] font-medium tabular-nums',
             isDone
               ? 'border-primary/40 bg-primary/10 text-primary'
               : isActive
@@ -51,7 +51,7 @@ function StageRow({ stage }: { stage: FocusedStage }) {
               />
             </svg>
           ) : (
-            stage.position
+            String(stage.position).padStart(2, '0')
           )}
         </span>
 
@@ -115,12 +115,16 @@ export default async function StartPage() {
   return (
     <div className="flex flex-col gap-8">
       <div>
+        <p className="mb-3 text-xs uppercase tracking-widest text-primary">
+          Your StayStory journey
+        </p>
         <h1 className="mb-2 font-serif text-3xl font-semibold text-foreground">
           Let’s start with your stay, {firstName}.
         </h1>
         <p className="max-w-2xl leading-relaxed text-muted-foreground">
           StayStory works by understanding the experience you already have, then helping you
-          design the one you want. Here’s the path.
+          design the one you want. Five steps — you’re never more than one away from something
+          useful.
         </p>
       </div>
 
@@ -132,7 +136,7 @@ export default async function StartPage() {
         ))}
       </ol>
 
-      {path.active && (
+      {path.active ? (
         <div className="flex flex-wrap items-center gap-4">
           <Link
             href={path.active.href!}
@@ -146,6 +150,20 @@ export default async function StartPage() {
               for you
             </span>
           )}
+        </div>
+      ) : (
+        /* Everything built is done. Say so, and point back at the work rather
+           than leaving the page with no action on it. */
+        <div className="flex flex-wrap items-center gap-4">
+          <Link
+            href="/start/recommendations"
+            className={cn(buttonVariants({ size: 'sm', variant: 'outline' }), 'h-10 px-5')}
+          >
+            Revisit your three opportunities
+          </Link>
+          <span className="text-sm text-muted-foreground">
+            Your starter playbook is next — we’re building it now.
+          </span>
         </div>
       )}
 

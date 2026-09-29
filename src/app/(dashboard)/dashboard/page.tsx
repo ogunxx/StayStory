@@ -1,8 +1,11 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
 import { resolveActivePropertyId } from '@/lib/active-property'
 import { getJourneyState } from '@/lib/journey-state'
+import { shouldGuideToFocusedPath } from '@/lib/focused-path'
+import { countGeneratorUsageSince } from '@/lib/focused-recommendations'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { LEGENDARY_PRICE } from '@/lib/config'
@@ -28,18 +31,20 @@ export default async function DashboardPage() {
   const propertyId = await resolveActivePropertyId(user!.id)
   const journey = await getJourneyState(user!.id, propertyId, isLegendary)
 
-  // Monthly generator usage for free users
+  // With FOCUSED_FIRST_RUN on, a host who hasn't been past the Compass is
+  // guided along the focused path instead of landing here. Off — which is how
+  // it ships — this is never true and everyone sees the full dashboard.
+  if (shouldGuideToFocusedPath(journey.isFirstRun)) redirect('/start')
+
+  // Monthly generator usage for free users. Focused recommendation sets live
+  // in the same table but are not Generator work, so they're excluded here the
+  // same way /api/generate excludes them when enforcing the limit.
   let monthlyUsed = 0
   if (!isLegendary) {
     const startOfMonth = new Date()
     startOfMonth.setDate(1)
     startOfMonth.setHours(0, 0, 0, 0)
-    const { count } = await supabase
-      .from('suggestions')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user!.id)
-      .gte('created_at', startOfMonth.toISOString())
-    monthlyUsed = count ?? 0
+    monthlyUsed = await countGeneratorUsageSince(user!.id, startOfMonth.toISOString())
   }
 
   const remaining = Math.max(0, 1 - monthlyUsed)

@@ -45,6 +45,10 @@ export function composeFocusedContextText(input: {
     section('WHERE THE EXPERIENCE CREATES FRICTION TODAY', signals.friction),
     section('WHAT IS DISTINCTIVE ABOUT THIS PLACE', signals.distinctive),
     section('GAPS THE HOST ALREADY SEES', signals.opportunities),
+    // The open question at the end of the Audit. Last, and labelled as the
+    // host's own words, because it's unstructured and may be the most
+    // important thing they said.
+    section('IN THE HOST’S OWN WORDS, UNPROMPTED', signals.hostNotes),
   ]
     .filter(Boolean)
     .join('\n')

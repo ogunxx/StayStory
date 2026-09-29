@@ -132,6 +132,27 @@ function InsightCard({ children }: { children: React.ReactNode }) {
   )
 }
 
+/* ── Why we're asking ─────────────────────────────────────────────────────── */
+
+/**
+ * One explanation per step, not per question. It tells the host what
+ * StayStory is listening for so the Audit teaches while it collects — and it
+ * never names a Compass field, because the internal plumbing is not the
+ * host's problem.
+ */
+function WhyWeAsk({ children }: { children: React.ReactNode }) {
+  return (
+    <aside className="mt-5 border-l-2 border-primary/30 pl-4">
+      <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-primary">
+        Why we’re asking
+      </p>
+      <p className="mt-1.5 max-w-2xl text-[0.85rem] leading-relaxed text-muted-foreground">
+        {children}
+      </p>
+    </aside>
+  )
+}
+
 /* ── One question ─────────────────────────────────────────────────────────── */
 
 function QuestionField({
@@ -450,6 +471,8 @@ export default function AuditClient({ initialAnswers, initialStep }: Props) {
         <p className="mt-2 max-w-2xl text-[0.9rem] leading-relaxed text-muted-foreground">
           {step.intro}
         </p>
+
+        {step.why && <WhyWeAsk>{step.why}</WhyWeAsk>}
 
         {step.image && (
           <div className="mt-6 overflow-hidden rounded-xl bg-muted">

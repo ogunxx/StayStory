@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { resolveActivePropertyId } from '@/lib/active-property'
 import { listProperties } from '@/lib/properties'
+import { FOCUSED_KIND } from '@/lib/focused-recommendations'
 import HistoryClient from './client'
 
 export default async function HistoryPage() {
@@ -24,6 +25,9 @@ export default async function HistoryPage() {
 
   const [audits, moments, stories, blueprints, playbooks] = await Promise.all([
     fetchScoped('audits', 'id, created_at, property_id, score, responses'),
+    // Focused recommendation sets share this table but are not guest moments —
+    // they have none of a moment's fields and used to render as a blank card.
+    // They are filtered out of the view, not deleted.
     fetchScoped('suggestions', 'id, created_at, property_id, content'),
     fetchScoped(
       'guest_stories',
@@ -40,7 +44,7 @@ export default async function HistoryPage() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       audits={(audits.data as any[]) ?? []}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      moments={(moments.data as any[]) ?? []}
+      moments={((moments.data as any[]) ?? []).filter((m) => m?.content?.kind !== FOCUSED_KIND)}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       stories={(stories.data as any[]) ?? []}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
