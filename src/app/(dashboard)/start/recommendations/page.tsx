@@ -24,7 +24,7 @@ export default async function RecommendationsPage() {
   const result = await getOrCreateFocusedSet(user.id, propertyId)
 
   return result.ok ? (
-    <RecommendationsClient set={result.set} />
+    <RecommendationsClient set={result.set} stale={result.stale} />
   ) : (
     <RecommendationsClient blocked={result.reason} />
   )

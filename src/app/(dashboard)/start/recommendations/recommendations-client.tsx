@@ -93,17 +93,26 @@ function RecommendationCard({ item, index }: { item: FocusedRecommendation; inde
 
 export default function RecommendationsClient({
   set,
+  stale,
   blocked,
 }: {
   set?: FocusedSet
+  stale?: boolean
   blocked?: Blocked
 }) {
   const [retrying, setRetrying] = useState(false)
 
-  async function retry() {
+  // Used both to retry after a failure and to refresh a set whose Audit or
+  // Compass has moved on. `regenerate` is what separates the two: without it
+  // the server reuses whatever is saved, so nothing regenerates by accident.
+  async function ask(regenerate: boolean) {
     setRetrying(true)
     try {
-      await fetch('/api/start/recommendations', { method: 'POST' })
+      await fetch('/api/start/recommendations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ regenerate }),
+      })
     } finally {
       // The page reads the saved set on the server, so a reload is the
       // simplest correct way to show a set that has just been created.
@@ -135,7 +144,7 @@ export default function RecommendationsClient({
         <p className="mt-3 max-w-xl text-[0.95rem] leading-relaxed text-muted-foreground">
           Nothing was lost — your Audit and Compass are safe. Try again in a moment.
         </p>
-        <Button onClick={() => void retry()} disabled={retrying} className="mt-6 h-11 px-6">
+        <Button onClick={() => void ask(false)} disabled={retrying} className="mt-6 h-11 px-6">
           {retrying ? 'Trying again…' : 'Try again'}
         </Button>
       </div>
@@ -156,6 +165,28 @@ export default function RecommendationsClient({
           Compass, here are three ways you could make the experience more intentional.
         </p>
       </header>
+
+      {/* Shown only when the saved set was reasoned from an Audit or Compass
+          that has since changed. Nothing regenerates until the host asks — a
+          refresh of the page never spends a model call. */}
+      {stale && (
+        <div className="rounded-2xl border border-accent/40 bg-accent/[0.08] p-5 sm:p-6">
+          <p className="text-sm font-semibold text-foreground">
+            Your Audit or Compass has changed since these were created
+          </p>
+          <p className="mt-1.5 max-w-xl text-[0.9rem] leading-relaxed text-muted-foreground">
+            These three still reflect what you told us before. Refresh them whenever you&apos;d
+            like StayStory to think again with what you know now.
+          </p>
+          <Button
+            onClick={() => void ask(true)}
+            disabled={retrying}
+            className="mt-4 h-11 px-6"
+          >
+            {retrying ? 'Thinking again…' : 'Refresh my recommendations →'}
+          </Button>
+        </div>
+      )}
 
       <div className="flex flex-col gap-4">
         {set.recommendations.map((item, i) => (

@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import {
   AUDIT_STEPS,
+  otherKey,
   stepProgress,
   visibleQuestions,
   type AuditAnswers,
@@ -158,13 +159,24 @@ function WhyWeAsk({ children }: { children: React.ReactNode }) {
 function QuestionField({
   question,
   value,
+  otherText,
   onChange,
+  onOtherChange,
 }: {
   question: AuditQuestion
   value: string | string[] | undefined
+  otherText: string
   onChange: (v: string | string[]) => void
+  onOtherChange: (v: string) => void
 }) {
   const selected = Array.isArray(value) ? value : []
+
+  // The first selected option that offers an explanation box. One box per
+  // question, so two options that both mean "something else" share it and
+  // switching between them keeps what was typed.
+  const revealing = question.options?.find(
+    (o) => o.revealsText && (Array.isArray(value) ? selected.includes(o.value) : value === o.value)
+  )
 
   function toggle(optionValue: string) {
     const isOn = selected.includes(optionValue)
@@ -314,6 +326,31 @@ function QuestionField({
           />
         )}
       </div>
+
+      {/* Revealed by the selected option, never a question of its own — so it
+          can't make a step look unfinished and can't be skipped past. */}
+      {revealing && (
+        <div className="mt-4 border-l-2 border-primary/30 pl-4">
+          <label
+            htmlFor={`${question.id}-other`}
+            className="text-[0.85rem] font-medium text-foreground"
+          >
+            {revealing.revealsText!.prompt}
+          </label>
+          {revealing.revealsText!.helper && (
+            <p className="mt-0.5 text-[0.75rem] text-muted-foreground">
+              {revealing.revealsText!.helper}
+            </p>
+          )}
+          <Input
+            id={`${question.id}-other`}
+            value={otherText}
+            onChange={(e) => onOtherChange(e.target.value)}
+            className="mt-2"
+            autoComplete="off"
+          />
+        </div>
+      )}
     </fieldset>
   )
 }
@@ -475,10 +512,27 @@ export default function AuditClient({ initialAnswers, initialStep }: Props) {
         {step.why && <WhyWeAsk>{step.why}</WhyWeAsk>}
 
         {step.image && (
-          <div className="mt-6 overflow-hidden rounded-xl bg-muted">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={step.image} alt={step.imageAlt ?? ''} className="block h-48 w-full object-cover sm:h-60" />
-          </div>
+          <figure className="mt-6">
+            <div className="overflow-hidden rounded-xl bg-muted">
+              {/* Fixed heights rather than an intrinsic ratio, so every step's
+                  image occupies the same band and the Audit keeps one rhythm
+                  whatever each photograph's proportions are.
+                  eslint-disable-next-line @next/next/no-img-element */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={step.image}
+                alt={step.imageAlt ?? ''}
+                loading="lazy"
+                className="block h-40 w-full object-cover sm:h-52"
+              />
+            </div>
+            {/* Never let a photograph of a real place pass as the host's own. */}
+            {step.imageCaption && (
+              <figcaption className="mt-2 text-[0.7rem] leading-relaxed text-muted-foreground">
+                {step.imageCaption}
+              </figcaption>
+            )}
+          </figure>
         )}
 
         {/* Dividers rather than gaps alone: some steps carry a dozen
@@ -490,7 +544,13 @@ export default function AuditClient({ initialAnswers, initialStep }: Props) {
             <QuestionField
               question={question}
               value={answers[question.id]}
+              otherText={
+                typeof answers[otherKey(question.id)] === 'string'
+                  ? (answers[otherKey(question.id)] as string)
+                  : ''
+              }
               onChange={(v) => setAnswer(question.id, v)}
+              onOtherChange={(v) => setAnswer(otherKey(question.id), v)}
             />
             </div>
           ))}

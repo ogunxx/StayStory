@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { generateFocusedRecommendations, type FocusedRecommendation } from '@/lib/anthropic'
-import { buildFocusedContext } from '@/lib/focused-context'
+import { buildFocusedContext, type FocusedContext } from '@/lib/focused-context'
 
 /**
  * Where the focused path's recommendations live.
@@ -20,6 +20,12 @@ export type FocusedSet = {
   compass_elements_used: string[]
   audit_signal_counts: Record<string, number>
   source_audit_id: string
+  /**
+   * Fingerprint of the context this set was reasoned from. Absent on sets
+   * written before staleness existed — those fall back to comparing the audit
+   * id alone. A new key inside the existing jsonb column, not a new column.
+   */
+  source_fingerprint?: string
   recommendations: FocusedRecommendation[]
 }
 
@@ -42,6 +48,26 @@ export async function findExistingSet(
     : query.is('property_id', null))
 
   return (data?.[0] as { id: string; content: FocusedSet; created_at: string } | undefined) ?? null
+}
+
+/**
+ * Whether a saved set was reasoned from context that has since changed.
+ *
+ * Pure, so the rule can be read and tested without a database.
+ *
+ * Deliberately conservative: it only says "stale" when it can see that the
+ * context genuinely differs. If the context can't be rebuilt right now (the
+ * Compass has been un-confirmed, say), the host keeps their recommendations
+ * and is not nagged to regenerate — nothing has been shown to have changed.
+ * A set written before fingerprints existed falls back to the audit id, which
+ * still catches the case that prompted this: redoing the Audit.
+ */
+export function isStale(set: FocusedSet, context: FocusedContext): boolean {
+  if (!context.ready) return false
+
+  if (set.source_fingerprint) return set.source_fingerprint !== context.fingerprint
+
+  return Boolean(set.source_audit_id) && set.source_audit_id !== context.auditId
 }
 
 /**
@@ -110,15 +136,18 @@ export async function getOrCreateFocusedSet(
   propertyId: string | null,
   options: { regenerate?: boolean } = {}
 ): Promise<
-  | { ok: true; set: FocusedSet; reused: boolean }
+  | { ok: true; set: FocusedSet; reused: boolean; stale: boolean }
   | { ok: false; reason: 'no_audit' | 'compass_unconfirmed' | 'too_sparse' | 'generation_failed' }
 > {
+  const context = await buildFocusedContext(userId, propertyId)
+
   if (!options.regenerate) {
     const existing = await findExistingSet(userId, propertyId)
-    if (existing) return { ok: true, set: existing.content, reused: true }
+    if (existing) {
+      return { ok: true, set: existing.content, reused: true, stale: isStale(existing.content, context) }
+    }
   }
 
-  const context = await buildFocusedContext(userId, propertyId)
   if (!context.ready) return { ok: false, reason: context.reason }
 
   let recommendations
@@ -148,6 +177,7 @@ export async function getOrCreateFocusedSet(
       host_notes: context.signals.hostNotes.length,
     },
     source_audit_id: context.auditId,
+    source_fingerprint: context.fingerprint,
     recommendations,
   }
 
@@ -161,5 +191,8 @@ export async function getOrCreateFocusedSet(
   })
   if (error) console.error('[focused] could not save recommendations:', error)
 
-  return { ok: true, set, reused: false }
+  // A fresh set is by definition current. The row just written is the newest,
+  // and findExistingSet takes the newest, so it supersedes the old one for
+  // Stage 3 without anything being deleted.
+  return { ok: true, set, reused: false, stale: false }
 }

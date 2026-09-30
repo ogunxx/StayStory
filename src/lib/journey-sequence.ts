@@ -123,8 +123,8 @@ export function decideNextStep(s: JourneyProgress): NextStep {
   if (stillAtFrontDoor && !s.focusedSetExists) {
     return {
       stepId: 'recommendations',
-      title: 'See the three opportunities StayStory found',
-      why: 'Your Audit and your Compass are in place, which is everything StayStory needs to be specific. Before you design the whole journey, look at three things worth creating in your own property.',
+      title: 'See your three opportunities',
+      why: 'Your Compass is confirmed, so StayStory has enough context to show you three opportunities shaped around this stay. Look at those before you design the whole journey.',
       ctaLabel: 'See my recommendations',
       href: '/start/recommendations',
     }

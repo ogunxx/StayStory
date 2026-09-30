@@ -149,18 +149,22 @@ function ConfirmedNextStep() {
           Compass confirmed
         </p>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-foreground">
-          This is now the lens every recommendation passes through. You just gave your hospitality
-          a shape most hosts never bother to find — and you can keep changing it whenever you like.
+          StayStory can now use this direction to shape recommendations for your stay. You can
+          come back and evolve your Compass any time — confirming doesn’t lock anything.
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Link href="/start/recommendations" className="sm:w-auto">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <Link href="/start/recommendations">
           <Button className="h-11 w-full px-6 sm:w-auto">See my recommendations →</Button>
         </Link>
-        <span className="text-sm text-muted-foreground">
-          or keep refining your Compass above
-        </span>
+        <Button
+          variant="ghost"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="h-11 px-4 text-muted-foreground sm:w-auto"
+        >
+          Keep refining my Compass
+        </Button>
       </div>
     </div>
   )

@@ -17,6 +17,7 @@
  */
 
 import type { CompassField } from '@/types'
+import { LAUREL_IMAGES } from '@/components/marketing/laurel-images'
 
 export type QuestionKind = 'single' | 'multi' | 'pills' | 'text' | 'textarea'
 
@@ -31,6 +32,28 @@ export type AuditOption = {
    * Story, and a Compass field is the host's own words about their property.
    */
   compassExclude?: true
+  /**
+   * Selecting this option reveals an optional text box, so an answer that
+   * means "not one of these" can say what it does mean.
+   *
+   * One mechanism for every such option rather than a bespoke follow-up
+   * question each time. The text is stored on the answers object under
+   * otherKey(questionId) — one box per question, so two options that both
+   * mean "something else" share it and switching between them keeps what was
+   * typed.
+   */
+  revealsText?: { prompt: string; helper?: string }
+}
+
+/**
+ * Where an option's explanatory text lives on the answers object.
+ *
+ * One key per question. It is a plain answer key like any other, so autosave,
+ * draft restore, Back/Next and `audits.responses` all carry it with no special
+ * handling anywhere.
+ */
+export function otherKey(questionId: string): string {
+  return `${questionId}_other`
 }
 
 export type AuditQuestion = {
@@ -77,13 +100,22 @@ export type AuditStep = {
   /** One teaching moment per step at most — placed where it becomes useful. */
   insight?: string
   /**
-   * Optional photograph for this step. Deliberately unset: the brief rules out
-   * decorative stock photography, and a picture of someone else's property
-   * while a host audits their own would actively mislead. Set `image` to a
-   * real photograph and the step renders it in the mockup's position.
+   * A photograph to break up the step, placed under the intro.
+   *
+   * These are Laurel & Lore — the property the StayStory system was built and
+   * tested on, and the only real place we can honestly show. They are here as
+   * editorial pacing, not as examples of the host's own property, which is why
+   * every one carries a visible caption saying whose place it is. No stock
+   * photography, per the website brief.
+   *
+   * Steps with no suitable photograph are left without one rather than filled
+   * with something arbitrary.
    */
   image?: string
+  /** Empty for decorative images; the caption carries the meaning. */
   imageAlt?: string
+  /** Shown under the image. Never omit it on a photograph of a real place. */
+  imageCaption?: string
 }
 
 /* ── Shared option sets ───────────────────────────────────────────────────── */
@@ -103,7 +135,12 @@ const FEELINGS: AuditOption[] = [
   { value: 'luxurious', label: 'Luxurious' },
   { value: 'adventurous', label: 'Adventurous' },
   { value: 'romantic', label: 'Romantic' },
-  { value: 'something_else', label: 'Something else', compassExclude: true },
+  {
+    value: 'something_else',
+    label: 'Something else',
+    compassExclude: true,
+    revealsText: { prompt: 'Tell us what you mean.', helper: 'Optional — the feeling you’re after, in your own words.' },
+  },
 ]
 
 const UNSURE: AuditOption = { value: 'unsure', label: 'I’m not sure' }
@@ -114,6 +151,9 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 1 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'vision',
+    image: LAUREL_IMAGES.exterior,
+    imageAlt: '',
+    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Your Vision',
     title: 'Your Vision',
     intro:
@@ -139,14 +179,6 @@ export const AUDIT_STEPS: AuditStep[] = [
         max: 3,
         options: FEELINGS,
         compass: 'hospitality_promise',
-      },
-      {
-        id: 'desired_feelings_other',
-        optional: true,
-        kind: 'text',
-        prompt: 'Tell us what you mean.',
-        helper: 'Optional — the feeling you’re after, in your own words.',
-        showIf: { questionId: 'desired_feelings', anyOf: ['something_else'] },
       },
       {
         id: 'best_day',
@@ -176,16 +208,8 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'activity', label: 'Something guests do here' },
           { value: 'story_detail', label: 'A story or meaningful detail' },
           { value: 'not_sure', label: 'I’m not sure yet' },
-          { value: 'something_else', label: 'Something else' },
+          { value: 'something_else', label: 'Something else', revealsText: { prompt: 'Tell us what you mean.', helper: 'Optional — in your own words.' } },
         ],
-      },
-      {
-        id: 'strongest_asset_other',
-        optional: true,
-        kind: 'text',
-        prompt: 'Tell us what you mean.',
-        helper: 'Optional.',
-        showIf: { questionId: 'strongest_asset', anyOf: ['something_else'] },
       },
     ],
   },
@@ -310,20 +334,19 @@ export const AUDIT_STEPS: AuditStep[] = [
         showIf: { questionId: 'first_sight', anyOf: ['__answered__'] },
         options: [
           { value: 'yes', label: 'Yes, that’s exactly it', quality: 3 },
-          { value: 'partly', label: 'Partly — I’d rather they noticed something else', quality: 1 },
-          { value: 'no', label: 'No, that isn’t what I want leading', quality: 0 },
+          {
+            value: 'partly',
+            label: 'Partly — I’d rather they noticed something else',
+            quality: 1,
+            revealsText: { prompt: 'What would you rather they noticed first?', helper: 'Optional.' },
+          },
+          {
+            value: 'no',
+            label: 'No, that isn’t what I want leading',
+            quality: 0,
+            revealsText: { prompt: 'What would you rather they noticed first?', helper: 'Optional.' },
+          },
         ],
-      },
-      {
-        // Both of the answers above mean "not this" without saying what
-        // instead. What a host would rather guests noticed first is one of
-        // the most useful things they can tell us, so we ask.
-        id: 'first_sight_preferred',
-        optional: true,
-        kind: 'text',
-        prompt: 'What would you rather they noticed first?',
-        helper: 'Optional.',
-        showIf: { questionId: 'first_sight_intended', anyOf: ['partly', 'no'] },
       },
       {
         id: 'door_opens',
@@ -340,16 +363,8 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'signage', label: 'Instructions or signage' },
           { value: 'clutter', label: 'Clutter' },
           { value: 'amenity', label: 'A special amenity' },
-          { value: 'something_else', label: 'Something else' },
+          { value: 'something_else', label: 'Something else', revealsText: { prompt: 'Tell us what you mean.', helper: 'Optional — in your own words.' } },
         ],
-      },
-      {
-        id: 'door_opens_other',
-        optional: true,
-        kind: 'text',
-        prompt: 'Tell us what you mean.',
-        helper: 'Optional.',
-        showIf: { questionId: 'door_opens', anyOf: ['something_else'] },
       },
       {
         id: 'first_moment_supports',
@@ -458,6 +473,9 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 4 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'light',
+    image: LAUREL_IMAGES.interior,
+    imageAlt: '',
+    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Light & Senses',
     title: 'Light & Senses',
     intro:
@@ -573,6 +591,9 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 5 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'sleep',
+    image: LAUREL_IMAGES.outdoorShower,
+    imageAlt: '',
+    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Sleep & Bath',
     title: 'Sleep & Bath',
     intro:
@@ -792,6 +813,9 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 7 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'story',
+    image: LAUREL_IMAGES.wellness,
+    imageAlt: '',
+    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Story & Meaning',
     title: 'Story & Meaning',
     intro:
@@ -845,7 +869,12 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'landscape', label: 'The landscape' },
           { value: 'nature', label: 'Nature' },
           { value: 'why_exists', label: 'Why this property exists' },
-          { value: 'not_yet', label: 'Not really yet', compassExclude: true },
+          {
+            value: 'not_yet',
+            label: 'Not really yet',
+            compassExclude: true,
+            revealsText: { prompt: 'What would you want it to say about this place?', helper: 'Optional.' },
+          },
         ],
         compass: 'story',
       },
@@ -921,6 +950,9 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 8 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'transformation',
+    image: LAUREL_IMAGES.deck,
+    imageAlt: '',
+    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Guest Transformation',
     title: 'The Guest Transformation',
     intro:
@@ -944,17 +976,14 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'overstimulated', label: 'Overstimulated' },
           { value: 'ready_explore', label: 'Ready to explore' },
           { value: 'ready_rest', label: 'Ready to rest' },
-          { value: 'something_else', label: 'Something else', compassExclude: true },
+          {
+            value: 'something_else',
+            label: 'Something else',
+            compassExclude: true,
+            revealsText: { prompt: 'Tell us what you mean.', helper: 'Optional — how they arrive, in your own words.' },
+          },
         ],
         compass: 'transformation_arrive',
-      },
-      {
-        id: 'arrive_feeling_other',
-        optional: true,
-        kind: 'text',
-        prompt: 'Tell us what you mean.',
-        helper: 'Optional — how they arrive, in your own words.',
-        showIf: { questionId: 'arrive_feeling', anyOf: ['something_else'] },
       },
       {
         id: 'leave_feeling',
@@ -973,17 +1002,14 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'delighted', label: 'Delighted' },
           { value: 'curious', label: 'Curious' },
           { value: 'reconnected', label: 'Reconnected' },
-          { value: 'something_else', label: 'Something else', compassExclude: true },
+          {
+            value: 'something_else',
+            label: 'Something else',
+            compassExclude: true,
+            revealsText: { prompt: 'Tell us what you mean.', helper: 'Optional — how they leave, in your own words.' },
+          },
         ],
         compass: 'transformation_leave',
-      },
-      {
-        id: 'leave_feeling_other',
-        optional: true,
-        kind: 'text',
-        prompt: 'Tell us what you mean.',
-        helper: 'Optional — how they leave, in your own words.',
-        showIf: { questionId: 'leave_feeling', anyOf: ['something_else'] },
       },
       {
         id: 'what_creates_change',
@@ -1021,17 +1047,9 @@ export const AUDIT_STEPS: AuditStep[] = [
           { value: 'amenities', label: 'Amenities' },
           { value: 'story', label: 'Story & personality' },
           { value: 'communication', label: 'Instructions / communication' },
-          { value: 'something_else', label: 'Something else' },
+          { value: 'something_else', label: 'Something else', revealsText: { prompt: 'Tell us what you mean.', helper: 'Optional — in your own words.' } },
           { value: 'help_decide', label: 'I’m not sure — help me decide' },
         ],
-      },
-      {
-        id: 'where_to_begin_other',
-        optional: true,
-        kind: 'text',
-        prompt: 'Tell us what you mean.',
-        helper: 'Optional.',
-        showIf: { questionId: 'where_to_begin', anyOf: ['something_else'] },
       },
       {
         // No structured Audit can cover everything about a property, and
@@ -1257,23 +1275,27 @@ const DISTINCTIVE_IDS = [
 ]
 
 /** Free-text questions that name a gap rather than a strength. */
-const OPPORTUNITY_IDS = [
-  'biggest_friction',
-  'friction_where',
-  'undersold_what',
-  'first_sight',
-  'where_to_begin_other',
-  'first_sight_preferred',
-]
+const OPPORTUNITY_IDS = ['biggest_friction', 'friction_where', 'undersold_what', 'first_sight']
 
 /**
- * The "tell us what you mean" follow-ups, routed to the same group as the
- * question they belong to. Without this a host who chose "Something else" and
- * explained it would have had that explanation stored and then ignored — the
- * exact problem the structured options created in the first place.
+ * Where a question's explanatory text belongs once it's written.
+ *
+ * A host who picks "Something else" and says what they meant has told us
+ * something real; without this it would be stored and then ignored — the exact
+ * problem the fixed options created in the first place. Keyed by the question
+ * the box hangs off, so adding revealsText to a new option only needs a line
+ * here to decide which group it informs.
  */
-const FEELING_OTHER_IDS = ['desired_feelings_other', 'arrive_feeling_other', 'leave_feeling_other']
-const DISTINCTIVE_OTHER_IDS = ['strongest_asset_other', 'door_opens_other']
+const OTHER_TEXT_GROUP: Record<string, keyof AuditSignals> = {
+  desired_feelings: 'desiredFeeling',
+  arrive_feeling: 'desiredFeeling',
+  leave_feeling: 'desiredFeeling',
+  strongest_asset: 'distinctive',
+  door_opens: 'distinctive',
+  tells_about_place: 'opportunities',
+  first_sight_intended: 'opportunities',
+  where_to_begin: 'opportunities',
+}
 
 /**
  * Read a completed audit and pull out only what is useful for designing the
@@ -1301,6 +1323,23 @@ export function auditSignals(
     if (!isVisible(question, answers)) continue
     const raw = responses[question.id]
 
+    // An explanation the host typed after choosing "Something else". Read off
+    // the question it belongs to, and only when the option that reveals the
+    // box is actually selected — so text left behind by a changed answer is
+    // ignored rather than quietly steering a recommendation.
+    const explained = responses[otherKey(question.id)]
+    if (typeof explained === 'string' && explained.trim()) {
+      const revealed = question.options?.some(
+        (o) =>
+          o.revealsText &&
+          (Array.isArray(raw) ? raw.map(String).includes(o.value) : raw === o.value)
+      )
+      const group = OTHER_TEXT_GROUP[question.id]
+      if (revealed && group && group !== 'hostNotes') {
+        out[group].push(explained.trim())
+      }
+    }
+
     if (question.id === 'desired_feelings' || question.id === 'leave_feeling') {
       if (Array.isArray(raw)) {
         out.desiredFeeling.push(
@@ -1311,19 +1350,10 @@ export function auditSignals(
     }
 
     if (typeof raw === 'string' && raw.trim()) {
-      // The open question at the end, and the "tell us what you mean"
-      // follow-ups. Handled before the option lookup because these are always
-      // free text and belong with the question that revealed them.
+      // The open question at the end of the Audit — always free text, and
+      // carried through unlabelled because it could be about anything.
       if (question.id === 'anything_else') {
         out.hostNotes.push(raw.trim())
-        continue
-      }
-      if (FEELING_OTHER_IDS.includes(question.id)) {
-        out.desiredFeeling.push(raw.trim())
-        continue
-      }
-      if (DISTINCTIVE_OTHER_IDS.includes(question.id)) {
-        out.distinctive.push(raw.trim())
         continue
       }
 

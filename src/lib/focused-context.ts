@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { createClient } from '@/lib/supabase/server'
 import { buildCompassContext, getOrCreateCompass } from '@/lib/compass'
 import { auditSignalCount, auditSignals, type AuditSignals } from '@/lib/audit-questions'
@@ -20,8 +21,33 @@ import { auditSignalCount, auditSignals, type AuditSignals } from '@/lib/audit-q
  */
 
 export type FocusedContext =
-  | { ready: true; text: string; compassElementsUsed: string[]; signals: AuditSignals; auditId: string }
+  | {
+      ready: true
+      text: string
+      compassElementsUsed: string[]
+      signals: AuditSignals
+      auditId: string
+      /** Fingerprint of `text` — see contextFingerprint. */
+      fingerprint: string
+    }
   | { ready: false; reason: 'no_audit' | 'compass_unconfirmed' | 'too_sparse' }
+
+/**
+ * A short, stable fingerprint of the exact context a set was generated from.
+ *
+ * Recommendations go stale when the thing they were reasoned from changes.
+ * Timestamps are the obvious signal and the wrong one: confirmCompass rewrites
+ * `updated_at` every time it runs, so re-confirming an unchanged Compass would
+ * look like a change and send the host to regenerate for nothing.
+ *
+ * Fingerprinting the assembled context instead means staleness tracks what
+ * actually reached the model. Reword a Compass field, answer another Audit
+ * question, redo the Audit — the text differs and the fingerprint moves.
+ * Re-confirm without editing anything and it doesn't.
+ */
+export function contextFingerprint(text: string): string {
+  return createHash('sha256').update(text).digest('hex').slice(0, 32)
+}
 
 function section(title: string, lines: string[]): string {
   return lines.length ? `${title}\n${lines.map((l) => `- ${l}`).join('\n')}\n` : ''
@@ -111,5 +137,6 @@ export async function buildFocusedContext(
     compassElementsUsed: compassContext.usedFields,
     signals,
     auditId: audit.id as string,
+    fingerprint: contextFingerprint(text),
   }
 }

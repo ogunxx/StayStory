@@ -32,5 +32,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: result.reason }, { status })
   }
 
-  return NextResponse.json({ ...result.set, reused: result.reused })
+  return NextResponse.json({ ...result.set, reused: result.reused, stale: result.stale })
 }
