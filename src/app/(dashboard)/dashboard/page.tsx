@@ -9,7 +9,7 @@ import { countGeneratorUsageSince } from '@/lib/focused-recommendations'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { LEGENDARY_PRICE } from '@/lib/config'
-import { CompassSummary, JourneySteps, NextStepCard } from './journey'
+import { CompassSummary, JourneySteps, NextStepCard, RecommendationsCard } from './journey'
 
 /**
  * Product home.
@@ -86,8 +86,16 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* ── Primary: what to do next, and why ───────────────────────────── */}
-      <NextStepCard next={journey.next} pendingCount={journey.pendingCount} />
+      {/* ── Recommendations, whenever a set exists for this property ─────
+          A standing destination so they never have to be found through the
+          Compass again. */}
+      {journey.focusedSetExists && <RecommendationsCard stale={journey.focusedStale} />}
+
+      {/* ── Primary: what to do next, and why ─────────────────────────────
+          Suppressed only when it would repeat the card above word for word. */}
+      {!(journey.focusedSetExists && journey.next.stepId === 'recommendations') && (
+        <NextStepCard next={journey.next} pendingCount={journey.pendingCount} />
+      )}
 
       {/* ── What StayStory currently knows ──────────────────────────────── */}
       <CompassSummary

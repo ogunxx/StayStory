@@ -42,6 +42,12 @@ export type FocusedStage = {
   href: string | null
   /** False until the stage exists. The path renders it, but doesn't link it. */
   available: boolean
+  /**
+   * Overrides the generic Done/Next/Later wording where a stage has something
+   * more useful to say — "Recommendations ready" tells a returning host their
+   * three are waiting, which "Done" does not.
+   */
+  statusLabel?: string
 }
 
 export type FocusedPath = {
@@ -119,6 +125,7 @@ export function buildFocusedStages(p: FocusedProgress): {
           : 'active',
       href: '/start/recommendations',
       available: true,
+      statusLabel: p.recommendationsReady ? 'Recommendations ready' : undefined,
     },
     {
       id: 'starter_playbook',

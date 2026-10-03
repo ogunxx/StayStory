@@ -58,6 +58,58 @@ export function NextStepCard({ next, pendingCount }: { next: NextStep; pendingCo
   )
 }
 
+/* ── Recommendations, once they exist ────────────────────────────────────── */
+
+/**
+ * A standing destination for the three opportunities.
+ *
+ * The Compass is how the recommendations get their context; it is not the door
+ * a host should have to walk back through every time they want to re-read
+ * them. This card appears on Home for as long as a set exists for the active
+ * property, so finding them again never depends on remembering a route.
+ *
+ * When the Audit or Compass has moved on it says so and sends the host to the
+ * same page, where refreshing is a deliberate act. Nothing regenerates from
+ * here.
+ */
+export function RecommendationsCard({ stale }: { stale: boolean }) {
+  return (
+    <section
+      aria-labelledby="recommendations-heading"
+      className={cn(
+        'rounded-2xl border p-6 sm:p-7',
+        stale ? 'border-accent/40 bg-accent/[0.08]' : 'border-primary/20 bg-primary/[0.07]'
+      )}
+    >
+      <p className={cn('mb-2 text-xs uppercase tracking-widest', stale ? 'text-accent-foreground' : 'text-primary')}>
+        {stale ? 'Your recommendations have new context' : 'Your recommendations'}
+      </p>
+      <h2
+        id="recommendations-heading"
+        className="font-serif text-xl font-semibold text-foreground sm:text-2xl"
+      >
+        {stale
+          ? 'Your Audit or Compass has changed since these were created'
+          : 'Three opportunities shaped around your stay'}
+      </h2>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        {stale
+          ? 'The three you have still reflect what you told us before. You can read them as they are, or ask StayStory to think again with what it knows now.'
+          : 'Drawn from your Audit and the Compass you confirmed. They stay here — come back to them whenever you like.'}
+      </p>
+
+      <div className="mt-5">
+        <Link
+          href="/start/recommendations"
+          className={cn(buttonVariants({ size: 'sm' }), 'h-10 px-5')}
+        >
+          {stale ? 'Refresh my recommendations' : 'View my recommendations'} →
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 /* ── What the Compass currently holds ────────────────────────────────────── */
 
 const COMPASS_STATUS_LABEL: Record<ExperienceCompass['status'], string> = {

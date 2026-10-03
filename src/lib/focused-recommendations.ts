@@ -93,6 +93,29 @@ export async function hasFocusedSet(userId: string, propertyId: string | null): 
 }
 
 /**
+ * Whether this property has recommendations, and whether they still match the
+ * Audit and Compass they came from.
+ *
+ * What the Dashboard needs to offer them as a destination and to say honestly
+ * whether they are current. Scoped to the active property throughout —
+ * findExistingSet and buildFocusedContext both take propertyId — so switching
+ * properties switches the answer rather than leaking another property's work.
+ *
+ * The context is only built when a set exists, so a host who has never
+ * generated anything pays nothing for this.
+ */
+export async function getFocusedSetState(
+  userId: string,
+  propertyId: string | null
+): Promise<{ exists: boolean; stale: boolean }> {
+  const existing = await findExistingSet(userId, propertyId)
+  if (!existing) return { exists: false, stale: false }
+
+  const context = await buildFocusedContext(userId, propertyId)
+  return { exists: true, stale: isStale(existing.content, context) }
+}
+
+/**
  * How many Generator suggestions this host has created since `sinceIso`,
  * not counting focused recommendation sets.
  *

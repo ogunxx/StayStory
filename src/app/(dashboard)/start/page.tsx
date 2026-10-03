@@ -67,10 +67,18 @@ function StageRow({ stage }: { stage: FocusedStage }) {
             </h2>
             {/* Status in words, never colour alone. */}
             <span className="text-xs text-muted-foreground">
-              {isDone ? 'Done' : isActive ? 'Next' : stage.available ? 'Later' : 'Coming soon'}
+              {stage.statusLabel ??
+                (isDone ? 'Done' : isActive ? 'Next' : stage.available ? 'Later' : 'Coming soon')}
             </span>
           </div>
           <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{stage.summary}</p>
+          {/* A done stage that is still worth opening says so, so a returning
+              host can see where their three recommendations live. */}
+          {isDone && stage.available && stage.href && (
+            <p className="mt-2 text-sm font-medium text-primary">
+              {stage.id === 'recommendations' ? 'View recommendations →' : 'Open again →'}
+            </p>
+          )}
         </div>
       </div>
     </>
@@ -157,9 +165,9 @@ export default async function StartPage() {
         <div className="flex flex-wrap items-center gap-4">
           <Link
             href="/start/recommendations"
-            className={cn(buttonVariants({ size: 'sm', variant: 'outline' }), 'h-10 px-5')}
+            className={cn(buttonVariants({ size: 'sm' }), 'h-10 px-5')}
           >
-            Revisit your three opportunities
+            View my recommendations →
           </Link>
           <span className="text-sm text-muted-foreground">
             Your starter playbook is next — we’re building it now.

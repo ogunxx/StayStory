@@ -17,7 +17,6 @@
  */
 
 import type { CompassField } from '@/types'
-import { LAUREL_IMAGES } from '@/components/marketing/laurel-images'
 
 export type QuestionKind = 'single' | 'multi' | 'pills' | 'text' | 'textarea'
 
@@ -100,22 +99,10 @@ export type AuditStep = {
   /** One teaching moment per step at most — placed where it becomes useful. */
   insight?: string
   /**
-   * A photograph to break up the step, placed under the intro.
-   *
-   * These are Laurel & Lore — the property the StayStory system was built and
-   * tested on, and the only real place we can honestly show. They are here as
-   * editorial pacing, not as examples of the host's own property, which is why
-   * every one carries a visible caption saying whose place it is. No stock
-   * photography, per the website brief.
-   *
-   * Steps with no suitable photograph are left without one rather than filled
-   * with something arbitrary.
+   * Imagery is configured per step id in src/lib/audit-images.ts, not here —
+   * so a picture can be swapped, captioned, removed or added to a step that
+   * has none without editing the questions or the component.
    */
-  image?: string
-  /** Empty for decorative images; the caption carries the meaning. */
-  imageAlt?: string
-  /** Shown under the image. Never omit it on a photograph of a real place. */
-  imageCaption?: string
 }
 
 /* ── Shared option sets ───────────────────────────────────────────────────── */
@@ -151,9 +138,6 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 1 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'vision',
-    image: LAUREL_IMAGES.exterior,
-    imageAlt: '',
-    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Your Vision',
     title: 'Your Vision',
     intro:
@@ -473,9 +457,6 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 4 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'light',
-    image: LAUREL_IMAGES.interior,
-    imageAlt: '',
-    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Light & Senses',
     title: 'Light & Senses',
     intro:
@@ -591,9 +572,6 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 5 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'sleep',
-    image: LAUREL_IMAGES.outdoorShower,
-    imageAlt: '',
-    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Sleep & Bath',
     title: 'Sleep & Bath',
     intro:
@@ -813,9 +791,6 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 7 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'story',
-    image: LAUREL_IMAGES.wellness,
-    imageAlt: '',
-    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Story & Meaning',
     title: 'Story & Meaning',
     intro:
@@ -950,9 +925,6 @@ export const AUDIT_STEPS: AuditStep[] = [
   /* 8 ─────────────────────────────────────────────────────────────────────── */
   {
     id: 'transformation',
-    image: LAUREL_IMAGES.deck,
-    imageAlt: '',
-    imageCaption: 'Laurel & Lore — the property StayStory was built on',
     navLabel: 'Guest Transformation',
     title: 'The Guest Transformation',
     intro:

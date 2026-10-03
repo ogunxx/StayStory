@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
+import { auditImage, type AuditImage } from '@/lib/audit-images'
 import {
   AUDIT_STEPS,
   otherKey,
@@ -130,6 +131,67 @@ function InsightCard({ children }: { children: React.ReactNode }) {
         <p className="mt-1 text-[0.82rem] leading-relaxed text-muted-foreground">{children}</p>
       </div>
     </aside>
+  )
+}
+
+/* ── The step's photograph ────────────────────────────────────────────────── */
+
+/**
+ * Tries the local file first and falls back to the CDN only if it isn't
+ * there, so the Audit stops depending on someone else's uptime the moment the
+ * files land in /public — with no code change. If both fail the figure removes
+ * itself, because a broken-image icon in the middle of a step is worse than no
+ * picture at all.
+ */
+function StepImage({ image }: { image: AuditImage }) {
+  // The local file first, the CDN only if it isn't there. Ordered, and only
+  // ever moved forward, so a candidate is never retried or skipped.
+  const candidates = useMemo(
+    () => [image.src, ...(image.remote ? [image.remote] : [])],
+    [image.src, image.remote]
+  )
+  const [index, setIndex] = useState(0)
+  const ref = useRef<HTMLImageElement>(null)
+
+  // An image that fails before React hydrates never reaches onError — the
+  // browser's error event has already come and gone. The first step's picture
+  // is server-rendered and above the fold, so that is the ordinary case rather
+  // than an edge one: check on mount whether what is showing already failed.
+  // The `i === index` guard makes this idempotent if onError also fired.
+  useEffect(() => {
+    const img = ref.current
+    if (!img) return
+    if (img.complete && img.naturalWidth === 0) {
+      setIndex((i) => (i === index ? i + 1 : i))
+    }
+  }, [index])
+
+  // Out of candidates: show nothing. A broken-image icon in the middle of a
+  // step is worse than no picture at all.
+  if (index >= candidates.length) return null
+
+  return (
+    <figure className="mt-6">
+      <div className="overflow-hidden rounded-xl bg-muted">
+        {/* Fixed heights rather than an intrinsic ratio, so every step's image
+            occupies the same band and the Audit keeps one rhythm whatever each
+            photograph's proportions are. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          ref={ref}
+          src={candidates[index]}
+          alt={image.alt}
+          loading="lazy"
+          decoding="async"
+          onError={() => setIndex((i) => (i === index ? i + 1 : i))}
+          className="block h-40 w-full object-cover sm:h-52"
+        />
+      </div>
+      {/* Never let a photograph of a real place pass as the host's own. */}
+      <figcaption className="mt-2 text-[0.7rem] leading-relaxed text-muted-foreground">
+        {image.caption}
+      </figcaption>
+    </figure>
   )
 }
 
@@ -400,6 +462,7 @@ export default function AuditClient({ initialAnswers, initialStep }: Props) {
   }, [answers, stepIndex, save, done])
 
   const step = AUDIT_STEPS[stepIndex]
+  const stepImage = auditImage(step.id)
   const questions = visibleQuestions(step, answers)
   const isLast = stepIndex === AUDIT_STEPS.length - 1
 
@@ -511,29 +574,7 @@ export default function AuditClient({ initialAnswers, initialStep }: Props) {
 
         {step.why && <WhyWeAsk>{step.why}</WhyWeAsk>}
 
-        {step.image && (
-          <figure className="mt-6">
-            <div className="overflow-hidden rounded-xl bg-muted">
-              {/* Fixed heights rather than an intrinsic ratio, so every step's
-                  image occupies the same band and the Audit keeps one rhythm
-                  whatever each photograph's proportions are.
-                  eslint-disable-next-line @next/next/no-img-element */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={step.image}
-                alt={step.imageAlt ?? ''}
-                loading="lazy"
-                className="block h-40 w-full object-cover sm:h-52"
-              />
-            </div>
-            {/* Never let a photograph of a real place pass as the host's own. */}
-            {step.imageCaption && (
-              <figcaption className="mt-2 text-[0.7rem] leading-relaxed text-muted-foreground">
-                {step.imageCaption}
-              </figcaption>
-            )}
-          </figure>
-        )}
+        {stepImage && <StepImage key={stepImage.src} image={stepImage} />}
 
         {/* Dividers rather than gaps alone: some steps carry a dozen
             questions, and a hairline keeps them scannable without adding

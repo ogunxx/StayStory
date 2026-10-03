@@ -120,14 +120,26 @@ export function decideNextStep(s: JourneyProgress): NextStep {
   const stillAtFrontDoor =
     s.blueprintTouchpoints === 0 && s.storyCount === 0 && s.playbookCount === 0
 
-  if (stillAtFrontDoor && !s.focusedSetExists) {
-    return {
-      stepId: 'recommendations',
-      title: 'See your three opportunities',
-      why: 'Your Compass is confirmed, so StayStory has enough context to show you three opportunities shaped around this stay. Look at those before you design the whole journey.',
-      ctaLabel: 'See my recommendations',
-      href: '/start/recommendations',
-    }
+  if (stillAtFrontDoor) {
+    // Until the Starter Playbook exists, the focused journey ends at the
+    // recommendations. Pointing a host who is still at the front door toward
+    // the Blueprint sends them into the full six-tool product before they have
+    // seen what StayStory made of their own property.
+    return s.focusedSetExists
+      ? {
+          stepId: 'recommendations',
+          title: 'Your recommendations',
+          why: 'Three opportunities shaped around your stay, drawn from your Audit and the Compass you confirmed. They stay here — come back to them whenever you like.',
+          ctaLabel: 'View my recommendations',
+          href: '/start/recommendations',
+        }
+      : {
+          stepId: 'recommendations',
+          title: 'See your three opportunities',
+          why: 'Your Compass is confirmed, so StayStory has enough context to show you three opportunities shaped around this stay. Look at those before you design the whole journey.',
+          ctaLabel: 'See my recommendations',
+          href: '/start/recommendations',
+        }
   }
 
   if (s.blueprintTouchpoints === 0) {
