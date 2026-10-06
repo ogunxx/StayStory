@@ -1,28 +1,16 @@
-import { LAUREL_IMAGES } from '@/components/marketing/laurel-images'
-
 /**
  * The photographs that break up the Experience Audit.
  *
  * This is the one place Audit imagery is configured. Changing a picture,
- * removing one, rewording a caption or adding one to a step that has none is
- * an edit here — the Audit component reads this and renders whatever it finds,
- * so none of it requires touching the UI.
+ * reframing one, rewording a caption or removing one is an edit here — the
+ * Audit component reads this and renders whatever it finds, so none of it
+ * requires touching the questions or the UI.
  *
- * ── Local first, remote as a safety net ─────────────────────────────────────
- *
- * `src` points at a file served from this app's own /public directory. `remote`
- * is the original URL on the Laurel & Lore CDNs, used only if the local file
- * isn't there. The host reported images failing intermittently, which is what
- * depending on someone else's CDN buys you.
- *
- * The two together mean the switch needs no coordination: while /public is
- * empty the local request 404s, the remote loads, and the Audit looks the same
- * as it does today. Drop the files in and every load is local from then on,
- * with no code change. If both fail the figure removes itself rather than
- * leaving a broken-image icon in the middle of the step.
- *
- * To fetch the files, run:  node scripts/fetch-audit-images.mjs
- * See public/images/audit/README.md for what belongs there.
+ * Every file is served from this app's own /public directory. There is no
+ * remote fallback any more: the approved set lives in the repository, so the
+ * Audit no longer depends on anyone else's CDN being up, which is what was
+ * making these fail intermittently. Files are in public/images/audit — see the
+ * README there for which belongs to which step.
  *
  * ── On what these pictures are ──────────────────────────────────────────────
  *
@@ -36,67 +24,49 @@ import { LAUREL_IMAGES } from '@/components/marketing/laurel-images'
 export type AuditImage = {
   /** Served from /public. Edit this to swap a picture. */
   src: string
-  /** Original CDN URL, used only when the local file is missing. */
-  remote?: string
   /** Empty for decorative images — the caption carries the meaning. */
   alt: string
   /** Never omit this on a photograph of a real place. */
   caption: string
+  /**
+   * CSS object-position, for when the middle of a photograph isn't the part
+   * worth keeping. The band is wide and short, so a portrait shot is cropped
+   * hard; this decides which slice survives. Omit for centre.
+   */
+  position?: string
 }
 
 const CAPTION = 'Laurel & Lore — the property StayStory was built on'
 
-/**
- * Ask each CDN for a sensibly sized file.
- *
- * The originals are requested at 2500w and 1200w for a band that is never
- * taller than 208px. Multi-megabyte downloads for a decorative strip are the
- * most likely reason they were timing out, so the fallback asks for something
- * proportionate. The marketing site's own usage is untouched: these are
- * derived here rather than changed in LAUREL_IMAGES.
- */
-function sized(url: string): string {
-  return url
-    .replace(/format=\d+w/, 'format=1000w')
-    .replace(/im_w=\d+/, 'im_w=720')
-}
-
 /** Keyed by Audit step id. A step with no entry simply renders no image. */
 export const AUDIT_IMAGES: Record<string, AuditImage> = {
-  vision: {
-    src: '/images/audit/vision.jpg',
-    remote: sized(LAUREL_IMAGES.exterior),
-    alt: '',
-    caption: CAPTION,
-  },
-  light: {
-    src: '/images/audit/light.jpg',
-    remote: sized(LAUREL_IMAGES.interior),
-    alt: '',
-    caption: CAPTION,
-  },
-  sleep: {
-    src: '/images/audit/sleep.jpg',
-    remote: sized(LAUREL_IMAGES.outdoorShower),
-    alt: '',
-    caption: CAPTION,
-  },
-  story: {
-    src: '/images/audit/story.jpg',
-    remote: sized(LAUREL_IMAGES.wellness),
-    alt: '',
-    caption: CAPTION,
-  },
-  transformation: {
-    src: '/images/audit/transformation.jpg',
-    remote: sized(LAUREL_IMAGES.deck),
-    alt: '',
-    caption: CAPTION,
-  },
+  /** 1 — Your Vision. Wide exterior: the whole place, at a distance. */
+  vision: { src: '/images/audit/vision.jpg', alt: '', caption: CAPTION },
 
-  // Steps 2 (Arrival), 3 (Living & Flow) and 6 (Kitchen & Amenities) have no
-  // entry on purpose: there is no approved photograph of an entry, a living
-  // space or a kitchen. Add one here when there is — nothing else changes.
+  /**
+   * 2 — Arrival. Entry door and approach. The only portrait shot in the set,
+   * so it is pulled upward: centred, the band would crop to the deck boards
+   * and lose the door the step is about.
+   */
+  arrival: { src: '/images/audit/arrival.jpg', alt: '', caption: CAPTION, position: '50% 38%' },
+
+  /** 3 — Living & Flow. Wide interior showing circulation and layout. */
+  flow: { src: '/images/audit/flow.jpg', alt: '', caption: CAPTION },
+
+  /** 4 — Light & Senses. Warm natural light across the interior. */
+  light: { src: '/images/audit/light.jpg', alt: '', caption: CAPTION },
+
+  /** 5 — Sleep & Bath. Murphy bed deployed. */
+  sleep: { src: '/images/audit/sleep.jpg', alt: '', caption: CAPTION },
+
+  /** 6 — Kitchen & Amenities. Kitchenette and cooking setup. */
+  kitchen: { src: '/images/audit/kitchen.jpg', alt: '', caption: CAPTION },
+
+  /** 7 — Story & Meaning. Bench under the oak; the sense of place. */
+  story: { src: '/images/audit/story.jpg', alt: '', caption: CAPTION },
+
+  /** 8 — Guest Transformation. The calm outdoor scene the stay builds toward. */
+  transformation: { src: '/images/audit/transformation.jpg', alt: '', caption: CAPTION },
 }
 
 export function auditImage(stepId: string): AuditImage | undefined {

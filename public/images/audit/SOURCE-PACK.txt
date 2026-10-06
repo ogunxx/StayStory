@@ -1,0 +1,36 @@
+StayStory Experience Audit image pack
+
+01-vision.jpg
+  Step 1 — Your Vision
+  Wide exterior/property view.
+
+02-arrival.jpg
+  Step 2 — Arrival
+  Entry door and approach.
+
+03-living-flow.jpg
+  Step 3 — Living & Flow
+  Wide interior showing circulation and room layout.
+
+04-light-senses.jpg
+  Step 4 — Light & Senses
+  Warm natural light across the interior.
+
+05-sleep-bath.jpg
+  Step 5 — Sleep & Bath
+  Murphy bed deployed; strongest available sleep image.
+
+06-kitchen-amenities.png
+  Step 6 — Kitchen & Amenities
+  Kitchenette and cooking setup.
+
+07-story-meaning.jpg
+  Step 7 — Story & Meaning
+  Squirrels, bench, oak/nature setting; strongest image for sense of place.
+
+08-guest-transformation.png
+  Step 8 — Guest Transformation
+  Calm outdoor deck/nature scene; supports the emotional outcome of the stay.
+
+alternates/light-senses-alternate.jpg
+  Alternate interior image if the Step 4 crop feels better in the actual Audit layout.

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -144,31 +144,23 @@ function InsightCard({ children }: { children: React.ReactNode }) {
  * picture at all.
  */
 function StepImage({ image }: { image: AuditImage }) {
-  // The local file first, the CDN only if it isn't there. Ordered, and only
-  // ever moved forward, so a candidate is never retried or skipped.
-  const candidates = useMemo(
-    () => [image.src, ...(image.remote ? [image.remote] : [])],
-    [image.src, image.remote]
-  )
-  const [index, setIndex] = useState(0)
+  // The approved set is served from /public, so there is nothing to fall back
+  // to and nothing that can be slow because someone else's CDN is. All that is
+  // left to handle is a file that genuinely cannot be loaded: show nothing
+  // rather than a broken-image icon in the middle of a step.
+  const [failed, setFailed] = useState(false)
   const ref = useRef<HTMLImageElement>(null)
 
   // An image that fails before React hydrates never reaches onError — the
   // browser's error event has already come and gone. The first step's picture
   // is server-rendered and above the fold, so that is the ordinary case rather
   // than an edge one: check on mount whether what is showing already failed.
-  // The `i === index` guard makes this idempotent if onError also fired.
   useEffect(() => {
     const img = ref.current
-    if (!img) return
-    if (img.complete && img.naturalWidth === 0) {
-      setIndex((i) => (i === index ? i + 1 : i))
-    }
-  }, [index])
+    if (img && img.complete && img.naturalWidth === 0) setFailed(true)
+  }, [])
 
-  // Out of candidates: show nothing. A broken-image icon in the middle of a
-  // step is worse than no picture at all.
-  if (index >= candidates.length) return null
+  if (failed) return null
 
   return (
     <figure className="mt-6">
@@ -179,11 +171,12 @@ function StepImage({ image }: { image: AuditImage }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={ref}
-          src={candidates[index]}
+          src={image.src}
           alt={image.alt}
           loading="lazy"
           decoding="async"
-          onError={() => setIndex((i) => (i === index ? i + 1 : i))}
+          onError={() => setFailed(true)}
+          style={image.position ? { objectPosition: image.position } : undefined}
           className="block h-40 w-full object-cover sm:h-52"
         />
       </div>
