@@ -3,20 +3,20 @@ import { createClient } from '@/lib/supabase/server'
 import { JsonLd, webPageSchema } from '@/lib/seo'
 import { SiteNav } from '@/components/marketing/site-nav'
 import { SiteFooter } from '@/components/marketing/site-footer'
-import { Hero } from '@/components/marketing/hero'
-import { PlatformOverview } from '@/components/marketing/platform-overview'
-import { Benefits } from '@/components/marketing/benefits'
-import { Proof } from '@/components/marketing/proof'
-import { Audiences } from '@/components/marketing/audiences'
-import { FinalCta } from '@/components/marketing/final-cta'
-import { AIRBNB_URL } from '@/components/marketing/laurel-images'
+import { FullHomepage, FocusedHomepage } from '@/components/marketing/home-compositions'
+import { FOCUSED_HOMEPAGE } from '@/lib/config'
 
 /**
- * The homepage — six sections, hero to closing CTA.
+ * The homepage.
  *
- * Each section is its own component in components/marketing, so copy, order
- * and imagery are edited there rather than here. This file only decides which
- * sections appear and in what order.
+ * Two compositions of the same sections live in home-compositions.tsx — the
+ * original full-platform story and the focused MVP one — and FOCUSED_HOMEPAGE
+ * decides which renders. Both are permanent; neither was built by taking
+ * anything away from the other, so flipping the switch restores the full
+ * homepage with nothing to rebuild.
+ *
+ * Nav, footer, metadata and the guest figures are shared by both, which is
+ * why they stay here.
  */
 
 const DESCRIPTION =
@@ -68,23 +68,11 @@ export default async function LandingPage() {
 
       <SiteNav />
 
-      {/* ─── Hero ─────────────────────────────────────────────────────────── */}
-      <Hero />
-
-      {/* ─── Platform Overview ────────────────────────────────────────────── */}
-      <PlatformOverview />
-
-      {/* ─── Why hosts choose StayStory ───────────────────────────────────── */}
-      <Benefits />
-
-      {/* ─── Proof ────────────────────────────────────────────────────────── */}
-      <Proof rating={rating} reviews={reviews} sourceHref={AIRBNB_URL} />
-
-      {/* ─── Built for the way you host ───────────────────────────────────── */}
-      <Audiences />
-
-      {/* ─── Final CTA ────────────────────────────────────────────────────── */}
-      <FinalCta rating={rating} reviews={reviews} />
+      {FOCUSED_HOMEPAGE ? (
+        <FocusedHomepage rating={rating} reviews={reviews} />
+      ) : (
+        <FullHomepage rating={rating} reviews={reviews} />
+      )}
 
       <SiteFooter />
 

@@ -45,3 +45,26 @@ export const PROPERTY_LIMITS: Record<string, number> = {
 // nothing is user-facing; flipping it back to false fully restores today's
 // behaviour with no data to unwind.
 export const FOCUSED_FIRST_RUN = false
+
+// ── FOCUSED HOMEPAGE ─────────────────────────────────────────────────────────
+// Which story the public homepage tells.
+//
+//   true  — the focused MVP homepage: Audit → Compass → three opportunities →
+//           Starter Playbook, with a bridge out to /platform for the rest.
+//   false — the original full-platform homepage, exactly as it was.
+//
+// Both compositions are real and permanent. Nothing about the original was
+// deleted or rewritten to make room for the focused one: they are two orderings
+// of the same components in src/components/marketing, so flipping this restores
+// the full homepage in one edit with nothing to rebuild.
+//
+// This is NOT the same switch as FOCUSED_FIRST_RUN above, and the two are
+// deliberately kept apart:
+//
+//   FOCUSED_HOMEPAGE   → what a visitor sees on the public marketing site
+//   FOCUSED_FIRST_RUN  → where a signed-in host is guided inside the product
+//
+// One can be on while the other is off. Combining them would mean the marketing
+// site could not be changed without changing the product, which is not a
+// relationship either of them should have.
+export const FOCUSED_HOMEPAGE = true

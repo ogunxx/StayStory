@@ -176,7 +176,23 @@ function ArrowCta({ label, href }: { label: string; href: string }) {
   )
 }
 
-export function Audiences() {
+/**
+ * `order` lets a page lead with the audiences it actually serves without
+ * editing the shared AUDIENCES array or dropping anyone from the page. Ids not
+ * listed keep their original position after the ones that are. Omit it and the
+ * section renders exactly as it always has.
+ */
+export function Audiences({ order }: { order?: string[] } = {}) {
+  const audiences = order
+    ? [...AUDIENCES].sort((a, b) => {
+        const rank = (id: string) => {
+          const i = order.indexOf(id)
+          return i === -1 ? order.length + AUDIENCES.findIndex((x) => x.id === id) : i
+        }
+        return rank(a.id) - rank(b.id)
+      })
+    : AUDIENCES
+
   return (
     <section id="audiences" className="px-6 py-20 lg:py-28">
       <div className="mx-auto w-full max-w-7xl">
@@ -193,7 +209,7 @@ export function Audiences() {
         </div>
 
         <ul className="mt-14 grid gap-5 lg:mt-16 lg:grid-cols-3">
-          {AUDIENCES.map((a) => {
+          {audiences.map((a) => {
             const Panel = PANELS[a.panel]
             return (
               <li
