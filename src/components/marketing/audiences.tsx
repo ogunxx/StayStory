@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 /**
  * Section 5 — Built for the way you host.
  *
@@ -18,7 +19,19 @@
  * would imply customers that don't exist, so nothing is filled in by default.
  */
 
-type PanelKey = 'score' | 'story' | 'team'
+export type PanelKey = 'score' | 'story' | 'team' | 'compass'
+
+/**
+ * Tailwind needs the whole class name in the source, so the column count is
+ * looked up rather than interpolated — the same approach platform-overview
+ * uses. Without this, showing two audiences would leave a third of the row
+ * empty.
+ */
+const AUDIENCE_COLS: Record<number, string> = {
+  1: 'lg:grid-cols-1',
+  2: 'lg:grid-cols-2',
+  3: 'lg:grid-cols-3',
+}
 
 export type Audience = {
   id: string
@@ -124,10 +137,31 @@ function TeamPanel() {
   )
 }
 
+/**
+ * The Compass as it looks once confirmed. Used on the focused homepage in
+ * place of the Story Builder panel, which names a tool that is not part of
+ * the experience a visitor can start today.
+ */
+function CompassPanel() {
+  return (
+    <PanelShell title="Experience Compass">
+      <p className="text-[0.62rem] leading-snug text-muted-foreground">Guests should feel</p>
+      <p className="text-[0.72rem] font-medium leading-snug text-foreground">
+        Like we&apos;ve been expecting them.
+      </p>
+      <p className="mt-1 text-[0.62rem] leading-snug text-muted-foreground">They should remember</p>
+      <p className="text-[0.72rem] font-medium leading-snug text-foreground">
+        The fire, after dark.
+      </p>
+    </PanelShell>
+  )
+}
+
 const PANELS: Record<PanelKey, () => React.ReactElement> = {
   score: ScorePanel,
   story: StoryPanel,
   team: TeamPanel,
+  compass: CompassPanel,
 }
 
 /* ── Image slot ───────────────────────────────────────────────────────── */
@@ -182,16 +216,32 @@ function ArrowCta({ label, href }: { label: string; href: string }) {
  * listed keep their original position after the ones that are. Omit it and the
  * section renders exactly as it always has.
  */
-export function Audiences({ order }: { order?: string[] } = {}) {
-  const audiences = order
-    ? [...AUDIENCES].sort((a, b) => {
-        const rank = (id: string) => {
-          const i = order.indexOf(id)
-          return i === -1 ? order.length + AUDIENCES.findIndex((x) => x.id === id) : i
-        }
-        return rank(a.id) - rank(b.id)
-      })
-    : AUDIENCES
+export function Audiences({
+  order,
+  only,
+  panels,
+}: {
+  order?: string[]
+  /**
+   * Show only these audiences. The focused homepage uses it to leave out
+   * Hospitality Teams, whose panel shows shared playbooks and co-hosts —
+   * functionality the focused experience does not include. The audience
+   * itself stays in AUDIENCES and on the full homepage.
+   */
+  only?: string[]
+  /** Swap an audience's preview panel without editing the shared array. */
+  panels?: Record<string, PanelKey>
+} = {}) {
+  let audiences = only ? AUDIENCES.filter((a) => only.includes(a.id)) : AUDIENCES
+  if (order) {
+    audiences = [...audiences].sort((a, b) => {
+      const rank = (id: string) => {
+        const i = order.indexOf(id)
+        return i === -1 ? order.length + AUDIENCES.findIndex((x) => x.id === id) : i
+      }
+      return rank(a.id) - rank(b.id)
+    })
+  }
 
   return (
     <section id="audiences" className="px-6 py-20 lg:py-28">
@@ -208,9 +258,9 @@ export function Audiences({ order }: { order?: string[] } = {}) {
           </p>
         </div>
 
-        <ul className="mt-14 grid gap-5 lg:mt-16 lg:grid-cols-3">
+        <ul className={cn('mt-14 grid gap-5 lg:mt-16', AUDIENCE_COLS[audiences.length] ?? 'lg:grid-cols-3')}>
           {audiences.map((a) => {
-            const Panel = PANELS[a.panel]
+            const Panel = PANELS[panels?.[a.id] ?? a.panel]
             return (
               <li
                 key={a.id}

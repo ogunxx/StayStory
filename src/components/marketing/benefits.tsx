@@ -137,7 +137,11 @@ function BenefitStory({ benefit, index }: { benefit: Benefit; index: number }) {
   )
 }
 
-export function Benefits() {
+/**
+ * `benefits` lets a composition tell the same three stories with copy suited
+ * to what it is selling. Omit it and the section is exactly what it was.
+ */
+export function Benefits({ benefits = BENEFITS }: { benefits?: Benefit[] } = {}) {
   return (
     <section id="benefits" className="px-6 py-20 lg:py-28">
       <div className="mx-auto w-full max-w-7xl">
@@ -176,7 +180,7 @@ export function Benefits() {
 
         {/* ── Benefit stories ─────────────────────────────────────────── */}
         <div className="mt-16 flex flex-col gap-16 lg:mt-20 lg:gap-24">
-          {BENEFITS.map((b, i) => (
+          {benefits.map((b, i) => (
             <BenefitStory key={b.id} benefit={b} index={i} />
           ))}
         </div>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { SiteNav } from '@/components/marketing/site-nav'
 import { SiteFooter } from '@/components/marketing/site-footer'
 import { PlatformHero } from '@/components/marketing/platform-hero'
+import { PlatformToday, PlatformDirection } from '@/components/marketing/platform-today'
 import { PlatformSystem } from '@/components/marketing/platform-system'
 import { PlatformDeepDives } from '@/components/marketing/platform-deep-dives'
 import { PlatformConnected } from '@/components/marketing/platform-connected'
@@ -38,13 +39,21 @@ export default function PlatformPage() {
       <SiteNav active="/platform" />
       <main className="flex-1">
         <PlatformHero />
+
+        {/* What a visitor can use today, answered first. */}
+        <PlatformToday />
+
+        {/* Everything below is the broader direction. Saying so once is what
+            lets the original sections stay exactly as they were written. */}
+        <PlatformDirection />
         <PlatformSystem />
         <PlatformDeepDives />
         <PlatformConnected />
         <FinalCta
           layout="band"
           headline="Ready to design a stay guests remember?"
-          supporting="Bring your guest experience into one connected system and start designing the moments, details, and stories that make a stay memorable."
+          supporting="Begin with the Experience Audit — the guided journey available today — and build from there as StayStory grows."
+          primaryLabel="Start Your Experience Audit"
           secondaryLabel="Explore the Method"
           secondaryHref="/method"
         />

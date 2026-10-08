@@ -20,6 +20,8 @@ export type HeroProps = {
   primary?: { label: string; href: string }
   secondary?: { label: string; href: string }
   reassurance?: string[]
+  /** The panel beside the message. Defaults to the full platform preview. */
+  preview?: React.ReactNode
 }
 
 function TickIcon() {
@@ -38,6 +40,7 @@ export function Hero({
   primary = { label: 'Start Free', href: '/signup' },
   secondary = { label: 'See the Platform', href: '/platform' },
   reassurance = REASSURANCE,
+  preview = <ProductPreview />,
 }: HeroProps = {}) {
   const lead = headline.slice(0, -1)
   const last = headline[headline.length - 1]
@@ -100,9 +103,7 @@ export function Hero({
         </div>
 
         {/* ── Product preview ───────────────────────────────────────────── */}
-        <div className="lg:pl-4">
-          <ProductPreview />
-        </div>
+        <div className="lg:pl-4">{preview}</div>
       </div>
     </section>
   )

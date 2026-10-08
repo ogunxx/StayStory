@@ -10,6 +10,7 @@ import { ctaOnDarkPrimary, ctaOnDarkSecondary } from './cta-styles'
  *   • headline / supporting copy   → `headline`, `supporting`
  *   • primary CTA                  → `primaryLabel`, `primaryHref`
  *   • secondary CTA                → `secondaryLabel`, `secondaryHref`
+ *     (secondaryLabel="" leaves the primary as the only choice)
  *   • reassurance points           → `reassurance` (each item independent)
  *
  * On the supporting line: the mockup reads "Join thousands of hosts…", which
@@ -177,12 +178,11 @@ export function FinalCta({
               >
                 {primaryLabel}
               </Link>
-              <Link
-                href={secondaryHref}
-                className={ctaOnDarkSecondary}
-              >
-                {secondaryLabel}
-              </Link>
+              {secondaryLabel && (
+                <Link href={secondaryHref} className={ctaOnDarkSecondary}>
+                  {secondaryLabel}
+                </Link>
+              )}
             </div>
 
             {/* Mobile keeps the brief's order: CTAs, then reassurance. */}
@@ -217,12 +217,14 @@ export function FinalCta({
               <span aria-hidden className="ml-2">→</span>
             </Link>
 
-            <a
-              href={secondaryHref}
-              className="text-sm font-medium text-background/80 underline underline-offset-4 transition-colors hover:text-background"
-            >
-              {secondaryLabel}
-            </a>
+            {secondaryLabel && (
+              <a
+                href={secondaryHref}
+                className="text-sm font-medium text-background/80 underline underline-offset-4 transition-colors hover:text-background"
+              >
+                {secondaryLabel}
+              </a>
+            )}
 
             <ul className="mt-1 flex flex-wrap items-center gap-x-5 gap-y-2 lg:justify-center">
               {reassurance.map((item) => (

@@ -128,7 +128,13 @@ export function HomeJourney({
 }: {
   steps?: JourneyStep[]
   heading?: typeof JOURNEY_HEADING
-  bridge?: typeof BRIDGE
+  /**
+   * null leaves the journey as the whole of the section. The focused homepage
+   * passes null: a first-time visitor should finish this section understanding
+   * one process, not holding a second, larger system in their head as well.
+   * The copy itself is kept and reused on /platform, where someone has asked.
+   */
+  bridge?: typeof BRIDGE | null
 }) {
   return (
     <section id="how-it-works" className="scroll-mt-24 px-6 py-20 lg:py-28">
@@ -149,18 +155,20 @@ export function HomeJourney({
           ))}
         </ol>
 
-        {/* ── Bridge to the rest of the platform ─────────────────────────── */}
-        <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 sm:p-8 lg:mt-14 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-          <div className="max-w-2xl">
-            <h3 className="font-serif text-xl font-semibold text-foreground">{bridge.title}</h3>
-            <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
-              {bridge.body}
-            </p>
+        {bridge && (
+          <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-border bg-card p-6 sm:p-8 lg:mt-14 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+            <div className="max-w-2xl">
+              <h3 className="font-serif text-xl font-semibold text-foreground">{bridge.title}</h3>
+              <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">
+                {bridge.body}
+              </p>
+            </div>
+            <Link href={bridge.ctaHref} className={cn(ctaTextLink, 'shrink-0')}>
+              {bridge.ctaLabel} <span aria-hidden>→</span>
+            </Link>
           </div>
-          <Link href={bridge.ctaHref} className={cn(ctaTextLink, 'shrink-0')}>
-            {bridge.ctaLabel} <span aria-hidden>→</span>
-          </Link>
-        </div>
+        )}
+
       </div>
     </section>
   )
