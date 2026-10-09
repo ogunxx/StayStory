@@ -35,16 +35,22 @@ export const PROPERTY_LIMITS: Record<string, number> = {
 // Whether a brand-new host is guided along the focused path (/start) instead
 // of landing straight in the full six-tool product.
 //
-// OFF on purpose. The path's structure exists and stages 1 and 2 work, but
-// stages 3 to 5 — the three recommendations, the starter playbook and the
-// feedback step — have not been built yet, so nobody should be routed into it.
-// Turn this on only once those exist.
+// ON. Stages 1 to 3 — the Audit, the Compass and the three recommendations —
+// are built and are what the public homepage now promises, so landing a new
+// host in the full six-tool Dashboard contradicts the page they arrived from.
+// Stage 4 (Starter Playbook) is still unbuilt and shows as "Coming soon"; the
+// routing does not depend on it.
+//
+// Who this applies to is JourneyState.isNewHost — a host with nothing stored
+// at all. Any single piece of saved work ends it, so the detour happens at
+// most once, and /dashboard?full=1 skips it outright. An established host is
+// never affected.
 //
 // This is one constant rather than a feature-flag framework because one
 // boolean is all that's needed. Nothing about it is stored per user and
-// nothing is user-facing; flipping it back to false fully restores today's
+// nothing is user-facing; flipping it back to false fully restores the old
 // behaviour with no data to unwind.
-export const FOCUSED_FIRST_RUN = false
+export const FOCUSED_FIRST_RUN = true
 
 // ── FOCUSED HOMEPAGE ─────────────────────────────────────────────────────────
 // Which story the public homepage tells.

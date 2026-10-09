@@ -57,8 +57,27 @@ export type JourneyState = {
    * True until the host has opened any of the tools past the Compass. Derived
    * from stored work, not a flag on the user, and defined here once so the
    * Dashboard and the focused path can never disagree about it.
+   *
+   * This shapes what the focused path *shows*. It is deliberately not what
+   * decides whether to redirect someone — see isNewHost.
    */
   isFirstRun: boolean
+  /**
+   * True only when this host has nothing at all: no Audit, no Compass, no
+   * Blueprint, no Generator work, no Story, no Playbook.
+   *
+   * This is the one that gates the first-run redirect, and it is stricter
+   * than isFirstRun on purpose. isFirstRun stays true for a host who has
+   * finished the Audit, the Compass and their recommendations but never
+   * opened the Blueprint — routing on it would send that host from the
+   * Dashboard back to /start on every visit, with no way to reach the
+   * Dashboard again. A redirect that cannot be escaped is worse than the
+   * problem it solves.
+   *
+   * Because any single piece of stored work flips it to false, the guided
+   * detour happens at most once and then stops for good.
+   */
+  isNewHost: boolean
 }
 
 /**
@@ -232,5 +251,12 @@ export async function getJourneyState(
     focusedSetExists: focused.exists,
     focusedStale: focused.stale,
     isFirstRun: blueprintTouchpoints === 0 && storyCount === 0 && playbookCount === 0,
+    isNewHost:
+      auditCount === 0 &&
+      compassFilled === 0 &&
+      blueprintTouchpoints === 0 &&
+      suggestionCount === 0 &&
+      storyCount === 0 &&
+      playbookCount === 0,
   }
 }

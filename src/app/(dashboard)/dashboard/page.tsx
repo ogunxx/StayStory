@@ -20,7 +20,20 @@ import { CompassSummary, JourneySteps, NextStepCard, RecommendationsCard } from 
  * no progress model of its own.
  */
 
-export default async function DashboardPage() {
+/**
+ * `?full=1` skips the first-run detour and loads the Dashboard.
+ *
+ * Guided onboarding should be a door, not a lock. /start links here with it,
+ * so a brand-new host who wants the whole product can always get to it — and
+ * without it, that link would bounce straight back to /start and look broken.
+ */
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const wantsFullDashboard = (await searchParams).full === '1'
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const tier = await getUserTier()
@@ -31,10 +44,13 @@ export default async function DashboardPage() {
   const propertyId = await resolveActivePropertyId(user!.id)
   const journey = await getJourneyState(user!.id, propertyId, isLegendary)
 
-  // With FOCUSED_FIRST_RUN on, a host who hasn't been past the Compass is
-  // guided along the focused path instead of landing here. Off — which is how
-  // it ships — this is never true and everyone sees the full dashboard.
-  if (shouldGuideToFocusedPath(journey.isFirstRun)) redirect('/start')
+  // A host with nothing stored yet is guided to the focused journey instead
+  // of being handed the whole system to choose from. isNewHost, not
+  // isFirstRun: see journey-state.ts for why routing on the looser one would
+  // trap a host who finished the focused path but never opened the Blueprint.
+  if (!wantsFullDashboard && shouldGuideToFocusedPath(journey.isNewHost)) {
+    redirect('/start')
+  }
 
   // Monthly generator usage for free users. Focused recommendation sets live
   // in the same table but are not Generator work, so they're excluded here the
@@ -55,11 +71,19 @@ export default async function DashboardPage() {
       {/* Welcome */}
       <div>
         <h1 className="text-3xl font-serif font-semibold text-foreground mb-2">
-          Welcome back, {name}.
+          {journey.isNewHost ? `Welcome to StayStory, ${name}.` : `Welcome back, ${name}.`}
         </h1>
         <p className="text-muted-foreground">
           Every unforgettable stay starts with intention. Let&apos;s make a guest feel seen today.
         </p>
+        {/* The guided journey stays one click away from here, so a host who
+            came in through it can always pick it back up. */}
+        <Link
+          href="/start"
+          className="mt-3 inline-block text-sm font-medium text-primary underline underline-offset-4"
+        >
+          Follow the guided journey →
+        </Link>
       </div>
 
       {/* Free tier usage banner */}

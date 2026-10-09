@@ -177,7 +177,9 @@ export default async function StartPage() {
 
       <p className="border-t border-border pt-6 text-sm text-muted-foreground">
         Looking for everything else?{' '}
-        <Link href="/dashboard" className="text-primary underline underline-offset-4">
+        {/* ?full=1 so this doesn't bounce straight back here while the host
+            still has nothing stored. Guided, not locked in. */}
+        <Link href="/dashboard?full=1" className="text-primary underline underline-offset-4">
           Open your full dashboard
         </Link>
         .
