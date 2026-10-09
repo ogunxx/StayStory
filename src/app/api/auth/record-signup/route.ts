@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { signupIpLimitEnabled } from '@/lib/signup-guard'
 
 function getIP(request: Request): string {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -8,9 +9,9 @@ function getIP(request: Request): string {
 }
 
 export async function POST(request: Request) {
-  // When the IP limit is disabled we don't record IPs, so the table stays clean
-  // for when the guard is switched back on.
-  if (process.env.SIGNUP_IP_LIMIT_ENABLED === 'false') {
+  // Nothing is recorded where the guard doesn't apply, so preview and local
+  // signups never leave rows that would block a real person later.
+  if (!signupIpLimitEnabled()) {
     return NextResponse.json({ ok: true })
   }
 

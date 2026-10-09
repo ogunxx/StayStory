@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { signupIpLimitEnabled } from '@/lib/signup-guard'
 
 function getIP(request: Request): string {
   const forwarded = request.headers.get('x-forwarded-for')
@@ -8,9 +9,9 @@ function getIP(request: Request): string {
 }
 
 export async function POST(request: Request) {
-  // Master switch for the one-account-per-IP guard. Set SIGNUP_IP_LIMIT_ENABLED
-  // to "false" (e.g. while testing) to allow unlimited signups per IP.
-  if (process.env.SIGNUP_IP_LIMIT_ENABLED === 'false') {
+  // Production only — see signup-guard.ts. On a preview the second person in
+  // a household would otherwise be refused before reaching the form.
+  if (!signupIpLimitEnabled()) {
     return NextResponse.json({ allowed: true })
   }
 
