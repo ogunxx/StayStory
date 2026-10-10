@@ -8,7 +8,7 @@ import { isDisposableEmail } from '@/lib/disposable-domains'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { LEGENDARY_PRICE } from '@/lib/config'
+import { FOCUSED_FREE_LAUNCH, LEGENDARY_PRICE } from '@/lib/config'
 
 function SignupForm() {
   const searchParams = useSearchParams()
@@ -115,8 +115,10 @@ function SignupForm() {
             </p>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground mb-8">
-            Free to start, no card needed — begin becoming the host your guests never forget.
+          <p className="text-sm leading-relaxed text-muted-foreground mb-8">
+            Start with your Experience Audit. From there, StayStory will help you shape your
+            Experience Compass, uncover three personalized opportunities, and turn those insights
+            into a Starter Playbook. Free to start, no card needed.
           </p>
         )}
 
@@ -157,11 +159,20 @@ function SignupForm() {
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Creating account…' : isLegendary ? 'Create account & continue to payment →' : 'Create free account'}
+            {loading
+              ? 'Creating account…'
+              : isLegendary
+                ? 'Create account & continue to payment →'
+                : 'Create account & start my Audit →'}
           </Button>
         </form>
 
-        {!isLegendary && (
+        {/* The only link in the app that led to the paid signup screen. While
+            the focused journey is the free starting point, offering checkout
+            to someone who has not yet run an Audit contradicts the page they
+            arrived from. The route still exists and still works — see
+            FOCUSED_FREE_LAUNCH. */}
+        {!isLegendary && !FOCUSED_FREE_LAUNCH && (
           <p className="text-xs text-muted-foreground text-center mt-4">
             Want Legendary from the start?{' '}
             <Link href="/signup?plan=legendary" className="text-primary hover:underline">

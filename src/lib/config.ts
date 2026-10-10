@@ -74,3 +74,25 @@ export const FOCUSED_FIRST_RUN = true
 // site could not be changed without changing the product, which is not a
 // relationship either of them should have.
 export const FOCUSED_HOMEPAGE = true
+
+// ── FOCUSED FREE LAUNCH ──────────────────────────────────────────────────────
+// Whether signup offers the paid plan as a starting point.
+//
+//   true  — signup is about starting the Audit, and nothing on it invites a
+//           brand-new host into a checkout before they have used anything.
+//   false — the "Sign up as Legendary" route is offered again at signup.
+//
+// Worth being exact about what this does NOT do, because the name could
+// suggest otherwise: it grants nothing and unlocks nothing. The focused
+// journey was never behind a paywall. The Audit, the Compass, the three
+// recommendations and their API routes contain no tier check, middleware has
+// no subscription gate, and the Free plan already exists on the Pricing page.
+// Every link in the app points at plain /signup, which has always read "Free
+// to start, no card needed".
+//
+// The only way to reach the $29 screen was a link on the signup page offering
+// it. This decides whether that link is there. Stripe, the Legendary plan, the
+// /signup?plan=legendary flow and the checkout redirect in the auth callback
+// are all untouched and still work — they are simply not advertised to someone
+// who has not yet seen what StayStory does.
+export const FOCUSED_FREE_LAUNCH = true
