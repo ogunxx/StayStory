@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { ResendConfirmation } from '@/components/auth/resend-confirmation'
 
 /**
  * What a confirmation link that didn't work should say. The callback route
@@ -34,7 +35,13 @@ const NOTICES: Record<string, { title: string; body: string }> = {
  * step left. It reuses the same notice panel as an expired link above.
  * Everything that genuinely is an error keeps its own wording and stays red.
  */
-type SignInFeedback = { tone: 'error' | 'notice'; title?: string; text: string }
+type SignInFeedback = {
+  tone: 'error' | 'notice'
+  title?: string
+  text: string
+  /** Only for the unconfirmed case, where the account is known to exist. */
+  canResend?: boolean
+}
 
 function signInFeedback(error: { code?: string; message: string }): SignInFeedback {
   const unconfirmed =
@@ -47,6 +54,7 @@ function signInFeedback(error: { code?: string; message: string }): SignInFeedba
     tone: 'notice',
     title: 'One step left — confirm your email',
     text: 'Look for the confirmation link in your inbox, and in your spam or junk folder, which is where it often ends up.',
+    canResend: true,
   }
 }
 
@@ -105,7 +113,15 @@ function LoginForm() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-baseline justify-between gap-3">
+              <Label htmlFor="password">Password</Label>
+              <Link
+                href="/forgot-password"
+                className="text-xs text-primary hover:underline"
+              >
+                Forgot it?
+              </Link>
+            </div>
             <Input
               id="password"
               type="password"
@@ -122,6 +138,7 @@ function LoginForm() {
                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                   {feedback.text}
                 </p>
+                {feedback.canResend && <ResendConfirmation email={email} />}
               </div>
             ) : (
               <p className="text-sm text-destructive">{feedback.text}</p>

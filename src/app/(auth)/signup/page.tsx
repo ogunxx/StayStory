@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { isDisposableEmail } from '@/lib/disposable-domains'
 import { checkPwnedPassword } from '@/lib/pwned-password'
+import { ResendConfirmation } from '@/components/auth/resend-confirmation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -124,6 +125,7 @@ function SignupForm() {
             emails sometimes end up there. Marking it &ldquo;not spam&rdquo; will help the
             rest of your StayStory emails arrive where they should.
           </p>
+          <ResendConfirmation email={email} />
         </div>
       </div>
     )

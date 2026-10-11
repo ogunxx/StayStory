@@ -21,6 +21,22 @@ function toLogin(origin: string, notice: Notice) {
   return NextResponse.redirect(`${origin}/login?notice=${notice}`)
 }
 
+/**
+ * Where a link may send someone once its code has been exchanged.
+ *
+ * Supabase does not tell us what kind of link was clicked — a confirmation
+ * and a password reset both arrive here with nothing but a code — so the
+ * sender says where it is going by putting a key in its own redirect URL.
+ *
+ * A key, not a path. The value comes off a query string, and anything that
+ * turned a query string into a redirect target would be an open redirect: a
+ * link that looks like staystory.co but lands somewhere else. Only these
+ * destinations exist, and anything unrecognised falls back to the dashboard.
+ */
+const DESTINATIONS: Record<string, string> = {
+  reset: '/reset-password',
+}
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
 
@@ -43,6 +59,9 @@ export async function GET(request: Request) {
     console.error('Auth callback exchange failed:', exchangeError.message)
     return toLogin(origin, 'link_invalid')
   }
+
+  const destination = DESTINATIONS[searchParams.get('next') ?? '']
+  if (destination) return NextResponse.redirect(`${origin}${destination}`)
 
   const plan = searchParams.get('plan')
   const next = plan === 'legendary' ? '/pricing' : '/dashboard'
