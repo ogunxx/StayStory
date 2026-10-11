@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { isPaidPlanId } from '@/lib/plans'
 import { NextResponse } from 'next/server'
 
 /**
@@ -63,7 +64,10 @@ export async function GET(request: Request) {
   const destination = DESTINATIONS[searchParams.get('next') ?? '']
   if (destination) return NextResponse.redirect(`${origin}${destination}`)
 
+  // Someone who picked a paid plan before creating an account lands on the
+  // in-app upgrade screen with that plan already chosen, rather than on the
+  // public pricing page where they cannot buy anything.
   const plan = searchParams.get('plan')
-  const next = plan === 'legendary' ? '/pricing' : '/dashboard'
+  const next = isPaidPlanId(plan) ? `/upgrade?plan=${plan}` : '/dashboard'
   return NextResponse.redirect(`${origin}${next}`)
 }

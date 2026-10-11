@@ -37,7 +37,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: '/story', label: 'Story Builder' },
     { href: '/legend', label: 'Guest Journey Playbook' },
     { href: '/history', label: 'History' },
-    { href: '/pricing', label: 'Upgrade' },
+    { href: '/upgrade', label: 'Upgrade' },
     ...(isAdmin ? [{ href: '/admin', label: 'Members' }] : []),
   ]
 

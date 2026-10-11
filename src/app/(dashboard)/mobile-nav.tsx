@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { href: '/story', label: 'Story Builder' },
   { href: '/legend', label: 'Guest Journey Playbook' },
   { href: '/history', label: 'History' },
-  { href: '/pricing', label: 'Upgrade' },
+  { href: '/upgrade', label: 'Upgrade' },
 ]
 
 export function MobileNav({

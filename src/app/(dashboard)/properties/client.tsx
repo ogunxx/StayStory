@@ -74,7 +74,7 @@ export default function PropertiesClient({
           {limit === 1 ? (
             <>
               Your plan includes one property.{' '}
-              <Link href="/pricing" className="text-primary underline underline-offset-2">
+              <Link href="/upgrade" className="text-primary underline underline-offset-2">
                 Upgrade to Portfolio
               </Link>{' '}
               to run up to five and invite your co-hosts.
@@ -123,7 +123,7 @@ export default function PropertiesClient({
             </p>
             {limit === 1 && (
               <Link
-                href="/pricing"
+                href="/upgrade"
                 className="inline-block mt-3 text-xs font-medium text-primary underline underline-offset-2"
               >
                 Scale with Portfolio →

@@ -10,11 +10,17 @@ import { ResendConfirmation } from '@/components/auth/resend-confirmation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FOCUSED_FREE_LAUNCH, LEGENDARY_PRICE } from '@/lib/config'
+import { FOCUSED_FREE_LAUNCH } from '@/lib/config'
+import { isPaidPlanId, planById } from '@/lib/plans'
 
 function SignupForm() {
   const searchParams = useSearchParams()
-  const isLegendary = searchParams.get('plan') === 'legendary'
+  // Either paid plan can be chosen before the account exists. The plan rides
+  // through confirmation on the callback URL so it survives the email round
+  // trip and the host lands back on it.
+  const requestedPlan = searchParams.get('plan')
+  const paidPlan = isPaidPlanId(requestedPlan) ? requestedPlan : null
+  const plan = paidPlan ? planById(paidPlan) : undefined
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -60,8 +66,8 @@ function SignupForm() {
       // If check fails, allow signup to proceed
     }
 
-    const callbackUrl = isLegendary
-      ? `${window.location.origin}/api/auth/callback?plan=legendary`
+    const callbackUrl = paidPlan
+      ? `${window.location.origin}/api/auth/callback?plan=${paidPlan}`
       : `${window.location.origin}/api/auth/callback`
 
     const { data, error } = await supabase.auth.signUp({
@@ -86,7 +92,7 @@ function SignupForm() {
     // their inbox would leave them waiting for an email that never comes. Go
     // where the confirmation link would have taken them instead.
     if (data.session) {
-      router.push(isLegendary ? '/pricing' : '/dashboard')
+      router.push(paidPlan ? `/upgrade?plan=${paidPlan}` : '/dashboard')
       router.refresh()
       return
     }
@@ -104,9 +110,10 @@ function SignupForm() {
         <p className="text-muted-foreground max-w-sm">
           We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account.
         </p>
-        {isLegendary && (
+        {plan && (
           <p className="text-sm text-primary mt-4 max-w-sm">
-            After verifying, you'll be taken straight to checkout to complete your Legendary subscription.
+            After verifying, we&apos;ll take you straight to checkout to complete your {plan.name}{' '}
+            subscription.
           </p>
         )}
 
@@ -139,11 +146,13 @@ function SignupForm() {
       <div className="w-full max-w-sm">
         <h1 className="text-2xl font-serif font-semibold mb-1 text-foreground">Create your account</h1>
 
-        {isLegendary ? (
+        {plan ? (
           <div className="mt-2 mb-6 bg-primary/10 border border-primary/20 rounded-xl px-4 py-3">
-            <p className="text-sm font-semibold text-foreground">Starting with Legendary — {LEGENDARY_PRICE}</p>
+            <p className="text-sm font-semibold text-foreground">
+              Starting with {plan.name} — ${plan.monthly}/month
+            </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Create your account, verify your email, then complete payment. The whole system, unlimited.
+              Create your account, verify your email, then complete payment. {plan.promise}
             </p>
           </div>
         ) : (
@@ -193,7 +202,7 @@ function SignupForm() {
           <Button type="submit" disabled={loading} className="w-full">
             {loading
               ? 'Creating account…'
-              : isLegendary
+              : paidPlan
                 ? 'Create account & continue to payment →'
                 : 'Create account & start my Audit →'}
           </Button>
@@ -204,7 +213,7 @@ function SignupForm() {
             to someone who has not yet run an Audit contradicts the page they
             arrived from. The route still exists and still works — see
             FOCUSED_FREE_LAUNCH. */}
-        {!isLegendary && !FOCUSED_FREE_LAUNCH && (
+        {!paidPlan && !FOCUSED_FREE_LAUNCH && (
           <p className="text-xs text-muted-foreground text-center mt-4">
             Want Legendary from the start?{' '}
             <Link href="/signup?plan=legendary" className="text-primary hover:underline">

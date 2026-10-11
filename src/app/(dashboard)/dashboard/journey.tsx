@@ -233,7 +233,7 @@ export function JourneySteps({ steps }: { steps: JourneyStep[] }) {
       {steps.some((s) => s.limitedOnFreePlan) && (
         <p className="mt-4 text-xs text-muted-foreground">
           Every step is open to you. Some have limits on the free plan —{' '}
-          <Link href="/pricing" className="underline underline-offset-4 hover:text-foreground">
+          <Link href="/upgrade" className="underline underline-offset-4 hover:text-foreground">
             Legendary removes them
           </Link>
           .

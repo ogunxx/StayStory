@@ -179,12 +179,12 @@ export default function AccountClient({ email, profile, suggestions, stories, au
 
         <div className="border-t border-border px-6 py-4 flex flex-wrap gap-3">
           {!isPaid && (
-            <Link href="/pricing" className={cn(buttonVariants({ size: 'sm' }))}>
+            <Link href="/upgrade" className={cn(buttonVariants({ size: 'sm' }))}>
               Upgrade plan →
             </Link>
           )}
           {isPaid && tier !== 'legendary' && (
-            <Link href="/pricing" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
+            <Link href="/upgrade" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
               Upgrade plan
             </Link>
           )}

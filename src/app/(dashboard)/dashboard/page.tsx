@@ -104,7 +104,7 @@ export default async function DashboardPage({
                 : 'Free plan includes 1 generation/month. Upgrade to Legendary for unlimited.'}
             </p>
           </div>
-          <Link href="/pricing" className={cn(buttonVariants({ size: 'sm' }), 'shrink-0')}>
+          <Link href="/upgrade" className={cn(buttonVariants({ size: 'sm' }), 'shrink-0')}>
             Upgrade to Legendary →
           </Link>
         </div>
@@ -166,7 +166,7 @@ export default async function DashboardPage({
             <p className="text-sm font-semibold text-foreground">Go Legendary — {LEGENDARY_PRICE}</p>
             <p className="text-xs text-muted-foreground mt-1">Every tool unlimited, your custom playbook, and priority support — {LEGENDARY_PRICE}.</p>
           </div>
-          <Link href="/pricing" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'shrink-0')}>
+          <Link href="/upgrade" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'shrink-0')}>
             See Legendary →
           </Link>
         </div>
