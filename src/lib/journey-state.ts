@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getOrCreateCompass, getPendingContributions } from '@/lib/compass'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 import { decideNextStep, type NextStep, type StepId, type StepStatus } from '@/lib/journey-sequence'
-import { getFocusedSetState } from '@/lib/focused-recommendations'
+import { getStarterPlaybookState } from '@/lib/focused-playbook'
 import type { CompassField, ExperienceCompass } from '@/types'
 
 export { STATUS_LABEL } from '@/lib/journey-sequence'
@@ -53,6 +53,10 @@ export type JourneyState = {
   focusedSetExists: boolean
   /** True when those recommendations predate a change to the Audit or Compass. */
   focusedStale: boolean
+  /** Whether a Starter Playbook has been built for this property. */
+  starterPlaybookExists: boolean
+  /** True when it was built from an older set of recommendations. */
+  starterPlaybookStale: boolean
   /**
    * True until the host has opened any of the tools past the Compass. Derived
    * from stored work, not a flag on the user, and defined here once so the
@@ -139,7 +143,7 @@ export async function getJourneyState(
     propertyId
       ? blueprintQuery.eq('property_id', propertyId)
       : blueprintQuery.is('property_id', null),
-    getFocusedSetState(userId, propertyId),
+    getStarterPlaybookState(userId, propertyId),
   ])
 
   const auditCount = audits.count ?? 0
@@ -237,7 +241,7 @@ export async function getJourneyState(
     suggestionCount,
     storyCount,
     playbookCount,
-    focusedSetExists: focused.exists,
+    focusedSetExists: focused.recommendationsExist,
   })
 
   return {
@@ -248,8 +252,12 @@ export async function getJourneyState(
     highlights,
     compassFilled,
     compassTotal: ALL_COMPASS_FIELDS.length,
-    focusedSetExists: focused.exists,
-    focusedStale: focused.stale,
+    // One read answers both stages: getStarterPlaybookState already has to
+    // look at the recommendations to know whether a playbook is current.
+    focusedSetExists: focused.recommendationsExist,
+    focusedStale: focused.recommendationsStale,
+    starterPlaybookExists: focused.exists,
+    starterPlaybookStale: focused.stale,
     isFirstRun: blueprintTouchpoints === 0 && storyCount === 0 && playbookCount === 0,
     isNewHost:
       auditCount === 0 &&

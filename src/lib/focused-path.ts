@@ -12,12 +12,12 @@ import { getJourneyState } from '@/lib/journey-state'
  *   1  Tell us about the stay        → the existing Experience Audit
  *   2  See what we're learning       → the existing Experience Compass
  *   3  Three things you could create → the Generator, fed Audit + Compass
- *   4  Your starter playbook         → not built yet
+ *   4  Your Starter Playbook         → /start/playbook
  *   5  Tell us what was useful       → not built yet
  *
- * Stages 4 and 5 are declared here but marked unavailable. Declaring them is
- * the point: the shape of the path is settled, and each one becomes reachable
- * by building it and flipping `available`. Nothing here duplicates the Audit,
+ * Stage 5 is declared here but marked unavailable. Declaring it is the point:
+ * the shape of the path is settled, and it becomes reachable by building it
+ * and flipping `available` — which is exactly how Stage 4 arrived. Nothing here duplicates the Audit,
  * the Compass, the Generator or the Playbook — stages 1 and 2 link straight
  * at the real tools.
  */
@@ -69,6 +69,12 @@ export type FocusedProgress = {
   auditDone: boolean
   compassConfirmed: boolean
   recommendationsReady: boolean
+  /** Those recommendations predate an Audit or Compass change. */
+  recommendationsStale: boolean
+  /** A Starter Playbook exists for this property. */
+  starterPlaybookReady: boolean
+  /** It was built from an older set of recommendations. */
+  starterPlaybookStale: boolean
   blueprintStarted: boolean
   storyStarted: boolean
   playbookBuilt: boolean
@@ -130,12 +136,26 @@ export function buildFocusedStages(p: FocusedProgress): {
     {
       id: 'starter_playbook',
       position: 4,
-      title: 'Leave with a starter playbook',
+      // Built. Reachable, and it states its own condition rather than being a
+      // generic "Later" — a host should be able to tell at a glance whether
+      // theirs is ready, waiting to be made, or out of step with Stage 3.
+      title: 'Leave with a Starter Playbook',
       summary:
-        'What you want guests to feel, what they should remember, and the moments worth designing first — in one place.',
-      status: 'upcoming',
-      href: null,
-      available: false,
+        'Your three opportunities turned into a practical starting plan — what you are designing, ways to begin, and one first step for each.',
+      status: !p.recommendationsReady
+        ? 'upcoming'
+        : p.starterPlaybookReady && !p.starterPlaybookStale
+          ? 'done'
+          : 'active',
+      href: '/start/playbook',
+      available: true,
+      statusLabel: !p.recommendationsReady
+        ? undefined
+        : p.starterPlaybookStale
+          ? 'Update available'
+          : p.starterPlaybookReady
+            ? 'Starter Playbook ready'
+            : undefined,
     },
     {
       id: 'feedback',
@@ -164,6 +184,9 @@ export async function getFocusedPath(
     auditDone: byId.audit?.status === 'completed',
     compassConfirmed: Boolean(journey.compass.confirmed_at),
     recommendationsReady: journey.focusedSetExists,
+    recommendationsStale: journey.focusedStale,
+    starterPlaybookReady: journey.starterPlaybookExists,
+    starterPlaybookStale: journey.starterPlaybookStale,
     blueprintStarted: byId.blueprint?.status !== 'not_started',
     storyStarted: byId.story?.status !== 'not_started',
     playbookBuilt: byId.playbook?.status === 'completed',

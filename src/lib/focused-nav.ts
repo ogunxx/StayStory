@@ -10,8 +10,12 @@ import { FOCUSED_FIRST_RUN } from '@/lib/config'
  * so both sides can use it.
  */
 /**
- * The navigation a host sees while they're inside the focused path: the three
+ * The navigation a host sees while they're inside the focused path: the four
  * stages that exist, plus their account.
+ *
+ * Starter Playbook stays listed before one has been built. The route explains
+ * what has to happen first and links to it, which is more use than a nav item
+ * that appears only once you no longer need to be told where it is.
  *
  * This is hierarchy, not access. Every other route stays exactly where it is
  * and keeps working — a host can type /journey or /generator and land there as
@@ -23,6 +27,7 @@ export const FOCUSED_NAV: { href: string; label: string }[] = [
   { href: '/audit', label: 'Experience Audit' },
   { href: '/compass', label: 'Experience Compass' },
   { href: '/start/recommendations', label: 'Recommendations' },
+  { href: '/start/playbook', label: 'Starter Playbook' },
   { href: '/account', label: 'Account' },
 ]
 

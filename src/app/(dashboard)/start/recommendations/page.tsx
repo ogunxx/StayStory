@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { resolveActivePropertyId } from '@/lib/active-property'
 import { getOrCreateFocusedSet } from '@/lib/focused-recommendations'
+import { getStarterPlaybookState } from '@/lib/focused-playbook'
 import RecommendationsClient from './recommendations-client'
 
 export const metadata: Metadata = { title: 'Three opportunities — StayStory' }
@@ -22,10 +23,18 @@ export default async function RecommendationsPage() {
 
   const propertyId = await resolveActivePropertyId(user.id)
   const result = await getOrCreateFocusedSet(user.id, propertyId)
+  if (!result.ok) return <RecommendationsClient blocked={result.reason} />
 
-  return result.ok ? (
-    <RecommendationsClient set={result.set} stale={result.stale} />
-  ) : (
-    <RecommendationsClient blocked={result.reason} />
+  // Read after the set is settled, so a first visit that just generated one
+  // reports Stage 4 against the set the host is actually looking at.
+  const playbook = await getStarterPlaybookState(user.id, propertyId)
+
+  return (
+    <RecommendationsClient
+      set={result.set}
+      stale={result.stale}
+      playbookExists={playbook.exists}
+      playbookStale={playbook.stale}
+    />
   )
 }

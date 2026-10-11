@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { generateFocusedRecommendations, type FocusedRecommendation } from '@/lib/anthropic'
 import { buildFocusedContext, type FocusedContext } from '@/lib/focused-context'
+import { FOCUSED_KINDS, FOCUSED_RECOMMENDATIONS_KIND } from '@/lib/focused-kinds'
 
 /**
  * Where the focused path's recommendations live.
@@ -12,7 +13,12 @@ import { buildFocusedContext, type FocusedContext } from '@/lib/focused-context'
  * Generator suggestion from being mistaken for a focused set.
  */
 
-export const FOCUSED_KIND = 'focused_recommendations'
+/**
+ * Kept as a re-export so existing imports keep working. The kinds themselves
+ * now live in focused-kinds.ts, where every query that must know about them
+ * can read the full list.
+ */
+export const FOCUSED_KIND = FOCUSED_RECOMMENDATIONS_KIND
 
 export type FocusedSet = {
   kind: typeof FOCUSED_KIND
@@ -93,35 +99,12 @@ export async function hasFocusedSet(userId: string, propertyId: string | null): 
 }
 
 /**
- * Whether this property has recommendations, and whether they still match the
- * Audit and Compass they came from.
- *
- * What the Dashboard needs to offer them as a destination and to say honestly
- * whether they are current. Scoped to the active property throughout —
- * findExistingSet and buildFocusedContext both take propertyId — so switching
- * properties switches the answer rather than leaking another property's work.
- *
- * The context is only built when a set exists, so a host who has never
- * generated anything pays nothing for this.
- */
-export async function getFocusedSetState(
-  userId: string,
-  propertyId: string | null
-): Promise<{ exists: boolean; stale: boolean }> {
-  const existing = await findExistingSet(userId, propertyId)
-  if (!existing) return { exists: false, stale: false }
-
-  const context = await buildFocusedContext(userId, propertyId)
-  return { exists: true, stale: isStale(existing.content, context) }
-}
-
-/**
  * How many Generator suggestions this host has created since `sinceIso`,
- * not counting focused recommendation sets.
+ * not counting anything the focused path wrote.
  *
- * Focused sets share the `suggestions` table but are not Generator work, so a
- * host walking the focused path shouldn't quietly spend a monthly credit on
- * them. Counted as "everything minus focused" rather than with a `neq` filter,
+ * Focused-path rows share the `suggestions` table but are not Generator work,
+ * so walking the focused path must not spend a free host's monthly credit.
+ * Counted as "everything minus focused" rather than with a `neq` filter,
  * because `content->>kind` is null on every Generator row and `null <> 'x'` is
  * null in SQL — a neq would silently exclude exactly the rows we want.
  *
@@ -140,12 +123,16 @@ export async function countGeneratorUsageSince(
       .eq('user_id', userId)
       .gte('created_at', sinceIso)
 
-  const [all, focused] = await Promise.all([
+  const [all, ...focusedCounts] = await Promise.all([
     base(),
-    base().eq('content->>kind', FOCUSED_KIND),
+    // Every focused kind, not just recommendations. When the Starter Playbook
+    // was added this counted only one of them, which would have quietly
+    // charged a free host a Generator credit for building a playbook.
+    ...FOCUSED_KINDS.map((kind) => base().eq('content->>kind', kind)),
   ])
 
-  return Math.max(0, (all.count ?? 0) - (focused.count ?? 0))
+  const focused = focusedCounts.reduce((sum, r) => sum + (r.count ?? 0), 0)
+  return Math.max(0, (all.count ?? 0) - focused)
 }
 
 /**

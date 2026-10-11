@@ -22,6 +22,15 @@ import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Get started — StayStory' }
 
+/**
+ * What a finished stage offers when it is still worth opening. A generic
+ * "Open again" tells a returning host nothing about what is waiting there.
+ */
+const REOPEN_LABEL: Partial<Record<FocusedStage['id'], string>> = {
+  recommendations: 'View recommendations →',
+  starter_playbook: 'Open Starter Playbook →',
+}
+
 function StageRow({ stage }: { stage: FocusedStage }) {
   const isDone = stage.status === 'done'
   const isActive = stage.status === 'active'
@@ -76,7 +85,7 @@ function StageRow({ stage }: { stage: FocusedStage }) {
               host can see where their three recommendations live. */}
           {isDone && stage.available && stage.href && (
             <p className="mt-2 text-sm font-medium text-primary">
-              {stage.id === 'recommendations' ? 'View recommendations →' : 'Open again →'}
+              {REOPEN_LABEL[stage.id] ?? 'Open again →'}
             </p>
           )}
         </div>
@@ -160,17 +169,17 @@ export default async function StartPage() {
           )}
         </div>
       ) : (
-        /* Everything built is done. Say so, and point back at the work rather
-           than leaving the page with no action on it. */
+        /* Everything built is done. Point at the Starter Playbook, which is
+           now the end of the journey and the thing worth returning to. */
         <div className="flex flex-wrap items-center gap-4">
           <Link
-            href="/start/recommendations"
+            href="/start/playbook"
             className={cn(buttonVariants({ size: 'sm' }), 'h-10 px-5')}
           >
-            View my recommendations →
+            Open my Starter Playbook →
           </Link>
           <span className="text-sm text-muted-foreground">
-            Your starter playbook is next — we’re building it now.
+            Come back to it whenever you like — it stays here.
           </span>
         </div>
       )}

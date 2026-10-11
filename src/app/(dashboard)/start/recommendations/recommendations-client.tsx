@@ -95,10 +95,15 @@ export default function RecommendationsClient({
   set,
   stale,
   blocked,
+  playbookExists = false,
+  playbookStale = false,
 }: {
   set?: FocusedSet
   stale?: boolean
   blocked?: Blocked
+  /** Whether Stage 4 has been built, so the CTA can offer the right thing. */
+  playbookExists?: boolean
+  playbookStale?: boolean
 }) {
   const [retrying, setRetrying] = useState(false)
 
@@ -195,20 +200,34 @@ export default function RecommendationsClient({
       </div>
 
       <footer className="flex flex-col gap-5">
-        {/* Stage 4 doesn't exist yet, so this says what's coming without
-            offering a button that would go nowhere. It becomes the
-            continuation CTA once the Starter Playbook is built. */}
-        <div className="rounded-2xl border border-dashed border-border p-6">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-muted-foreground">
-            Next
-          </p>
+        {/* Stage 4. The wording follows the state rather than always saying
+            "create": a host who already has one should be offered the way
+            back to it, not invited to make a second. Nothing generates from
+            here — the button is a link, and the Playbook page asks before
+            calling the model. */}
+        <div className="rounded-2xl border border-primary/20 bg-primary/[0.06] p-6">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-widest text-primary">Next</p>
           <p className="mt-2 font-serif text-lg font-semibold text-foreground">
-            Turn these opportunities into your Starter Playbook
+            {playbookExists
+              ? 'Your Starter Playbook is ready'
+              : 'Turn these opportunities into your Starter Playbook'}
           </p>
           <p className="mt-1.5 max-w-xl text-[0.9rem] leading-relaxed text-muted-foreground">
-            Your Starter Playbook will turn these ideas into practical moments you can actually
-            design and deliver. We’re building it now.
+            {playbookExists && playbookStale
+              ? 'It was built from your previous three opportunities. You can keep it as it is, or create an updated version from these.'
+              : playbookExists
+                ? 'What each opportunity means for your place, ways you could begin, and one small first step for each.'
+                : 'StayStory will work out what each of these could mean for your property — ways to begin, what you already have that supports it, and one small first step for each.'}
           </p>
+          <Link href="/start/playbook" className="mt-4 block w-full sm:inline-block sm:w-auto">
+            <Button className="h-auto min-h-11 w-full whitespace-normal px-6 py-2.5 text-center sm:w-auto">
+              {playbookExists && playbookStale
+                ? 'Review my Starter Playbook →'
+                : playbookExists
+                  ? 'Open my Starter Playbook →'
+                  : 'Create my Starter Playbook →'}
+            </Button>
+          </Link>
         </div>
 
         <div className="flex flex-wrap items-center gap-4 border-t border-border pt-5">

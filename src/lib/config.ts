@@ -35,11 +35,11 @@ export const PROPERTY_LIMITS: Record<string, number> = {
 // Whether a brand-new host is guided along the focused path (/start) instead
 // of landing straight in the full six-tool product.
 //
-// ON. Stages 1 to 3 — the Audit, the Compass and the three recommendations —
-// are built and are what the public homepage now promises, so landing a new
-// host in the full six-tool Dashboard contradicts the page they arrived from.
-// Stage 4 (Starter Playbook) is still unbuilt and shows as "Coming soon"; the
-// routing does not depend on it.
+// ON. Stages 1 to 4 — the Audit, the Compass, the three recommendations and
+// the Starter Playbook — are built and are what the public homepage promises,
+// so landing a new host in the full six-tool Dashboard contradicts the page
+// they arrived from. Stage 5 (Feedback) is still unbuilt; the routing does
+// not depend on it.
 //
 // Who this applies to is JourneyState.isNewHost — a host with nothing stored
 // at all. Any single piece of saved work ends it, so the detour happens at

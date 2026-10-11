@@ -110,6 +110,54 @@ export function RecommendationsCard({ stale }: { stale: boolean }) {
   )
 }
 
+/**
+ * The Starter Playbook, once one exists.
+ *
+ * A standing destination, so reopening it never means walking back through
+ * the Compass and the recommendations to find it. When the recommendations
+ * have moved on it says so and offers the same route, where refreshing is a
+ * deliberate act — nothing regenerates from here.
+ */
+export function StarterPlaybookCard({ stale }: { stale: boolean }) {
+  return (
+    <section
+      aria-labelledby="starter-playbook-heading"
+      className={cn(
+        'rounded-2xl border p-6 sm:p-7',
+        stale ? 'border-accent/40 bg-accent/[0.08]' : 'border-border bg-card'
+      )}
+    >
+      <p
+        className={cn(
+          'mb-2 text-xs uppercase tracking-widest',
+          stale ? 'text-accent-foreground' : 'text-primary'
+        )}
+      >
+        Your Starter Playbook
+      </p>
+      <h2
+        id="starter-playbook-heading"
+        className="font-serif text-xl font-semibold text-foreground sm:text-2xl"
+      >
+        {stale
+          ? 'Your recommendations have changed since this was created'
+          : 'Three opportunities turned into a practical starting plan'}
+      </h2>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        {stale
+          ? 'It still reflects your previous three opportunities. Keep it as it is, or create an updated version whenever you like.'
+          : 'What each opportunity means for your place, ways you could begin, and one small first step for each.'}
+      </p>
+
+      <div className="mt-5">
+        <Link href="/start/playbook" className={cn(buttonVariants({ size: 'sm' }), 'h-10 px-5')}>
+          {stale ? 'Review my Starter Playbook' : 'Open my Starter Playbook'} →
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 /* ── What the Compass currently holds ────────────────────────────────────── */
 
 const COMPASS_STATUS_LABEL: Record<ExperienceCompass['status'], string> = {

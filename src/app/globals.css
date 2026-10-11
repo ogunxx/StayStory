@@ -135,3 +135,35 @@
     @apply font-sans;
   }
 }
+/* Printing.
+ *
+ * Added for the Starter Playbook, which a host may want on paper while
+ * walking their property. Native browser printing only — no PDF pipeline.
+ *
+ * Scoped to chrome that is meaningless on paper (navigation, the sign-out
+ * form, anything marked print:hidden) rather than restyling the document, so
+ * this stays safe for every other page and nothing has to opt in.
+ */
+@media print {
+  header,
+  nav,
+  footer form,
+  [data-print-hidden] {
+    display: none !important;
+  }
+
+  /* Printers drop backgrounds by default, which would erase the panels the
+     first step and the options live in. Keep ink to the page edges instead. */
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  a[href]::after {
+    content: '';
+  }
+}

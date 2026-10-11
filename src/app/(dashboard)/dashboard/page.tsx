@@ -9,7 +9,13 @@ import { countGeneratorUsageSince } from '@/lib/focused-recommendations'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { LEGENDARY_PRICE } from '@/lib/config'
-import { CompassSummary, JourneySteps, NextStepCard, RecommendationsCard } from './journey'
+import {
+  CompassSummary,
+  JourneySteps,
+  NextStepCard,
+  RecommendationsCard,
+  StarterPlaybookCard,
+} from './journey'
 
 /**
  * Product home.
@@ -114,6 +120,12 @@ export default async function DashboardPage({
           A standing destination so they never have to be found through the
           Compass again. */}
       {journey.focusedSetExists && <RecommendationsCard stale={journey.focusedStale} />}
+
+      {/* Stage 4, once it exists — so reopening it never means walking back
+          through the Compass and the recommendations to find it. */}
+      {journey.starterPlaybookExists && (
+        <StarterPlaybookCard stale={journey.starterPlaybookStale} />
+      )}
 
       {/* ── Primary: what to do next, and why ─────────────────────────────
           Suppressed only when it would repeat the card above word for word. */}
