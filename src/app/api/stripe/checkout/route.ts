@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { getStripe, PLANS } from '@/lib/stripe'
+import { findPriceMismatch, getStripe, PLANS } from '@/lib/stripe'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
@@ -25,6 +25,29 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: 'This plan is not available for checkout yet.' },
         { status: 400 }
+      )
+    }
+
+    // ── Does this price actually match the plan we are selling? ───────────
+    // See findPriceMismatch. A mismatch means an environment variable points
+    // at the wrong Stripe price, which is a misconfiguration and never
+    // something to charge through.
+    const price = await getStripe().prices.retrieve(priceId)
+    const mismatch = findPriceMismatch(price, plan, interval === 'annual' ? 'annual' : 'monthly')
+
+    if (mismatch) {
+      console.error(
+        `[stripe/checkout] price ${priceId} does not match the ${tier} ${interval} plan. ` +
+          `Expected ${mismatch.expectedAmount} per ${mismatch.expectedInterval}; ` +
+          `Stripe has ${mismatch.actualAmount} per ${mismatch.actualInterval ?? 'one-off'}. ` +
+          `Check the ${interval === 'annual' ? 'annual' : 'monthly'} price ID for ${tier}.`
+      )
+      return NextResponse.json(
+        {
+          error:
+            'We could not start checkout for this plan. Nothing has been charged. Please let us know and we will sort it out.',
+        },
+        { status: 500 }
       )
     }
 
