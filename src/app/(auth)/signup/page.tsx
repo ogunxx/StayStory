@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { isDisposableEmail } from '@/lib/disposable-domains'
+import { checkPwnedPassword } from '@/lib/pwned-password'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -30,6 +31,18 @@ function SignupForm() {
 
     if (isDisposableEmail(email)) {
       setError('Please use a permanent email address. Disposable email addresses are not allowed.')
+      setLoading(false)
+      return
+    }
+
+    // Only blocks on a positive match. If the check can't complete, it reports
+    // checked: false and we carry on — see pwned-password.ts on why this fails
+    // open rather than standing between a host and their account.
+    const breached = await checkPwnedPassword(password)
+    if (breached.pwned) {
+      setError(
+        'This password has appeared in a known data breach, which means it is already on the lists attackers try first. Please choose a different one — nothing about your account is at risk.'
+      )
       setLoading(false)
       return
     }

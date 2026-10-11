@@ -385,3 +385,47 @@ create index if not exists idx_signup_ips_ip on signup_ips (ip);
 alter table signup_ips enable row level security;
 
 revoke all on signup_ips from anon, authenticated;
+
+-- ── NEW USER → PROFILE ROW ──────────────────────────────────────────────────
+-- What actually creates a profiles row when someone signs up. Like signup_ips,
+-- it was created directly against the project before this file tracked it, so
+-- it is written down here now; the live objects already match.
+--
+-- search_path is pinned to empty and the body fully qualifies public.profiles.
+-- A SECURITY DEFINER function runs as its owner, so any unqualified name it
+-- resolved at run time could be shadowed by an object planted earlier in the
+-- caller's search_path. Nothing in profiles depends on a mutable search_path
+-- (its only defaults are now(), a literal and false), so pinning it changes
+-- nothing about how this runs.
+--
+-- The grants are the other half. PUBLIC held EXECUTE, which exposed the
+-- function at /rest/v1/rpc/handle_new_user to anyone holding the anon key.
+-- EXECUTE on a trigger function is checked when the trigger is created, not
+-- each time it fires, so revoking does not stop on_auth_user_created — that
+-- was verified against the database rather than assumed. The grant to
+-- supabase_auth_admin is explicit insurance: the auth service owns auth.users
+-- and is what makes the trigger fire.
+
+create or replace function public.handle_new_user()
+  returns trigger
+  language plpgsql
+  security definer
+  set search_path = ''
+as $function$
+begin
+  insert into public.profiles (id, email, full_name)
+  values (new.id, new.email, new.raw_user_meta_data->>'full_name');
+  return new;
+end;
+$function$;
+
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+grant execute on function public.handle_new_user() to postgres, supabase_auth_admin;
+
+-- Needs ownership of auth.users, so this runs as postgres (the SQL editor
+-- does). Guarded so re-running the file is a no-op.
+do $$ begin
+  create trigger on_auth_user_created
+    after insert on auth.users
+    for each row execute function public.handle_new_user();
+exception when duplicate_object then null; end $$;
