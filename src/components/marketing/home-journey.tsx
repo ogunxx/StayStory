@@ -24,7 +24,14 @@ export type JourneyStep = {
   body: string
   /** An optional second line, for a step that earns one. */
   aside?: string
-  /** Marks a step whose product work is still being finished. */
+  /**
+   * Marks a step whose product work is still being finished.
+   *
+   * Nothing sets this today — the Starter Playbook carried it until Stage 4
+   * shipped and a real playbook was generated end to end. Kept because it is
+   * the honest way to describe a step that exists in the sequence but not yet
+   * in the product, and the journey is expected to grow.
+   */
   comingSoon?: boolean
 }
 
@@ -53,9 +60,6 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     name: 'Starter Playbook',
     headline: 'Turn insight into something you can actually use.',
     body: 'Bring your experience direction and personalized opportunities together into a practical Starter Playbook designed to help you move from insight to action.',
-    // The Starter Playbook is still being built. Saying so is better than
-    // describing something a visitor cannot yet use.
-    comingSoon: true,
   },
 ]
 
