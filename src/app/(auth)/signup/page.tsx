@@ -108,6 +108,23 @@ function SignupForm() {
             After verifying, you'll be taken straight to checkout to complete your Legendary subscription.
           </p>
         )}
+
+        {/* Confirmation emails land in spam often enough that leaving someone
+            to work it out alone is a real way to lose them before they start.
+            Said here rather than in a support reply, and left-aligned because
+            it is something to read and act on, not a headline.
+
+            Same panel treatment as the notices on /login, so the two halves of
+            this flow look like one thing. It is also the readable choice: on
+            sage, muted-foreground measures 4.27:1, which is under AA. */}
+        <div className="mt-8 w-full max-w-sm rounded-xl border border-primary/20 bg-primary/[0.06] px-4 py-3 text-left">
+          <p className="text-sm font-semibold text-foreground">Not in your inbox?</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            Give it a minute, then check your spam or junk folder &mdash; confirmation
+            emails sometimes end up there. Marking it &ldquo;not spam&rdquo; will help the
+            rest of your StayStory emails arrive where they should.
+          </p>
+        </div>
       </div>
     )
   }

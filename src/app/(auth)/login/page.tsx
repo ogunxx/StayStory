@@ -23,6 +23,33 @@ const NOTICES: Record<string, { title: string; body: string }> = {
   },
 }
 
+/**
+ * Supabase's wording for an account that was never confirmed is "Email not
+ * confirmed" — accurate, and no help at all. Someone seeing it has almost
+ * always had the confirmation email filtered into spam, so say that instead
+ * of leaving them at a dead end.
+ *
+ * It is also not a failure, so it doesn't get the red treatment. Nothing has
+ * gone wrong and the host has done nothing careless — there is simply one
+ * step left. It reuses the same notice panel as an expired link above.
+ * Everything that genuinely is an error keeps its own wording and stays red.
+ */
+type SignInFeedback = { tone: 'error' | 'notice'; title?: string; text: string }
+
+function signInFeedback(error: { code?: string; message: string }): SignInFeedback {
+  const unconfirmed =
+    error.code === 'email_not_confirmed' ||
+    error.message.toLowerCase().includes('email not confirmed')
+
+  if (!unconfirmed) return { tone: 'error', text: error.message }
+
+  return {
+    tone: 'notice',
+    title: 'One step left — confirm your email',
+    text: 'Look for the confirmation link in your inbox, and in your spam or junk folder, which is where it often ends up.',
+  }
+}
+
 function LoginForm() {
   const searchParams = useSearchParams()
   const notice = NOTICES[searchParams.get('notice') ?? '']
@@ -30,18 +57,18 @@ function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<SignInFeedback | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    setError(null)
+    setFeedback(null)
 
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setError(error.message)
+      setFeedback(signInFeedback(error))
       setLoading(false)
       return
     }
@@ -88,7 +115,17 @@ function LoginForm() {
               required
             />
           </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {feedback &&
+            (feedback.tone === 'notice' ? (
+              <div className="rounded-xl border border-primary/20 bg-primary/[0.06] px-4 py-3">
+                <p className="text-sm font-semibold text-foreground">{feedback.title}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {feedback.text}
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-destructive">{feedback.text}</p>
+            ))}
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? 'Signing in…' : 'Sign in'}
           </Button>
