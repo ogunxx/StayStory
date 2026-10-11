@@ -355,3 +355,33 @@ do $$ begin
     using (auth.uid() = user_id)
     with check (auth.uid() = user_id);
 exception when duplicate_object then null; end $$;
+
+-- ── SIGNUP IP GUARD ─────────────────────────────────────────────────────────
+-- One free account per connection. The table was created directly against the
+-- project before this file tracked it, so it is written down here now — the
+-- live table already matches this definition, which is why every statement is
+-- idempotent.
+--
+-- Written and read only by /api/auth/record-signup and /api/auth/check-signup,
+-- both of which use the service-role key. Service role bypasses RLS entirely,
+-- so RLS with no policies at all is the tightest correct setting: the guard
+-- keeps working, and the table is unreachable through the user-scoped client.
+--
+-- The grants matter as much as the RLS. TRUNCATE is never subject to row level
+-- security — it is governed by table privileges alone — so leaving anon with
+-- its default grants would have let anyone empty the table and defeat the
+-- guard without ever reading a row. Hence the revoke.
+--
+-- See src/lib/signup-guard.ts for when the guard applies (production only).
+
+create table if not exists signup_ips (
+  id uuid primary key default gen_random_uuid(),
+  ip text not null,
+  created_at timestamptz default now()
+);
+
+create index if not exists idx_signup_ips_ip on signup_ips (ip);
+
+alter table signup_ips enable row level security;
+
+revoke all on signup_ips from anon, authenticated;
