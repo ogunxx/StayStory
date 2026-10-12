@@ -162,9 +162,12 @@ function Section({ section, index }: { section: StarterPlaybookSection; index: n
 export default function PlaybookClient({
   playbook,
   state,
+  feedbackGiven = false,
 }: {
   playbook: StarterPlaybookRecord | null
   state: PlaybookState
+  /** Whether this host has already left closing feedback for this property. */
+  feedbackGiven?: boolean
 }) {
   const [working, setWorking] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -323,6 +326,31 @@ export default function PlaybookClient({
           <Section key={`${section.opportunity}-${i}`} section={section} index={i} />
         ))}
       </div>
+
+      {/* After the Playbook, never inside it. The host has what they came
+          for; this is an invitation they can walk past. No modal, nothing
+          that interrupts the document above. */}
+      <section className="rounded-2xl border border-dashed border-border p-6 print:hidden">
+        <h2 className="font-serif text-lg font-semibold text-foreground">
+          Help shape StayStory
+        </h2>
+        <p className="mt-2 max-w-xl text-[0.9rem] leading-relaxed text-muted-foreground">
+          {feedbackGiven
+            ? 'Thank you for the feedback you already shared — it genuinely shapes what we build next. You can change what you said whenever you like.'
+            : 'You’ve completed your first StayStory journey. We’re building this around what actually helps hosts think differently about the guest experience. If you have a minute, we’d love to know what worked and what didn’t.'}
+        </p>
+        <Link href="/start/feedback" className="mt-4 inline-block">
+          <Button
+            variant="outline"
+            className="h-auto min-h-11 w-full whitespace-normal px-6 py-2.5 sm:w-auto"
+          >
+            {feedbackGiven ? 'View or update my feedback →' : 'Share feedback →'}
+          </Button>
+        </Link>
+        {!feedbackGiven && (
+          <p className="mt-2 text-[0.8rem] text-muted-foreground">Takes about a minute.</p>
+        )}
+      </section>
 
       <footer className="flex flex-wrap items-center gap-4 border-t border-border pt-5 print:hidden">
         <button

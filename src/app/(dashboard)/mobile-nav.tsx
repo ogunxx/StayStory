@@ -30,7 +30,13 @@ export function MobileNav({
   isAdmin?: boolean
 }) {
   const [open, setOpen] = useState(false)
-  const full = isAdmin ? [...NAV_ITEMS, { href: '/admin', label: 'Members' }] : NAV_ITEMS
+  const full = isAdmin
+    ? [
+        ...NAV_ITEMS,
+        { href: '/admin', label: 'Members' },
+        { href: '/admin/feedback', label: 'Feedback' },
+      ]
+    : NAV_ITEMS
   // Same focused/full decision as the desktop header, from the same helper, so
   // the two menus can never show different things.
   const navItems = useNavItems(full)

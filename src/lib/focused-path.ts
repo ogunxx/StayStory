@@ -13,11 +13,12 @@ import { getJourneyState } from '@/lib/journey-state'
  *   2  See what we're learning       → the existing Experience Compass
  *   3  Three things you could create → the Generator, fed Audit + Compass
  *   4  Your Starter Playbook         → /start/playbook
- *   5  Tell us what was useful       → not built yet
+ *   5  Help shape StayStory          → /start/feedback (optional)
  *
- * Stage 5 is declared here but marked unavailable. Declaring it is the point:
- * the shape of the path is settled, and it becomes reachable by building it
- * and flipping `available` — which is exactly how Stage 4 arrived. Nothing here duplicates the Audit,
+ * Stage 5 is deliberately not a product stage. The journey StayStory promises
+ * is the first four; the fifth is an invitation afterwards, marked `optional`
+ * so it is never the host's "next step" and skipping it never reads as
+ * unfinished work. Nothing here duplicates the Audit,
  * the Compass, the Generator or the Playbook — stages 1 and 2 link straight
  * at the real tools.
  */
@@ -42,6 +43,15 @@ export type FocusedStage = {
   href: string | null
   /** False until the stage exists. The path renders it, but doesn't link it. */
   available: boolean
+  /**
+   * True for a stage that sits outside the product journey.
+   *
+   * Only Feedback. The product is four stages and ends at the Starter
+   * Playbook; this stage is an invitation afterwards. Marking it rather than
+   * appending it is what stops a host who skips it being shown as unfinished,
+   * and keeps it out of `active`.
+   */
+  optional?: boolean
   /**
    * Overrides the generic Done/Next/Later wording where a stage has something
    * more useful to say — "Recommendations ready" tells a returning host their
@@ -75,6 +85,8 @@ export type FocusedProgress = {
   starterPlaybookReady: boolean
   /** It was built from an older set of recommendations. */
   starterPlaybookStale: boolean
+  /** The host has already left feedback for this property. */
+  feedbackGiven: boolean
   blueprintStarted: boolean
   storyStarted: boolean
   playbookBuilt: boolean
@@ -160,15 +172,39 @@ export function buildFocusedStages(p: FocusedProgress): {
     {
       id: 'feedback',
       position: 5,
-      title: 'Tell us what was useful',
-      summary: 'A couple of questions about what helped and what you’d want next.',
-      status: 'upcoming',
-      href: null,
-      available: false,
+      // Outside the product journey — see `optional`. Offered once the host
+      // has their Playbook and therefore has something to react to; asking
+      // before that would be asking them to review something they have not
+      // finished.
+      title: 'Help shape StayStory',
+      summary:
+        'What worked, what didn’t, and what you’d want next. About a minute, and entirely up to you.',
+      status: p.feedbackGiven ? 'done' : p.starterPlaybookReady ? 'active' : 'upcoming',
+      href: '/start/feedback',
+      available: true,
+      optional: true,
+      statusLabel: p.feedbackGiven
+        ? 'Feedback shared'
+        : p.starterPlaybookReady
+          ? 'Optional'
+          : undefined,
     },
   ]
 
   return { stages, isFirstRun }
+}
+
+/**
+ * The stage the host should do next, or null when the journey is finished.
+ *
+ * Pure, and exported, because the rule has one subtlety worth stating in one
+ * place: optional stages are skipped. Feedback must never present itself as
+ * the next step, or a host who declines it would be shown unfinished work for
+ * ever. This used to be an inline find() inside getFocusedPath, where it
+ * could not be tested without a database.
+ */
+export function activeStage(stages: FocusedStage[]): FocusedStage | null {
+  return stages.find((s) => s.available && !s.optional && s.status === 'active') ?? null
 }
 
 /** Reads the host's state, then derives the path from it. */
@@ -187,6 +223,7 @@ export async function getFocusedPath(
     recommendationsStale: journey.focusedStale,
     starterPlaybookReady: journey.starterPlaybookExists,
     starterPlaybookStale: journey.starterPlaybookStale,
+    feedbackGiven: journey.feedbackGiven,
     blueprintStarted: byId.blueprint?.status !== 'not_started',
     storyStarted: byId.story?.status !== 'not_started',
     playbookBuilt: byId.playbook?.status === 'completed',
@@ -194,7 +231,7 @@ export async function getFocusedPath(
 
   return {
     stages,
-    active: stages.find((s) => s.available && s.status === 'active') ?? null,
+    active: activeStage(stages),
     isFirstRun,
     pendingCount: journey.pendingCount,
     compassFilled: journey.compassFilled,

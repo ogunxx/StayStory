@@ -3,6 +3,7 @@ import { getOrCreateCompass, getPendingContributions } from '@/lib/compass'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 import { decideNextStep, type NextStep, type StepId, type StepStatus } from '@/lib/journey-sequence'
 import { getStarterPlaybookState } from '@/lib/focused-playbook'
+import { hasFeedback } from '@/lib/focused-feedback'
 import type { CompassField, ExperienceCompass } from '@/types'
 
 export { STATUS_LABEL } from '@/lib/journey-sequence'
@@ -57,6 +58,8 @@ export type JourneyState = {
   starterPlaybookExists: boolean
   /** True when it was built from an older set of recommendations. */
   starterPlaybookStale: boolean
+  /** Whether the host has left optional closing feedback for this property. */
+  feedbackGiven: boolean
   /**
    * True until the host has opened any of the tools past the Compass. Derived
    * from stored work, not a flag on the user, and defined here once so the
@@ -135,7 +138,7 @@ export async function getJourneyState(
     .eq('user_id', userId)
     .limit(1)
 
-  const [audits, suggestions, stories, playbooks, blueprint, focused] = await Promise.all([
+  const [audits, suggestions, stories, playbooks, blueprint, focused, feedbackGiven] = await Promise.all([
     countFor('audits'),
     countFor('suggestions'),
     countFor('guest_stories'),
@@ -144,6 +147,7 @@ export async function getJourneyState(
       ? blueprintQuery.eq('property_id', propertyId)
       : blueprintQuery.is('property_id', null),
     getStarterPlaybookState(userId, propertyId),
+    hasFeedback(userId, propertyId),
   ])
 
   const auditCount = audits.count ?? 0
@@ -258,6 +262,7 @@ export async function getJourneyState(
     focusedStale: focused.recommendationsStale,
     starterPlaybookExists: focused.exists,
     starterPlaybookStale: focused.stale,
+    feedbackGiven,
     isFirstRun: blueprintTouchpoints === 0 && storyCount === 0 && playbookCount === 0,
     isNewHost:
       auditCount === 0 &&

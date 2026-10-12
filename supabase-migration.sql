@@ -429,3 +429,70 @@ do $$ begin
     after insert on auth.users
     for each row execute function public.handle_new_user();
 exception when duplicate_object then null; end $$;
+
+-- ── FOCUSED JOURNEY: OPTIONAL CLOSING FEEDBACK ──────────────────────────────
+-- Feedback on the StayStory experience itself, offered after the Starter
+-- Playbook. Not a product stage — the journey is four steps and ends there.
+--
+-- A dedicated table rather than another `kind` inside `suggestions`: three
+-- queries already special-case the focused kinds in that table, admin needs to
+-- filter and sort by review status (awkward through jsonb), and this is
+-- feedback about StayStory rather than a suggestion for a property.
+
+create table if not exists focused_feedback (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users on delete cascade not null,
+  -- Null is legitimate: the focused journey works before a property exists.
+  property_id uuid references properties on delete set null,
+  usefulness smallint not null check (usefulness between 1 and 5),
+  most_valuable text check (most_valuable in ('audit','compass','opportunities','starter_playbook','whole_journey','something_else')),
+  most_valuable_other text check (most_valuable_other is null or char_length(most_valuable_other) <= 500),
+  improvement_feedback text check (improvement_feedback is null or char_length(improvement_feedback) <= 4000),
+  additional_feedback text check (additional_feedback is null or char_length(additional_feedback) <= 4000),
+  open_to_followup boolean not null default false,
+  -- Internal workflow only. The column grants below are what stop a host
+  -- setting this themselves.
+  review_status text not null default 'new' check (review_status in ('new','reviewed','follow_up')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- One row per host per property: this is what makes a returning host update
+-- their answers instead of leaving a trail of duplicates. On (user_id,
+-- property_id) rather than property alone, because a property can have
+-- co-hosts and each is entitled to their own answer.
+create unique index if not exists focused_feedback_user_property_uidx
+  on focused_feedback (user_id, property_id) where property_id is not null;
+create unique index if not exists focused_feedback_user_unassigned_uidx
+  on focused_feedback (user_id) where property_id is null;
+
+create index if not exists focused_feedback_created_at_idx on focused_feedback (created_at desc);
+create index if not exists focused_feedback_review_status_idx on focused_feedback (review_status);
+
+alter table focused_feedback enable row level security;
+
+-- Read, create and update their own. No delete policy on purpose: a host
+-- withdrawing feedback should be a conversation, not a row quietly vanishing.
+do $$ begin
+  create policy "Owners read own feedback" on focused_feedback
+    for select using (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Owners create own feedback" on focused_feedback
+    for insert with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Owners update own feedback" on focused_feedback
+    for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+-- RLS decides which ROWS a host may touch; it cannot restrict COLUMNS. Column
+-- grants can, and that is what stops a host setting their own review_status by
+-- calling the REST API directly with their own token.
+revoke all on focused_feedback from anon;
+revoke update on focused_feedback from authenticated;
+grant update (usefulness, most_valuable, most_valuable_other, improvement_feedback,
+              additional_feedback, open_to_followup, updated_at)
+  on focused_feedback to authenticated;

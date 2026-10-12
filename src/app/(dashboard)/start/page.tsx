@@ -129,6 +129,10 @@ export default async function StartPage() {
   const firstName =
     user.user_metadata?.full_name?.split(' ')[0] ?? user.email?.split('@')[0] ?? 'there'
 
+  const productStages = path.stages.filter((s) => !s.optional)
+  // Only worth offering once they have something to react to.
+  const feedback = path.stages.find((s) => s.optional && s.status !== 'upcoming')
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -145,8 +149,11 @@ export default async function StartPage() {
         </p>
       </div>
 
+      {/* The product journey is these four. The optional closing stage is
+          rendered separately below, so a host who never leaves feedback is
+          never shown as having left something unfinished. */}
       <ol className="flex flex-col gap-3">
-        {path.stages.map((stage) => (
+        {productStages.map((stage) => (
           <li key={stage.id}>
             <StageRow stage={stage} />
           </li>
@@ -182,6 +189,30 @@ export default async function StartPage() {
             Come back to it whenever you like — it stays here.
           </span>
         </div>
+      )}
+
+      {/* Separate from the journey above, and visually quieter: an
+          invitation, not a step. */}
+      {feedback && (
+        <section className="rounded-2xl border border-dashed border-border p-5 sm:p-6">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h2 className="font-serif text-lg font-semibold text-foreground">
+              {feedback.title}
+            </h2>
+            <span className="text-xs text-muted-foreground">{feedback.statusLabel}</span>
+          </div>
+          <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            {feedback.status === 'done'
+              ? 'Thank you — we read every one of these. You can change what you said whenever you like.'
+              : feedback.summary}
+          </p>
+          <Link
+            href={feedback.href!}
+            className="mt-3 inline-block text-sm font-medium text-primary underline underline-offset-4"
+          >
+            {feedback.status === 'done' ? 'View or update my feedback →' : 'Share feedback →'}
+          </Link>
+        </section>
       )}
 
       <p className="border-t border-border pt-6 text-sm text-muted-foreground">

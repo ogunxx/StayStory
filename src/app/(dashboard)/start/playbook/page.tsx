@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { resolveActivePropertyId } from '@/lib/active-property'
 import { getStarterPlaybook } from '@/lib/focused-playbook'
+import { hasFeedback } from '@/lib/focused-feedback'
 import PlaybookClient from './playbook-client'
 
 export const metadata: Metadata = { title: 'Your Starter Playbook — StayStory' }
@@ -27,7 +28,10 @@ export default async function StarterPlaybookPage() {
   if (!user) redirect('/login')
 
   const propertyId = await resolveActivePropertyId(user.id)
-  const { playbook, state } = await getStarterPlaybook(user.id, propertyId)
+  const [{ playbook, state }, feedbackGiven] = await Promise.all([
+    getStarterPlaybook(user.id, propertyId),
+    hasFeedback(user.id, propertyId),
+  ])
 
-  return <PlaybookClient playbook={playbook} state={state} />
+  return <PlaybookClient playbook={playbook} state={state} feedbackGiven={feedbackGiven} />
 }
