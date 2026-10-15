@@ -40,7 +40,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     { href: '/upgrade', label: 'Upgrade' },
     ...(isAdmin
       ? [
-          { href: '/admin', label: 'Members' },
+          { href: '/admin', label: 'Admin' },
           { href: '/admin/feedback', label: 'Feedback' },
         ]
       : []),

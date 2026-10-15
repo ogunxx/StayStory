@@ -33,7 +33,7 @@ export function MobileNav({
   const full = isAdmin
     ? [
         ...NAV_ITEMS,
-        { href: '/admin', label: 'Members' },
+        { href: '/admin', label: 'Admin' },
         { href: '/admin/feedback', label: 'Feedback' },
       ]
     : NAV_ITEMS
