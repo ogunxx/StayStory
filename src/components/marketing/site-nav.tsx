@@ -103,13 +103,17 @@ export function SiteNav({ active }: { active?: string }) {
       <nav
         aria-label="Main"
         className={cn(
-          'mx-auto flex w-full max-w-7xl items-center justify-between px-6 transition-[padding] duration-200',
+          'mx-auto flex w-full max-w-7xl items-center justify-between px-4 transition-[padding] duration-200 sm:px-6',
           scrolled ? 'py-3' : 'py-5'
         )}
       >
         <Link href="/" className="flex items-center gap-2 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
           <Mark />
-          <span className="font-serif text-xl font-semibold tracking-tight text-foreground">
+          {/* Adding Login to the mobile header cost 48px, which overflowed a
+              320px screen. The wordmark yields there and nowhere else — the
+              mark still carries the brand, and a returning host being able to
+              sign in matters more than the word at that width. */}
+          <span className="font-serif text-xl font-semibold tracking-tight text-foreground max-[359px]:sr-only">
             {WORDMARK}
           </span>
         </Link>
@@ -133,11 +137,16 @@ export function SiteNav({ active }: { active?: string }) {
         </ul>
 
         <div className="flex items-center gap-3 sm:gap-5">
+          {/* Visible at every width, not just desktop.
+              It used to be `hidden lg:inline-flex`, which meant a returning
+              host on a phone saw only "Start Free" and a hamburger — the one
+              thing they needed was the one thing behind a menu. New and
+              returning visitors now both have their action in the header. */}
           <Link
             href={LOGIN.href}
             aria-current={active === LOGIN.href ? 'page' : undefined}
             className={cn(
-              'hidden items-center rounded-md py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:inline-flex',
+              'inline-flex min-h-10 items-center rounded-md px-1 py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary',
               active === LOGIN.href ? ACTIVE_CLASS : INACTIVE_CLASS
             )}
           >
