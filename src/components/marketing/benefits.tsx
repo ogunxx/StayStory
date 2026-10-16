@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import { PREVIEWS, type PreviewKey } from './benefit-previews'
 import { ctaTextLink } from './cta-styles'
 
@@ -108,7 +109,9 @@ function BenefitStory({ benefit, index }: { benefit: Benefit; index: number }) {
     >
       {/* Copy stays first in the DOM so mobile reads
           headline → explanation → CTA → preview. */}
-      <div className={previewFirst ? 'lg:order-2' : 'lg:order-1'}>
+      {/* min-w-0: a grid child cannot shrink below its content's
+          intrinsic width without it, which widened the row at 320. */}
+      <div className={cn('min-w-0', previewFirst ? 'lg:order-2' : 'lg:order-1')}>
         <p className="mb-3 text-[0.7rem] font-semibold tabular-nums tracking-[0.12em] text-primary">
           {String(index + 1).padStart(2, '0')}
         </p>
@@ -123,7 +126,7 @@ function BenefitStory({ benefit, index }: { benefit: Benefit; index: number }) {
         </div>
       </div>
 
-      <div className={previewFirst ? 'lg:order-1' : 'lg:order-2'}>
+      <div className={cn('min-w-0', previewFirst ? 'lg:order-1' : 'lg:order-2')}>
         {benefit.image ? (
           <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_20px_60px_-34px_rgba(60,40,25,0.45)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}

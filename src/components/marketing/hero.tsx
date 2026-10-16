@@ -49,8 +49,16 @@ export function Hero({
     <section className="relative overflow-hidden">
       <div className="mx-auto grid w-full max-w-7xl items-center gap-14 px-6 pt-14 pb-20 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16 lg:pt-20 lg:pb-28">
         {/* ── Message ───────────────────────────────────────────────────── */}
-        <div className="flex flex-col">
-          <h1 className="font-serif text-[2.75rem] leading-[1.05] font-semibold tracking-tight text-foreground sm:text-6xl lg:text-[4.15rem]">
+        {/* min-w-0: a grid child defaults to min-width:auto, so it cannot
+            shrink below its content's intrinsic width and widens the grid
+            column instead of wrapping. */}
+        <div className="flex min-w-0 flex-col">
+          {/* The smallest step exists for 320px screens. At 2.75rem the word
+              "differently." has a min-content width of 301px, wider than the
+              272px a 320px viewport leaves inside px-6 — and a single word
+              cannot break, so it pushed the whole page sideways. Everything
+              from 360px up is unchanged. */}
+          <h1 className="font-serif text-[2.1rem] leading-[1.05] font-semibold tracking-tight text-foreground min-[360px]:text-[2.75rem] sm:text-6xl lg:text-[4.15rem]">
             {lead.map((line) => (
               <span key={line}>
                 {line}
@@ -103,7 +111,7 @@ export function Hero({
         </div>
 
         {/* ── Product preview ───────────────────────────────────────────── */}
-        <div className="lg:pl-4">{preview}</div>
+        <div className="min-w-0 lg:pl-4">{preview}</div>
       </div>
     </section>
   )

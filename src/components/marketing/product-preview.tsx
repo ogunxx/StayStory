@@ -58,8 +58,13 @@ function Check() {
 export function ProductPreview({ modules = PLATFORM_MODULES }: { modules?: PreviewModule[] } = {}) {
   const activeIndex = Math.max(0, modules.findIndex((m) => m.state === 'active'))
 
+  // overflow-x-clip, not overflow-hidden: the ambient wash below bleeds 32px
+  // past each side, which is the intent on a wide screen and pushed the page
+  // sideways on a 320px one. Clipping only the horizontal axis keeps the
+  // vertical bleed and never creates a scroll container, which
+  // overflow-hidden would.
   return (
-    <div className="relative">
+    <div className="relative overflow-x-clip">
       {/* Soft ambient wash so the panel lifts off the cream background. */}
       <div
         aria-hidden
