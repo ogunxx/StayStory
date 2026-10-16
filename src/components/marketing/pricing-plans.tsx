@@ -84,11 +84,13 @@ function PlanCard({ plan, interval }: { plan: Plan; interval: Interval }) {
 
       <Link
         href={plan.ctaHref}
-        className={`mt-7 inline-flex h-11 items-center justify-center rounded-lg px-6 text-sm font-medium transition-opacity ${
-          plan.featured
-            ? 'bg-primary text-primary-foreground hover:opacity-90'
-            : 'border border-border text-foreground hover:border-primary hover:text-primary'
-        }`}
+        /* Every plan's button is filled.
+           A faint outlined button beside a filled one reads as disabled
+           rather than as the quieter of two choices — on a phone, "Choose
+           Portfolio" did not look clickable at all. Which plan is featured
+           is already said by the card's frame and its badge, so it does not
+           also need to be said by making the others look unavailable. */
+        className="mt-7 inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium whitespace-nowrap text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
         {plan.ctaLabel}
       </Link>

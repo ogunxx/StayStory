@@ -131,7 +131,11 @@ export function UpgradePlans({
                     tier={paid}
                     interval={interval}
                     label={`Continue to payment — $${perMonth}/mo`}
-                    variant={featured ? 'default' : 'outline'}
+                    // Both filled. An outlined Portfolio button beside a
+                    // filled Legendary one read as disabled rather than as
+                    // the quieter of two choices — the card's frame already
+                    // says which plan is featured.
+                    variant="default"
                   />
                 )}
               </div>

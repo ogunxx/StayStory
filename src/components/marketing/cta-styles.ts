@@ -38,8 +38,23 @@ export const ctaOnDarkPrimary = `${BASE} h-11 rounded-lg px-6 text-sm bg-backgro
 /** On the dark closing panel: outlined, inverted. */
 export const ctaOnDarkSecondary = `${BASE} h-11 rounded-lg px-6 text-sm border border-background/35 text-background transition-colors hover:bg-background/10 focus-visible:outline-background`
 
-/** The compact CTA in the header. */
-export const ctaCompact = `${BASE} h-9 rounded-lg px-4 text-sm bg-primary text-primary-foreground hover:opacity-90 focus-visible:outline-primary`
+/**
+ * The header pair.
+ *
+ * Both are buttons, deliberately. Login used to be muted grey text sitting
+ * flush against the wordmark, which read as part of it — "StayStory Login" —
+ * and a returning host could barely find it. It is now an outlined button in
+ * the same terracotta, so the two read as a pair: one quiet, one filled,
+ * obviously both clickable.
+ *
+ * whitespace-nowrap matters here and nowhere else: the header is the one
+ * place a CTA gets squeezed, and without it "Start Free" broke onto two
+ * lines inside its own button on a phone.
+ */
+export const ctaCompact = `${BASE} h-9 shrink-0 rounded-lg px-4 text-sm whitespace-nowrap bg-primary text-primary-foreground hover:opacity-90 focus-visible:outline-primary`
+
+/** The header's quieter half: same shape and weight, outlined. */
+export const ctaCompactSecondary = `${BASE} h-9 shrink-0 rounded-lg px-4 text-sm whitespace-nowrap border border-primary/40 text-primary transition-colors hover:border-primary hover:bg-primary/[0.06] focus-visible:outline-primary`
 
 /** A quiet text link, used for secondary journeys between pages. */
 export const ctaTextLink =
