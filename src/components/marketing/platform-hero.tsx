@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ctaHeroPrimary, ctaHeroSecondary } from './cta-styles'
+import { ctaHeroPrimary, ctaHeroSecondary, REASSURANCE } from './cta-styles'
 
 /**
  * Platform page — Section 1, Hero.
@@ -21,7 +21,7 @@ export const HERO = {
   primaryHref: '/signup',
   secondaryLabel: 'Explore the Platform',
   secondaryHref: '#the-system',
-  reassurance: ['No credit card', 'Setup in minutes', 'Cancel anytime'],
+  reassurance: REASSURANCE,
   /** Set to a screenshot path to replace the in-code dashboard preview. */
   image: undefined as string | undefined,
   imageAlt: 'The StayStory dashboard',

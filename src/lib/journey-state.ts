@@ -61,6 +61,14 @@ export type JourneyState = {
   /** Whether the host has left optional closing feedback for this property. */
   feedbackGiven: boolean
   /**
+   * How far an unfinished Experience Audit got, 0-based, or null.
+   *
+   * null both when no draft exists and when a completed Audit exists —
+   * finished always wins over a leftover draft row. Scoped to the active
+   * property like everything else here.
+   */
+  auditDraftStep: number | null
+  /**
    * True until the host has opened any of the tools past the Compass. Derived
    * from stored work, not a flag on the user, and defined here once so the
    * Dashboard and the focused path can never disagree about it.
@@ -125,9 +133,10 @@ export async function getJourneyState(
   const compass = await getOrCreateCompass(userId, propertyId)
   const pending = await getPendingContributions(compass.id)
 
-  // Counts, scoped to the active property where the table carries
-  // property_id. playbooks has no property_id column, so it is necessarily
-  // user-scoped — don't read more precision into it than the schema supports.
+  // Counts, scoped to the active property. Every table read here carries
+  // property_id, playbooks included — an earlier comment here claimed it did
+  // not, and the playbooks count was left user-scoped on that basis, so one
+  // property's full Guest Journey Playbook counted for all of them.
   const countFor = (table: string) => {
     const q = supabase.from(table).select('id', { count: 'exact', head: true }).eq('user_id', userId)
     return propertyId ? q.eq('property_id', propertyId) : q.is('property_id', null)
@@ -138,22 +147,50 @@ export async function getJourneyState(
     .eq('user_id', userId)
     .limit(1)
 
-  const [audits, suggestions, stories, playbooks, blueprint, focused, feedbackGiven] = await Promise.all([
-    countFor('audits'),
-    countFor('suggestions'),
-    countFor('guest_stories'),
-    supabase.from('playbooks').select('id', { count: 'exact', head: true }).eq('user_id', userId),
-    propertyId
-      ? blueprintQuery.eq('property_id', propertyId)
-      : blueprintQuery.is('property_id', null),
-    getStarterPlaybookState(userId, propertyId),
-    hasFeedback(userId, propertyId),
-  ])
+  // The unfinished Audit, if there is one. Same user+property scoping as
+  // everything else, so a draft on one property can never speak for another.
+  const draftQuery = supabase
+    .from('audit_drafts')
+    .select('step_index')
+    .eq('user_id', userId)
+    .limit(1)
+
+  const [audits, suggestions, stories, playbooks, blueprint, focused, feedbackGiven, draft] =
+    await Promise.all([
+      countFor('audits'),
+      countFor('suggestions'),
+      countFor('guest_stories'),
+      countFor('playbooks'),
+      propertyId
+        ? blueprintQuery.eq('property_id', propertyId)
+        : blueprintQuery.is('property_id', null),
+      getStarterPlaybookState(userId, propertyId),
+      hasFeedback(userId, propertyId),
+      propertyId ? draftQuery.eq('property_id', propertyId) : draftQuery.is('property_id', null),
+    ])
 
   const auditCount = audits.count ?? 0
   const suggestionCount = suggestions.count ?? 0
   const storyCount = stories.count ?? 0
   const playbookCount = playbooks.count ?? 0
+
+  /**
+   * How far an unfinished Audit got, or null.
+   *
+   * Completed beats draft, and the rule is encoded here rather than at each
+   * place that asks. Submitting an Audit deletes the draft, but a row can
+   * survive that — a failed delete, an older submission, a second attempt —
+   * and "Continue at step 3" beside "Audit complete" is a contradiction the
+   * host has no way to resolve. Admin already resolves it the same way; see
+   * auditStep in admin-data.ts.
+   *
+   * 0-based, exactly as audit_drafts stores it and as the Audit's own
+   * "Step {current + 1} of 8" reads it.
+   */
+  const auditDraftStep =
+    auditCount === 0 && typeof draft.data?.[0]?.step_index === 'number'
+      ? draft.data[0].step_index
+      : null
 
   const touchpoints = (blueprint.data?.[0]?.touchpoints ?? {}) as Record<string, unknown>
   const blueprintTouchpoints = Object.keys(touchpoints).length
@@ -246,6 +283,7 @@ export async function getJourneyState(
     storyCount,
     playbookCount,
     focusedSetExists: focused.recommendationsExist,
+    auditDraftStep,
   })
 
   return {
@@ -263,6 +301,7 @@ export async function getJourneyState(
     starterPlaybookExists: focused.exists,
     starterPlaybookStale: focused.stale,
     feedbackGiven,
+    auditDraftStep,
     isFirstRun: blueprintTouchpoints === 0 && storyCount === 0 && playbookCount === 0,
     isNewHost:
       auditCount === 0 &&

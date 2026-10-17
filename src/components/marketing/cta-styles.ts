@@ -76,3 +76,26 @@ export const ctaTextLink =
 export const COMMERCIAL_LINK: { href: string; label: string } = FOCUSED_LAUNCH_MODE
   ? { href: '/pricing', label: 'See how early access works' }
   : { href: '/pricing', label: 'Explore StayStory pricing' }
+
+/**
+ * The small print under a call to action.
+ *
+ * The hero, the closing CTA and the Platform hero all carried their own copy
+ * of the same three items, which is how two of them went on saying "Cancel
+ * anytime" after there was nothing to cancel. They read this instead.
+ *
+ * During the focused launch both of the old items are wrong rather than
+ * merely odd: "Cancel anytime" implies a subscription the host does not
+ * have, and "Setup in minutes" is a timing claim nobody has measured. The
+ * focused line states only what is true — it is free, no card is needed, and
+ * the Audit is where it begins.
+ *
+ * The full-mode wording is preserved exactly and returns with the flag.
+ */
+export const FULL_REASSURANCE = ['No credit card', 'Setup in minutes', 'Cancel anytime']
+export const FOCUSED_REASSURANCE = [
+  'Free to start',
+  'No credit card required',
+  'Begin with your Experience Audit',
+]
+export const REASSURANCE = FOCUSED_LAUNCH_MODE ? FOCUSED_REASSURANCE : FULL_REASSURANCE

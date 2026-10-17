@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ctaOnDarkPrimary, ctaOnDarkSecondary } from './cta-styles'
+import { ctaOnDarkPrimary, ctaOnDarkSecondary, REASSURANCE } from './cta-styles'
 
 /**
  * Section 6 — the closing call to action.
@@ -126,7 +126,7 @@ export function FinalCta({
   primaryHref = '/signup',
   secondaryLabel = 'See the Platform',
   secondaryHref = '/platform',
-  reassurance = ['No credit card', 'Setup in minutes', 'Cancel anytime'],
+  reassurance = REASSURANCE,
   rating = '4.99',
   reviews = '136',
   layout = 'split',

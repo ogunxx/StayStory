@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ctaHeroPrimary, ctaHeroSecondary } from './cta-styles'
+import { ctaHeroPrimary, ctaHeroSecondary, REASSURANCE } from './cta-styles'
 
 /**
  * What /pricing says while the focused launch is free.
@@ -70,12 +70,10 @@ export function PricingEarlyAccess() {
           </Link>
         </div>
 
-        {/* The site's standard reassurance line is "No credit card · Setup in
-            minutes · Cancel anytime". "Cancel anytime" answers a question
-            this page has just said does not apply — there is nothing to
-            cancel — so it is replaced here rather than repeated. */}
+        {/* The same line as every other focused surface, from the same
+            constant, so this page cannot drift from the hero again. */}
         <p className="mt-6 text-[0.85rem] leading-relaxed text-muted-foreground">
-          No credit card · Setup in minutes · Leave whenever you like
+          {REASSURANCE.join(' · ')}
         </p>
 
         {/* Says what happens later without turning this into a price list. */}

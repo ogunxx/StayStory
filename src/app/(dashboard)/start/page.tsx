@@ -88,6 +88,12 @@ function StageRow({ stage }: { stage: FocusedStage }) {
               {REOPEN_LABEL[stage.id] ?? 'Open again →'}
             </p>
           )}
+          {/* An active stage speaks up only when it has something more
+              useful to say than the button below the list already does —
+              today that is the Audit a host left half-finished. */}
+          {isActive && stage.ctaLabel && stage.href && (
+            <p className="mt-2 text-sm font-medium text-primary">{stage.ctaLabel} →</p>
+          )}
         </div>
       </div>
     </>
@@ -166,7 +172,9 @@ export default async function StartPage() {
             href={path.active.href!}
             className={cn(buttonVariants({ size: 'sm' }), 'h-10 px-5')}
           >
-            {path.active.position === 1 ? 'Start your Audit' : 'Continue'} →
+            {path.active.ctaLabel ??
+              (path.active.position === 1 ? 'Start your Audit' : 'Continue')}{' '}
+            →
           </Link>
           {path.pendingCount > 0 && (
             <span className="text-sm text-muted-foreground">

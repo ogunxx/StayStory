@@ -54,6 +54,12 @@ export type JourneyProgress = {
    * should be pointed at those three ideas before the Blueprint.
    */
   focusedSetExists: boolean
+  /**
+   * How far an unfinished Audit got, 0-based, or null. Already resolved
+   * against a completed Audit by the caller — see auditDraftStep in
+   * journey-state.ts — so this is null whenever an Audit exists.
+   */
+  auditDraftStep: number | null
 }
 
 /**
@@ -68,6 +74,18 @@ export type JourneyProgress = {
  */
 export function decideNextStep(s: JourneyProgress): NextStep {
   if (s.auditCount === 0) {
+    // A host who already started is not being asked to begin. Their answers
+    // are saved and waiting; telling them to "start" is what makes it look
+    // as though the work was lost.
+    if (s.auditDraftStep !== null) {
+      return {
+        stepId: 'audit',
+        title: 'Your Experience Audit is in progress',
+        why: 'Everything you have answered so far is saved. Pick it back up where you left off — the Audit is how StayStory learns what is working, where friction sits, and what your guests are most likely feeling.',
+        ctaLabel: 'Continue your Audit',
+        href: '/audit',
+      }
+    }
     return {
       stepId: 'audit',
       title: 'Start with your Experience Audit',

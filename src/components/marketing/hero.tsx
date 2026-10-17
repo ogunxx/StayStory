@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import { ProductPreview } from './product-preview'
-import { ctaHeroPrimary, ctaHeroSecondary } from './cta-styles'
+import { ctaHeroPrimary, ctaHeroSecondary, REASSURANCE } from './cta-styles'
 
-const REASSURANCE = ['No credit card', 'Setup in minutes', 'Cancel anytime']
 
 /**
  * The hero takes its copy as props so the same composition can carry a

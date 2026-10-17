@@ -1,4 +1,5 @@
 import { getJourneyState } from '@/lib/journey-state'
+import { AUDIT_STEPS } from '@/lib/audit-questions'
 
 /**
  * The focused first-run path: a guidance layer over the existing product, not
@@ -58,6 +59,14 @@ export type FocusedStage = {
    * three are waiting, which "Done" does not.
    */
   statusLabel?: string
+  /**
+   * Overrides the generic button wording while this stage is active.
+   *
+   * Only the Audit uses it so far, to say "Continue" rather than "Start" to
+   * a host who already began one. It lives on the stage so /start renders
+   * what the rule decided instead of re-deciding it from the position.
+   */
+  ctaLabel?: string
 }
 
 export type FocusedPath = {
@@ -77,6 +86,12 @@ export type FocusedPath = {
 /** What the stage derivation depends on — all of it read from stored state. */
 export type FocusedProgress = {
   auditDone: boolean
+  /**
+   * How far an unfinished Audit got, 0-based, or null. Already resolved
+   * against a completed Audit upstream, so this is null whenever auditDone
+   * is true — a leftover draft row never contradicts a finished Audit.
+   */
+  auditDraftStep?: number | null
   compassConfirmed: boolean
   recommendationsReady: boolean
   /** Those recommendations predate an Audit or Compass change. */
@@ -103,6 +118,12 @@ export function buildFocusedStages(p: FocusedProgress): {
 } {
   const { auditDone, compassConfirmed } = p
 
+  // Completed beats draft. journey-state already nulls the step when an
+  // Audit exists; the guard is repeated here so buildFocusedStages stays
+  // correct for any caller, including the tests that call it directly.
+  const draftStep = auditDone ? null : (p.auditDraftStep ?? null)
+  const inProgress = draftStep !== null
+
   // A host is in their first run until they've gone beyond the first two
   // tools. Nothing is written to decide this — it's read from what exists.
   // getJourneyState derives the same thing from the same three counts; this
@@ -114,11 +135,17 @@ export function buildFocusedStages(p: FocusedProgress): {
       id: 'audit',
       position: 1,
       title: 'Tell us about the stay',
-      summary:
-        'Walk your property the way a guest would — arrival, light, sound, comfort, the details that carry meaning.',
+      summary: inProgress
+        // Says plainly that the work is still there. A host who left halfway
+        // and came back needs to know nothing was lost before they need to
+        // know what the Audit is for.
+        ? `Your answers are saved. Pick up at step ${draftStep! + 1} of ${AUDIT_STEPS.length}.`
+        : 'Walk your property the way a guest would — arrival, light, sound, comfort, the details that carry meaning.',
       status: auditDone ? 'done' : 'active',
       href: '/audit',
       available: true,
+      statusLabel: inProgress ? 'Audit in progress' : undefined,
+      ctaLabel: inProgress ? 'Continue your Audit' : undefined,
     },
     {
       id: 'compass',
@@ -218,6 +245,7 @@ export async function getFocusedPath(
 
   const { stages, isFirstRun } = buildFocusedStages({
     auditDone: byId.audit?.status === 'completed',
+    auditDraftStep: journey.auditDraftStep,
     compassConfirmed: Boolean(journey.compass.confirmed_at),
     recommendationsReady: journey.focusedSetExists,
     recommendationsStale: journey.focusedStale,
