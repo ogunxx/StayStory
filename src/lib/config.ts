@@ -96,3 +96,29 @@ export const FOCUSED_HOMEPAGE = true
 // are all untouched and still work — they are simply not advertised to someone
 // who has not yet seen what StayStory does.
 export const FOCUSED_FREE_LAUNCH = true
+
+// ── FOCUSED_LAUNCH_MODE ─────────────────────────────────────────────────────
+//
+// Whether the product SHELL presents only what this launch is actually
+// offering. The other three switches each own one decision; this one owns
+// what an ordinary host can stumble into.
+//
+//   FOCUSED_HOMEPAGE    which homepage composition the public sees
+//   FOCUSED_FIRST_RUN   where a brand-new host lands after signing up
+//   FOCUSED_FREE_LAUNCH whether signup offers the paid plan
+//   FOCUSED_LAUNCH_MODE what the rest of the shell shows while we launch free
+//
+// ON. The focused launch is free, and a host who was promised four steps
+// should not click Pricing and meet a $29 tier comparison, or open their
+// Dashboard and be told they have "1 free generation" left — a phrase that
+// means nothing until you know what the Generator is.
+//
+// This hides and contextualises. It changes no backend behaviour, no limits
+// and no billing. Every component it hides still exists and returns when this
+// is false. Generator cost controls are untouched: see FREE_MONTHLY_LIMIT in
+// /api/generate, which is enforced regardless of what the UI advertises.
+//
+// Who it applies to is decided in one place — see launchAudience in
+// src/lib/launch-mode.ts. A host with real work in the deeper tools, or who
+// is paying, is never shown less than they had.
+export const FOCUSED_LAUNCH_MODE = true

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ctaSecondary, ctaTextLink } from './cta-styles'
+import { COMMERCIAL_LINK, ctaSecondary, ctaTextLink } from './cta-styles'
 
 /**
  * The StayStory Method page — Section 7, The Outcome.
@@ -209,10 +209,10 @@ export function MethodOutcome() {
               <span aria-hidden className="ml-1.5">→</span>
             </Link>
             <Link
-              href="/pricing"
+              href={COMMERCIAL_LINK.href}
               className={ctaTextLink}
             >
-              Explore StayStory pricing
+              {COMMERCIAL_LINK.label}
             </Link>
           </div>
         </div>

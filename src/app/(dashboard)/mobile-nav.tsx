@@ -24,19 +24,28 @@ export function MobileNav({
   properties = [],
   activePropertyId = null,
   isAdmin = false,
+  items,
 }: {
   properties?: Property[]
   activePropertyId?: string | null
   isAdmin?: boolean
+  /**
+   * The list the layout already decided on, narrowed for a focused host.
+   * Passed in rather than rebuilt here so the two menus cannot drift —
+   * NAV_ITEMS below remains the fallback for any caller that omits it.
+   */
+  items?: { href: string; label: string }[]
 }) {
   const [open, setOpen] = useState(false)
-  const full = isAdmin
-    ? [
-        ...NAV_ITEMS,
-        { href: '/admin', label: 'Admin' },
-        { href: '/admin/feedback', label: 'Feedback' },
-      ]
-    : NAV_ITEMS
+  const full =
+    items ??
+    (isAdmin
+      ? [
+          ...NAV_ITEMS,
+          { href: '/admin', label: 'Admin' },
+          { href: '/admin/feedback', label: 'Feedback' },
+        ]
+      : NAV_ITEMS)
   // Same focused/full decision as the desktop header, from the same helper, so
   // the two menus can never show different things.
   const navItems = useNavItems(full)

@@ -1,3 +1,5 @@
+import { FOCUSED_LAUNCH_MODE } from '@/lib/config'
+
 /**
  * The one definition of how a call to action looks on the marketing site.
  *
@@ -59,3 +61,18 @@ export const ctaCompactSecondary = `${BASE} h-9 shrink-0 rounded-lg px-4 text-sm
 /** A quiet text link, used for secondary journeys between pages. */
 export const ctaTextLink =
   'rounded-sm text-sm font-medium text-primary underline underline-offset-4 transition-colors hover:text-primary/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
+
+/**
+ * The link that answers "and what does this cost?".
+ *
+ * Three pages ask that question — Platform, the Method and the audience
+ * section — and all three must give the same answer. During the focused
+ * launch /pricing shows early access rather than a tier comparison, so
+ * "Explore StayStory pricing" would promise a price list that isn't on the
+ * page. The destination doesn't change; the invitation does.
+ *
+ * Both the label and the href are here so a single edit moves all three.
+ */
+export const COMMERCIAL_LINK: { href: string; label: string } = FOCUSED_LAUNCH_MODE
+  ? { href: '/pricing', label: 'See how early access works' }
+  : { href: '/pricing', label: 'Explore StayStory pricing' }

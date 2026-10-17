@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { FOCUSED_LAUNCH_MODE } from '@/lib/config'
 import { ctaCompact, ctaCompactSecondary, ctaPrimary } from './cta-styles'
 
 /**
@@ -23,12 +24,25 @@ import { ctaCompact, ctaCompactSecondary, ctaPrimary } from './cta-styles'
  * nothing animates dramatically.
  */
 
-export const NAV_ITEMS: { href: string; label: string }[] = [
+const ALL_NAV_ITEMS: { href: string; label: string }[] = [
   { href: '/platform', label: 'Platform' },
   { href: '/method', label: 'The StayStory Method' },
   { href: '/about', label: 'About' },
   { href: '/pricing', label: 'Pricing' },
 ]
+
+/**
+ * Pricing is not offered while the launch is free.
+ *
+ * Nothing is deleted: the page still exists and still answers, and the link
+ * returns the moment FOCUSED_LAUNCH_MODE is off. It is simply not something
+ * to invite a host into when the honest answer to "what does it cost" is
+ * "nothing yet" — a tier comparison would contradict the page they came
+ * from.
+ */
+export const NAV_ITEMS = FOCUSED_LAUNCH_MODE
+  ? ALL_NAV_ITEMS.filter((item) => item.href !== '/pricing')
+  : ALL_NAV_ITEMS
 
 export const LOGIN = { href: '/login', label: 'Login' }
 export const CTA = { href: '/signup', label: 'Start Free' }

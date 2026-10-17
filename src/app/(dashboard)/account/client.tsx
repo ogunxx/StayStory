@@ -124,7 +124,26 @@ function EmptyState({ href }: { href: string }) {
   )
 }
 
-export default function AccountClient({ email, profile, suggestions, stories, audits, journeys, playbooks }: Props) {
+export default function AccountClient({
+  email,
+  profile,
+  suggestions,
+  stories,
+  audits,
+  journeys,
+  playbooks,
+  focused = false,
+}: Props & {
+  /**
+   * A focused-launch host: free, and with no work in the deeper tools.
+   * Plan and upgrade detail is hidden from them — there is nothing to buy
+   * during this launch, and a tier they never chose is only confusing.
+   *
+   * Never true for anyone paying, so a subscriber can always reach their
+   * billing portal. See launch-mode.ts.
+   */
+  focused?: boolean
+}) {
   const tier = profile.tier ?? 'free'
   const isPaid = tier !== 'free'
 
@@ -149,7 +168,11 @@ export default function AccountClient({ email, profile, suggestions, stories, au
         <p className="text-muted-foreground text-sm">{email}</p>
       </div>
 
-      {/* Plan card */}
+      {/* Plan card.
+          Hidden for a focused host: every line of it is tier information,
+          and the only action on it leads somewhere nothing is for sale. A
+          paying host is never 'focused', so billing stays reachable. */}
+      {!focused && (
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="p-6 flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
@@ -200,6 +223,7 @@ export default function AccountClient({ email, profile, suggestions, stories, au
           )}
         </div>
       </div>
+      )}
 
       {/* 5-tool stats */}
       <div className="grid grid-cols-5 gap-2">

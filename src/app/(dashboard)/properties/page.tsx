@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getUserTier } from '@/lib/get-tier'
+import { getLaunchAudience } from '@/lib/launch-mode'
 import {
   listProperties,
   listMembers,
@@ -17,6 +18,10 @@ export default async function PropertiesPage() {
 
   const tier = await getUserTier()
   const limit = getPropertyLimit(tier)
+  // This page is not in the focused navigation, but it is reachable by typing
+  // and by finishing an invite. A host who has not been shown a plan anywhere
+  // else should not meet one here — the limit is stated, the tier is not sold.
+  const focused = (await getLaunchAudience(user.id, tier)) === 'focused'
   const teamEnabled = canManageTeam(tier)
   const properties = await listProperties()
 
@@ -36,6 +41,7 @@ export default async function PropertiesPage() {
       membersByProperty={membersByProperty}
       limit={limit}
       teamEnabled={teamEnabled}
+      focused={focused}
     />
   )
 }

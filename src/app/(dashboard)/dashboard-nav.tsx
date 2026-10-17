@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { FOCUSED_NAV, isFocusedRoute } from '@/lib/focused-nav'
+import type { LaunchAudience } from '@/lib/launch-mode'
 
 export type NavItem = { href: string; label: string }
 
@@ -19,9 +20,21 @@ export type NavItem = { href: string; label: string }
  * A client component because the layout above it is a server component and
  * cannot read the current path.
  */
-export function DashboardNav({ items }: { items: NavItem[] }) {
+export function DashboardNav({
+  items,
+  audience = 'established',
+}: {
+  items: NavItem[]
+  /** From the layout. 'focused' means `items` is already the short list. */
+  audience?: LaunchAudience
+}) {
   const pathname = usePathname()
-  const visible = isFocusedRoute(pathname) ? FOCUSED_NAV : items
+  // A focused host gets the short list everywhere, not only inside /start —
+  // the layout has already narrowed `items` for them. An established host
+  // still gets the focused list while they are inside the focused path,
+  // which is the behaviour this component was written for.
+  const visible =
+    audience === 'focused' ? items : isFocusedRoute(pathname) ? FOCUSED_NAV : items
 
   return (
     <nav className="hidden sm:flex items-center gap-6">

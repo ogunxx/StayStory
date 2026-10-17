@@ -1,4 +1,4 @@
-import { ctaTextLink } from './cta-styles'
+import { COMMERCIAL_LINK, ctaTextLink } from './cta-styles'
 
 /**
  * Platform page — Section 9, Everything Stays Connected.
@@ -74,8 +74,8 @@ export function PlatformConnected() {
           <a href="/method" className={ctaTextLink}>
             See how the StayStory Method works
           </a>
-          <a href="/pricing" className={ctaTextLink}>
-            Explore StayStory pricing
+          <a href={COMMERCIAL_LINK.href} className={ctaTextLink}>
+            {COMMERCIAL_LINK.label}
           </a>
         </p>
 

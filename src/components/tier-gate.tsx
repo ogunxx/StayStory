@@ -27,8 +27,14 @@ export function TierGate({
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          {/* The in-product plan chooser, not the public pricing page. During
+              the focused launch /pricing deliberately shows early access
+              rather than a tier comparison, so sending someone here to buy
+              Legendary would land them on a page that does not sell it.
+              /upgrade is the same two plans either way, inside the product,
+              with the host's own navigation around them. */}
           <Link
-            href="/pricing"
+            href="/upgrade?plan=legendary"
             className={cn(buttonVariants({ size: 'lg' }), 'px-8')}
           >
             Upgrade to Legendary

@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { FOCUSED_LAUNCH_MODE } from '@/lib/config'
 /**
  * Section 5 — Built for the way you host.
  *
@@ -68,7 +69,10 @@ export const AUDIENCES: Audience[] = [
     name: 'Hospitality Teams',
     description: 'Align teams across properties while keeping each stay personal.',
     ctaLabel: 'See how hospitality teams use StayStory',
-    ctaHref: '/pricing',
+    // Multi-property hosting is a Portfolio story, which the focused launch
+    // isn't selling. Sending a team to the early-access page would answer a
+    // question they didn't ask; the Platform page answers the one they did.
+    ctaHref: FOCUSED_LAUNCH_MODE ? '/platform' : '/pricing',
     panel: 'team',
   },
 ]

@@ -1,3 +1,4 @@
+import { FOCUSED_LAUNCH_MODE } from '@/lib/config'
 import Link from 'next/link'
 
 /**
@@ -34,7 +35,14 @@ export const SIGN_OFF = 'A more intentional way to host.'
 export type FooterLink = { label: string; href: string; external?: boolean }
 export type FooterColumn = { title: string; links: FooterLink[] }
 
-export const FOOTER_COLUMNS: FooterColumn[] = [
+/**
+ * Hidden from the footer for the same reason it is hidden from the nav:
+ * the footer should not quietly reintroduce a pricing model the rest of the
+ * site has stepped away from. Restored with FOCUSED_LAUNCH_MODE.
+ */
+const HIDDEN_WHILE_FOCUSED = FOCUSED_LAUNCH_MODE ? ['/pricing'] : []
+
+const ALL_FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: 'Explore',
     links: [
@@ -65,6 +73,11 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     ],
   },
 ]
+
+export const FOOTER_COLUMNS: FooterColumn[] = ALL_FOOTER_COLUMNS.map((column) => ({
+  ...column,
+  links: column.links.filter((link) => !HIDDEN_WHILE_FOCUSED.includes(link.href)),
+}))
 
 /**
  * Social accounts. Add an entry only for an account that actually exists —

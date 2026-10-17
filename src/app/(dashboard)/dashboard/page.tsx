@@ -9,6 +9,7 @@ import { countGeneratorUsageSince } from '@/lib/focused-recommendations'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { LEGENDARY_PRICE } from '@/lib/config'
+import { getLaunchAudience } from '@/lib/launch-mode'
 import {
   CompassSummary,
   JourneySteps,
@@ -46,6 +47,10 @@ export default async function DashboardPage({
 
   const name = user?.user_metadata?.full_name?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there'
   const isLegendary = hasAccess(tier, 'legendary')
+
+  // One rule, shared with the navigation and the Account page.
+  const audience = await getLaunchAudience(user!.id, tier)
+  const focused = audience === 'focused'
 
   const propertyId = await resolveActivePropertyId(user!.id)
   const journey = await getJourneyState(user!.id, propertyId, isLegendary)
@@ -92,8 +97,12 @@ export default async function DashboardPage({
         </Link>
       </div>
 
-      {/* Free tier usage banner */}
-      {!isLegendary && (
+      {/* Free tier usage banner.
+          Hidden for a focused host: "1 free generation remaining" names a
+          tool they have not been offered and a limit they cannot have
+          reached. The limit itself is untouched and still enforced in
+          /api/generate. */}
+      {!isLegendary && !focused && (
         <div className={cn(
           'rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4',
           remaining === 0 ? 'bg-destructive/10 border border-destructive/20' : 'bg-primary/10 border border-primary/20'
@@ -142,13 +151,20 @@ export default async function DashboardPage({
         total={journey.compassTotal}
       />
 
-      {/* ── Secondary: the connected journey, in sequence ───────────────── */}
-      <JourneySteps steps={journey.steps} />
+      {/* ── Secondary: the connected journey, in sequence ─────────────────
+          The six-tool sequence is the broader product's framing. A focused
+          host was promised four steps, and /start is where those live. */}
+      {!focused && <JourneySteps steps={journey.steps} />}
 
-      {/* ── What it is all building toward ──────────────────────────────── */}
-      {/* Honest wording: the Playbook does not yet read the other tools'
+      {/* ── What it is all building toward ────────────────────────────────
+          Honest wording: the Playbook does not yet read the other tools'
           output. It says the work is building toward the Playbook, not that
-          it is already assembled there. */}
+          it is already assembled there.
+
+          Hidden from a focused host. This is the full Guest Journey
+          Playbook, a different object from the focused Starter Playbook,
+          and it belongs to the deeper system. */}
+      {!focused && (
       <div className="rounded-2xl border border-border bg-secondary p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
@@ -169,9 +185,12 @@ export default async function DashboardPage({
           {journey.steps[5].status === 'completed' ? 'Open playbook →' : 'See the Playbook →'}
         </Link>
       </div>
+      )}
 
-      {/* Legendary upgrade nudge for free users */}
-      {!isLegendary && (
+      {/* Legendary upgrade nudge for free users.
+          Nothing is for sale during the focused launch, so offering a plan
+          here would contradict the page they signed up from. */}
+      {!isLegendary && !focused && (
         <div className="bg-secondary rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Upgrade</p>
