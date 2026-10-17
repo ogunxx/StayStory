@@ -5,7 +5,7 @@
 > the design rules. What it does not know is everything decided while
 > building — which is what this file is for.
 >
-> Last updated: 17 October 2026, at commit `86a81a4`.
+> Last updated: 17 October 2026, at commit `1afc506`.
 
 ---
 
