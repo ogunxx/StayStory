@@ -122,3 +122,18 @@ export const FOCUSED_FREE_LAUNCH = true
 // src/lib/launch-mode.ts. A host with real work in the deeper tools, or who
 // is paying, is never shown less than they had.
 export const FOCUSED_LAUNCH_MODE = true
+
+// ── RESEARCH_CALL_URL ───────────────────────────────────────────────────────
+//
+// Where "Book a 15-Minute Conversation" goes, offered after someone submits
+// the Help Shape StayStory form and said they would test StayStory.
+//
+// Empty by default, and that is a working state, not a broken one: with no
+// URL the research form still submits and still confirms, and the booking
+// invitation simply does not render. A button that goes nowhere is worse
+// than no button.
+//
+// Set NEXT_PUBLIC_RESEARCH_CALL_URL in Vercel to whatever scheduling page you
+// choose — nothing is installed or integrated here, and no booking platform
+// is assumed. The one place the URL lives is this constant.
+export const RESEARCH_CALL_URL: string = process.env.NEXT_PUBLIC_RESEARCH_CALL_URL ?? ''

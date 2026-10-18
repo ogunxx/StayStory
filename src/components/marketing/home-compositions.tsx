@@ -7,6 +7,8 @@ import { Benefits } from './benefits'
 import { Proof } from './proof'
 import { Audiences } from './audiences'
 import { FinalCta } from './final-cta'
+import { HelpShape } from './help-shape'
+import { RESEARCH_CALL_URL } from '@/lib/config'
 import { AIRBNB_URL } from './laurel-images'
 
 /**
@@ -133,6 +135,11 @@ export function FocusedHomepage({ rating, reviews }: Stats) {
           shared playbooks and co-hosts, which this experience does not
           include. It stays in AUDIENCES and on the full homepage. */}
       <Audiences only={['independent', 'boutique']} panels={{ boutique: 'compass' }} />
+      {/* Customer discovery, immediately before the closing CTA. Beside the
+          four-step story rather than part of it — see help-shape.tsx. The
+          full homepage below does not carry it: this is an early-access
+          invitation, and the preserved composition stays as it was. */}
+      <HelpShape callUrl={RESEARCH_CALL_URL} />
       <FinalCta {...FOCUSED_FINAL_CTA} rating={rating} reviews={reviews} />
     </>
   )

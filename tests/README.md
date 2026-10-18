@@ -32,6 +32,8 @@ already in the stack; nothing heavier was added.
 | `admin-data.test.ts` | Property-scoped journey facts, draft precedence, and a funnel that counts people rather than rows |
 | `stripe-price-guard.test.ts` | Checkout refuses a mismatched price — the crossed Legendary/Portfolio bug |
 | `launch-mode.test.ts` | Who gets the focused shell, the launch copy, and the full-mode wording staying recoverable |
+| `host-research.test.ts` | The public research form: validation, internal fields that a submission can never set, idempotency, the conversation-invitation rule, and its separation from product Feedback |
+| `research-export.test.ts` | CSV escaping (including spreadsheet formula injection), what the export leaves out, and the rate-limit guard |
 
 ## What is deliberately not here
 

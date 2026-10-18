@@ -27,10 +27,17 @@ export function OverviewView({
   stats,
   journey,
   configMap,
+  research,
 }: {
   stats: OverviewStats
   journey: JourneyStep[]
   configMap: Record<string, string>
+  /**
+   * Host Research counts. A separate prop rather than part of OverviewStats
+   * because it comes from a different table and a different question, and
+   * two cheap head-counts should not mean touching the shared snapshot.
+   */
+  research: { total: number; interested: number }
 }) {
   const attention = [
     { label: 'new feedback', count: stats.feedbackNew, href: '/admin/feedback?status=new' },
@@ -77,6 +84,14 @@ export function OverviewView({
             label="Feedback"
             value={stats.feedbackTotal}
             hint={stats.feedbackNew > 0 ? `${stats.feedbackNew} new` : 'none new'}
+          />
+          {/* A different question from Feedback above: what hosts say they
+              need, rather than whether StayStory helped. The second number
+              is the one this form mainly exists to produce. */}
+          <Stat
+            label="Host Research"
+            value={research.total}
+            hint={`${research.interested} open to testing`}
           />
         </div>
       </section>

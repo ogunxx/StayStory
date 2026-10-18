@@ -496,3 +496,65 @@ revoke update on focused_feedback from authenticated;
 grant update (usefulness, most_valuable, most_valuable_other, improvement_feedback,
               additional_feedback, open_to_followup, updated_at)
   on focused_feedback to authenticated;
+
+-- ── HOST RESEARCH: WHAT HOSTS NEED, ASKED ON THE PUBLIC HOMEPAGE ────────────
+-- Deliberately NOT focused_feedback. That table answers "did StayStory help?"
+-- and belongs to a signed-in host who finished the Starter Playbook. This one
+-- answers "what do hospitality hosts need?" and comes from an anonymous
+-- visitor who may never have used the product. Two questions, two moments,
+-- two datasets, kept apart on purpose.
+
+create table if not exists host_research (
+  id uuid primary key default gen_random_uuid(),
+
+  -- Their answers.
+  property_type text not null check (property_type in (
+    'vacation_rental', 'cabin_tiny_home', 'boutique',
+    'bed_and_breakfast', 'other', 'preparing')),
+  property_type_other text,
+  biggest_challenge text not null check (length(biggest_challenge) between 1 and 4000),
+  desired_support text check (length(desired_support) <= 4000),
+  testing_interest text not null check (testing_interest in ('yes', 'maybe', 'not_right_now')),
+  name text,
+  email text not null,
+
+  -- Permission to reply about this research. NOT a marketing subscription,
+  -- and there is no subscriber table for it to feed.
+  contact_permission boolean not null default true,
+
+  -- Where the submission came from, so a second entry point later is
+  -- distinguishable without guessing from timestamps.
+  submission_source text not null default 'homepage',
+
+  -- One form interaction, one key. A double click, a retry or a flaky
+  -- network replays the same key and the unique index below turns the second
+  -- insert into a no-op rather than a duplicate row. Email is deliberately
+  -- NOT unique: the same host may legitimately answer again months later.
+  idempotency_key text not null,
+
+  -- Ours, never theirs. See the grants at the bottom.
+  admin_status text not null default 'new' check (admin_status in ('new', 'reviewed', 'follow_up')),
+
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create unique index if not exists host_research_idempotency_key_idx
+  on host_research (idempotency_key);
+create index if not exists host_research_created_at_idx on host_research (created_at desc);
+create index if not exists host_research_admin_status_idx on host_research (admin_status);
+-- Finding people willing to test is the main reason this form exists.
+create index if not exists host_research_testing_interest_idx on host_research (testing_interest);
+
+alter table host_research enable row level security;
+
+-- No policies, on purpose.
+--
+-- RLS with zero policies denies everything to anon and authenticated, which
+-- is exactly right here: there is no row a signed-in host should read, and
+-- nothing a visitor should read back. Inserts come from the server through
+-- the service-role client, which bypasses RLS, after server-side validation
+-- that builds the row field by field. So the browser never needs INSERT, and
+-- never gets it.
+revoke all on host_research from anon;
+revoke all on host_research from authenticated;
