@@ -3,6 +3,7 @@ import { getOrCreateCompass, getPendingContributions } from '@/lib/compass'
 import { COMPASS_FIELD_LABELS } from '@/lib/compass-fields'
 import { decideNextStep, type NextStep, type StepId, type StepStatus } from '@/lib/journey-sequence'
 import { getStarterPlaybookState } from '@/lib/focused-playbook'
+import { scopeToProperty } from '@/lib/property-scope'
 import { hasFeedback } from '@/lib/focused-feedback'
 import type { CompassField, ExperienceCompass } from '@/types'
 
@@ -137,10 +138,11 @@ export async function getJourneyState(
   // property_id, playbooks included — an earlier comment here claimed it did
   // not, and the playbooks count was left user-scoped on that basis, so one
   // property's full Guest Journey Playbook counted for all of them.
-  const countFor = (table: string) => {
-    const q = supabase.from(table).select('id', { count: 'exact', head: true }).eq('user_id', userId)
-    return propertyId ? q.eq('property_id', propertyId) : q.is('property_id', null)
-  }
+  const countFor = (table: string) =>
+    scopeToProperty(
+      supabase.from(table).select('id', { count: 'exact', head: true }).eq('user_id', userId),
+      propertyId
+    )
   const blueprintQuery = supabase
     .from('experience_blueprint')
     .select('touchpoints')
@@ -161,12 +163,10 @@ export async function getJourneyState(
       countFor('suggestions'),
       countFor('guest_stories'),
       countFor('playbooks'),
-      propertyId
-        ? blueprintQuery.eq('property_id', propertyId)
-        : blueprintQuery.is('property_id', null),
+      scopeToProperty(blueprintQuery, propertyId),
       getStarterPlaybookState(userId, propertyId),
       hasFeedback(userId, propertyId),
-      propertyId ? draftQuery.eq('property_id', propertyId) : draftQuery.is('property_id', null),
+      scopeToProperty(draftQuery, propertyId),
     ])
 
   const auditCount = audits.count ?? 0
