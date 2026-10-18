@@ -136,4 +136,9 @@ export const FOCUSED_LAUNCH_MODE = true
 // Set NEXT_PUBLIC_RESEARCH_CALL_URL in Vercel to whatever scheduling page you
 // choose — nothing is installed or integrated here, and no booking platform
 // is assumed. The one place the URL lives is this constant.
+//
+// It must be https, and a value that is not a usable URL is treated as no
+// value at all: see isUsableCallUrl. Being a NEXT_PUBLIC_ variable it is
+// inlined at build time, so setting it needs a redeploy to take effect.
+// Setup steps: docs/RESEARCH_CALL_SETUP.md.
 export const RESEARCH_CALL_URL: string = process.env.NEXT_PUBLIC_RESEARCH_CALL_URL ?? ''

@@ -16,6 +16,7 @@ import { readFileSync } from 'node:fs'
 import {
   validateSubmission,
   shouldOfferConversation,
+  isUsableCallUrl,
   isValidEmail,
   PROPERTY_TYPES,
   PROPERTY_TYPE_OTHER,
@@ -285,6 +286,31 @@ describe('the fifteen-minute conversation', () => {
   test('not right now: never offered, even with a URL', () => {
     // They answered the question. Asking again is pressure.
     assert.equal(shouldOfferConversation({ testingInterest: 'not_right_now', callUrl: url }), false)
+  })
+
+  test('a mistyped URL is treated as no URL', () => {
+    // Set but wrong is easier to get wrong than missing, and fails at the
+    // worst moment — after the person has already agreed to talk.
+    for (const bad of [
+      'example.com/book',          // no scheme
+      'http://example.com/book',   // not https: their name and email in clear text
+      'TODO',                      // a placeholder left behind
+      'javascript:alert(1)',
+      '   ',
+    ]) {
+      assert.equal(shouldOfferConversation({ testingInterest: 'yes', callUrl: bad }), false, bad)
+      assert.equal(isUsableCallUrl(bad), false, bad)
+    }
+  })
+
+  test('a real https link is usable', () => {
+    for (const good of [
+      'https://app.acuityscheduling.com/schedule.php?owner=12345&appointmentType=67890',
+      'https://staystory.as.me/host-research',
+      '  https://example.com/book  ',
+    ]) {
+      assert.equal(isUsableCallUrl(good), true, good)
+    }
   })
 
   test('no URL: never offered, whatever they said', () => {

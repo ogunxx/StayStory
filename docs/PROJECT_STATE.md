@@ -105,6 +105,10 @@ rather than charging the wrong amount.
   `docs/AUTH_EMAIL_SETUP.md`.
 - **Four Stripe price IDs** in Vercel, all verified October 2026. The checkout
   guard will refuse if one is ever wrong again.
+- **`NEXT_PUBLIC_RESEARCH_CALL_URL`** — the Acuity link for the optional
+  15-minute research conversation. Unset is a working state: the homepage
+  research form still submits and the booking invitation just does not
+  render. Full detail in `docs/RESEARCH_CALL_SETUP.md`.
 - **`ADMIN_EMAILS`** is the only thing granting admin access. The app cannot
   write to it, which is why Admin shows admin status but offers no control
   over it.

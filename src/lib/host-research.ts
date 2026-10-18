@@ -241,6 +241,31 @@ export function shouldOfferConversation(input: {
   testingInterest: TestingInterest
   callUrl: string | null | undefined
 }): boolean {
-  if (!input.callUrl || input.callUrl.trim().length === 0) return false
+  if (!isUsableCallUrl(input.callUrl)) return false
   return input.testingInterest === 'yes' || input.testingInterest === 'maybe'
+}
+
+/**
+ * Whether the configured booking link is something we can actually send a
+ * person to.
+ *
+ * A missing variable is the expected state and already handled. This also
+ * catches the one that is easier to get wrong: a value that is set but
+ * mistyped — a bare domain, a placeholder someone left behind, a `javascript:`
+ * string. All of those would render a button that fails after the click,
+ * which is the worst moment to fail, because the person has already agreed
+ * to talk to us. Hiding the invitation loses a conversation; a broken link
+ * loses it too, and looks careless doing it.
+ */
+export function isUsableCallUrl(value: string | null | undefined): boolean {
+  if (!value) return false
+  const trimmed = value.trim()
+  if (trimmed.length === 0) return false
+  try {
+    // Only https. An http booking page would hand a stranger's name and
+    // email to the network in clear text.
+    return new URL(trimmed).protocol === 'https:'
+  } catch {
+    return false
+  }
 }
