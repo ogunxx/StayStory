@@ -106,9 +106,11 @@ rather than charging the wrong amount.
 - **Four Stripe price IDs** in Vercel, all verified October 2026. The checkout
   guard will refuse if one is ever wrong again.
 - **`NEXT_PUBLIC_RESEARCH_CALL_URL`** — the Acuity link for the optional
-  15-minute research conversation. Unset is a working state: the homepage
-  research form still submits and the booking invitation just does not
-  render. Full detail in `docs/RESEARCH_CALL_SETUP.md`.
+  15-minute research conversation. **Set for Preview and Production,
+  19 October 2026**, pointing at the Laurel & Lore Acuity account's
+  15-minute "StayStory Host Research Conversation". Unset is a working
+  state: the form still submits and the invitation just does not render.
+  Full detail in `docs/RESEARCH_CALL_SETUP.md`.
 - **`ADMIN_EMAILS`** is the only thing granting admin access. The app cannot
   write to it, which is why Admin shows admin status but offers no control
   over it.
