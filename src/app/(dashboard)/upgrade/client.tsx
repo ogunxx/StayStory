@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { PAID_PLANS } from '@/lib/plans'
+import { REFUND_WINDOW_DAYS } from '@/lib/legal'
 import { UpgradeButton } from '@/components/billing/upgrade-button'
 import { cn } from '@/lib/utils'
 
@@ -144,14 +145,34 @@ export function UpgradePlans({
         })}
       </div>
 
-      <p className="border-t border-border pt-6 text-sm text-muted-foreground">
-        Payment is handled by Stripe — we never see your card details. You can change or cancel
-        your plan at any time from{' '}
-        <Link href="/account" className="text-primary underline underline-offset-4">
-          your account
-        </Link>
-        .
-      </p>
+      {/* Beside the payment button, not buried in the footer: the refund
+          window is the thing someone wants to know at the moment they are
+          deciding whether to risk a first payment. */}
+      <div className="flex flex-col gap-2 border-t border-border pt-6 text-sm text-muted-foreground">
+        <p>
+          Payment is handled by Stripe — we never see your card details. You can change or cancel
+          your plan at any time from{' '}
+          <Link href="/account" className="text-primary underline underline-offset-4">
+            your account
+          </Link>
+          .
+        </p>
+        <p>
+          Full refund within {REFUND_WINDOW_DAYS} days, no questions asked — see{' '}
+          <Link href="/refunds" className="text-primary underline underline-offset-4">
+            Refunds
+          </Link>
+          . By subscribing you agree to our{' '}
+          <Link href="/terms" className="text-primary underline underline-offset-4">
+            Terms
+          </Link>{' '}
+          and{' '}
+          <Link href="/privacy" className="text-primary underline underline-offset-4">
+            Privacy
+          </Link>
+          .
+        </p>
+      </div>
     </div>
   )
 }

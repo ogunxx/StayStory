@@ -206,6 +206,21 @@ function SignupForm() {
                 ? 'Create account & continue to payment →'
                 : 'Create account & start my Audit →'}
           </Button>
+
+          {/* Under the button rather than a tickbox: creating the account is
+              the act of agreeing, and a checkbox between a host and the
+              thing they came to do buys nothing but friction. */}
+          <p className="text-center text-xs leading-relaxed text-muted-foreground">
+            By creating an account you agree to our{' '}
+            <Link href="/terms" className="text-primary hover:underline">
+              Terms
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="text-primary hover:underline">
+              Privacy Policy
+            </Link>
+            .
+          </p>
         </form>
 
         {/* The only link in the app that led to the paid signup screen. While

@@ -66,9 +66,12 @@ const ALL_FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: 'Legal',
     links: [
-      // { label: 'Privacy Policy', href: '/privacy' },
-      // { label: 'Terms of Service', href: '/terms' },
-      // { label: 'Cookie Policy', href: '/cookies' },
+      { label: 'Terms', href: '/terms' },
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Refunds', href: '/refunds' },
+      // Cookies are covered inside the Privacy page rather than on their own,
+      // since StayStory sets only a sign-in cookie and an active-property
+      // one. A separate page would be a heading over two sentences.
       // { label: 'Accessibility', href: '/accessibility' },
     ],
   },

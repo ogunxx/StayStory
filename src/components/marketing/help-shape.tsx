@@ -63,6 +63,9 @@ export const QUESTIONS = {
 export const PERMISSION =
   'By submitting, you’re giving StayStory permission to contact you about your feedback or potential participation in product research. You will not be automatically subscribed to marketing emails.'
 
+/** The promise above is worth more with the policy behind it one click away. */
+export const PERMISSION_LINK = { href: '/privacy', label: 'How we handle your information' }
+
 export const CONFIRMATION = {
   heading: 'Thank you for helping shape StayStory.',
   body: 'Every thoughtful experience begins with listening. We appreciate you taking the time to share your perspective, and we’re excited to build something genuinely useful for hosts like you.',
@@ -416,7 +419,18 @@ export function HelpShape({ callUrl }: { callUrl?: string | null }) {
             </div>
 
             <div className="flex flex-col gap-4 border-t border-border/70 pt-6">
-              <p className="text-[0.8rem] leading-relaxed text-muted-foreground">{PERMISSION}</p>
+              <p className="text-[0.8rem] leading-relaxed text-muted-foreground">
+                {PERMISSION}{' '}
+                <a
+                  href={PERMISSION_LINK.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline underline-offset-4"
+                >
+                  {PERMISSION_LINK.label}
+                </a>
+                .
+              </p>
 
               {error && (
                 <p
