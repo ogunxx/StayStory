@@ -9,11 +9,12 @@
  */
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 
 import {
   ENTITY,
   CONTACT_EMAIL,
+  EMAIL_FROM,
   LAST_UPDATED,
   REFUND_WINDOW_DAYS,
   PROCESSORS,
@@ -22,6 +23,18 @@ import {
 
 const read = (f: string) => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8')
 const PAGES = ['src/app/terms/page.tsx', 'src/app/privacy/page.tsx', 'src/app/refunds/page.tsx']
+const WEBHOOK = 'src/app/api/stripe/webhook/route.ts'
+
+/** Every `.ts`/`.tsx` file under a directory, as paths `read()` accepts. */
+function sourceFiles(dir: string): string[] {
+  const out: string[] = []
+  for (const entry of readdirSync(new URL(`../${dir}`, import.meta.url), { withFileTypes: true })) {
+    const path = `${dir}/${entry.name}`
+    if (entry.isDirectory()) out.push(...sourceFiles(path))
+    else if (/\.tsx?$/.test(entry.name)) out.push(path)
+  }
+  return out
+}
 
 describe('the facts live in one place', () => {
   test('no page hardcodes the contact address', () => {
@@ -49,6 +62,47 @@ describe('the facts live in one place', () => {
     assert.match(shell, /ENTITY\.legalName/)
     assert.match(shell, /ENTITY\.descriptor/)
     assert.match(shell, /LAST_UPDATED/)
+  })
+})
+
+describe('the emails and the legal pages name the same address', () => {
+  /**
+   * The failure this guards against ran for months unnoticed. Receipts told
+   * customers to reply to `hello@staystory.co`; the Refunds page told them to
+   * write to `info@staystory.co`. Neither had a mailbox, so nobody ever
+   * reported a bounce — the mail simply went nowhere and the inconsistency
+   * had no symptom.
+   */
+  test('the Stripe webhook hardcodes no address of its own', () => {
+    assert.doesNotMatch(read(WEBHOOK), /\b(info|hello|support|no-?reply)@/, `${WEBHOOK} should use CONTACT_EMAIL`)
+  })
+
+  test('the webhook sends from, and replies to, the declared address', () => {
+    const src = read(WEBHOOK)
+    assert.match(src, /from: EMAIL_FROM/)
+    assert.match(src, /replyTo: CONTACT_EMAIL/)
+    // Both receipts, not just the one someone remembered to update.
+    assert.equal((src.match(/from: EMAIL_FROM/g) ?? []).length, 2)
+    assert.equal((src.match(/replyTo: CONTACT_EMAIL/g) ?? []).length, 2)
+  })
+
+  test('no source file names an address other than the declared one', () => {
+    // A sweep of the whole tree rather than a list of files, because the next
+    // place a stray address appears will not be a file this suite thought to
+    // name. `legal.ts` is the one legitimate home for the literal.
+    const stray: string[] = []
+    for (const file of sourceFiles('src')) {
+      if (file.endsWith('src/lib/legal.ts')) continue
+      for (const [address] of read(file).matchAll(/[\w.+-]+@staystory\.co\b/g)) {
+        if (address !== CONTACT_EMAIL) stray.push(`${file}: ${address}`)
+      }
+    }
+    assert.deepEqual(stray, [], `addresses with no mailbox behind them:\n${stray.join('\n')}`)
+  })
+
+  test('the From header is well formed and carries the contact address', () => {
+    assert.match(EMAIL_FROM, /^StayStory <[^<>@\s]+@[^<>@\s]+>$/, EMAIL_FROM)
+    assert.ok(EMAIL_FROM.includes(CONTACT_EMAIL), EMAIL_FROM)
   })
 })
 

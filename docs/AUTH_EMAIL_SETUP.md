@@ -79,8 +79,13 @@ key and fills in the SMTP fields. Done by hand, the settings are:
 | Port | `465` (implicit TLS; 587 / 2587 use STARTTLS if 465 is blocked) |
 | Username | `resend` |
 | Password | the Resend API key |
-| Sender email | an address at the verified domain, e.g. `hello@staystory.co` |
+| Sender email | `info@staystory.co` — see `CONTACT_EMAIL` in `src/lib/legal.ts` |
 | Sender name | `StayStory` |
+
+Any local-part at the verified domain *sends* fine, whether or not a mailbox
+exists behind it. Keeping this in step with `CONTACT_EMAIL` is so that a
+reply lands somewhere a person reads — which needs root MX records, a
+separate piece of DNS entirely. See `docs/MAILBOX_SETUP.md`.
 
 Entered in the dashboard under **Authentication → Emails → SMTP Settings**
 (older builds: Project Settings → Auth → SMTP Settings), with *Enable Custom

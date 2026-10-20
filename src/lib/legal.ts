@@ -1,10 +1,11 @@
 /**
- * The facts the legal pages are built from.
+ * Who StayStory is, and how someone reaches it.
  *
  * One place, because the same entity name, contact address and refund window
- * appear across Terms, Privacy and Refunds, and three copies of a legal fact
- * is three chances for them to disagree. If the company name changes, or the
- * refund window moves, change it here.
+ * appear across Terms, Privacy and Refunds — and in the emails Stripe
+ * triggers. Several copies of a fact like that is several chances for them to
+ * disagree. If the company name changes, or the refund window moves, change
+ * it here.
  *
  * ┌─ NOT LEGAL ADVICE ─────────────────────────────────────────────────────┐
  * │ These pages were drafted to describe accurately what StayStory         │
@@ -33,6 +34,28 @@ export const ENTITY = {
   tradingAs: 'StayStory',
 } as const
 
+/**
+ * The one address a host is ever told to write to.
+ *
+ * Used by the legal pages and by the transactional emails alike, which is the
+ * point: a receipt that says "reply to us here" and a refund policy that
+ * names somewhere else is how people conclude nobody is home.
+ *
+ * ┌─ TWO REQUIREMENTS, EASILY CONFUSED ────────────────────────────────────┐
+ * │ A `From` address needs its DOMAIN verified in Resend. Any local-part   │
+ * │ works — `anything@staystory.co` sends perfectly whether or not a       │
+ * │ mailbox exists behind it.                                              │
+ * │                                                                        │
+ * │ A `Reply-To` address needs a MAILBOX that actually RECEIVES. That is   │
+ * │ MX records on the root domain, which is an entirely separate piece of  │
+ * │ DNS from the sending setup.                                            │
+ * │                                                                        │
+ * │ Mail kept leaving successfully for months while every reply vanished,  │
+ * │ because the first requirement was met and the second was never         │
+ * │ noticed. If this address changes, check both.                          │
+ * │ See docs/MAILBOX_SETUP.md.                                             │
+ * └────────────────────────────────────────────────────────────────────────┘
+ */
 export const CONTACT_EMAIL = 'info@staystory.co'
 
 export const SITE = {
@@ -40,6 +63,15 @@ export const SITE = {
   domain: 'staystory.co',
   url: 'https://staystory.co',
 } as const
+
+/**
+ * The `From` header on every email StayStory sends itself.
+ *
+ * Deliberately the same address as `CONTACT_EMAIL` rather than a no-reply:
+ * someone answering a receipt is usually someone with a question, and the
+ * reply ought to land somewhere a person reads.
+ */
+export const EMAIL_FROM = `${SITE.name} <${CONTACT_EMAIL}>`
 
 /**
  * Shown as "Last updated" on each page. Move it whenever the substance

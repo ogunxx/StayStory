@@ -5,7 +5,7 @@
 > the design rules. What it does not know is everything decided while
 > building — which is what this file is for.
 >
-> Last updated: 20 October 2026, at commit `0ed264a`.
+> Last updated: 20 October 2026, after the mail audit.
 
 ---
 
@@ -54,13 +54,16 @@ code but deliberately *not* part of the promise.
 `/start` is the guided journey. The full six-tool product (`/journey`,
 `/generator`, `/story`, `/legend`) is untouched and still reachable.
 
-### Three switches in `src/lib/config.ts`
+### Four switches in `src/lib/config.ts`
 
 All currently `true`, all independent, each documented at length in place.
 
 - `FOCUSED_FIRST_RUN` — new hosts land in the guided journey, not the Dashboard
 - `FOCUSED_HOMEPAGE` — the public site shows the focused composition
 - `FOCUSED_FREE_LAUNCH` — signup does not offer the paid plan up front
+- `FOCUSED_LAUNCH_MODE` — paid tiers and six-tool messaging stay out of an
+  early host's way. `src/lib/launch-mode.ts` decides who sees what: anyone
+  paying, or with deeper work already saved, gets the full product regardless
 
 ---
 
@@ -95,14 +98,22 @@ rather than charging the wrong amount.
 
 ---
 
-## Known bugs, deliberately not fixed
+## Two bugs that were fixed, and are worth not reintroducing
 
-1. **`/legend` playbook count is user-scoped.** `journey-state.ts` queries
-   `playbooks` by `user_id` only, though the table has `property_id`. One
-   property's Playbook counts for all of them. Admin v1 avoids this by scoping
-   its own query; the shared helper is still wrong.
-2. **A saved Audit draft can look unstarted on `/start`** after logout/login.
-   Admin reads the draft correctly; the host-facing path does not.
+Both were listed here as known and deliberately unfixed; both were then
+fixed, and the fixes are the reason two test files exist.
+
+1. **`/legend` playbook count was user-scoped.** `journey-state.ts` counted
+   `playbooks` by `user_id` alone, though the table has `property_id`, so one
+   property's Playbook counted for all of them. Property scoping now goes
+   through `scopeToProperty` in `src/lib/property-scope.ts` — a one-line
+   helper that exists mainly so `tests/property-scope.test.ts` can hold the
+   behaviour still. Proved against the live database in a rolled-back
+   transaction: viewing property B, the old query returned 1 and the new
+   returned 0.
+2. **A saved Audit draft looked unstarted on `/start`.** The host-facing path
+   ignored the draft row that Admin read correctly. `/start` now says
+   "Continue your Audit" with the step number. See `tests/focused-path.test.ts`.
 
 ---
 
@@ -121,22 +132,18 @@ rather than charging the wrong amount.
   moving nameservers to it; do not, or the mail configuration goes with
   them.
 - **Nothing receives mail at staystory.co.** There is no MX record on the
-  root domain, so `info@` and `hello@` both bounce or vanish. The only MX
-  is on the `send` subdomain pointing at `feedback-smtp.us-east-1.amazonses.com`
-  — that is Resend's bounce handling for *outbound* mail and has nothing to
-  do with receiving.
-
-  This matters because the legal pages tell people to write in about
-  refunds, privacy and deletion, and the Stripe receipts say to reply to
-  `hello@`. Both addresses are currently dead ends. Either point
-  `CONTACT_EMAIL` in `src/lib/legal.ts` at an address that works, or add
-  real MX records and a mailbox.
+  root domain, so `info@staystory.co` bounces or vanishes — while sending
+  from that same address works perfectly, because a verified sending domain
+  needs no mailbox. Everything in the app now names `info@` and nothing
+  else; the address itself is what still has to be made real.
 
   ⚠️ Changing Namecheap's MAIL SETTINGS away from "Custom MX" **deletes the
   `send` MX record**, which un-verifies the domain in Resend and can stop
-  outbound mail entirely. This happened once. If it goes missing, re-add it:
-  type MX, host `send`, value `feedback-smtp.us-east-1.amazonses.com`,
-  priority 10.
+  signup emails and Stripe receipts entirely. This happened on 20 October.
+
+  **Read `docs/MAILBOX_SETUP.md` before touching any DNS.** It has the order
+  of work, the record to restore, and the one question that has to be
+  answered first.
 - **Four Stripe price IDs** in Vercel, all verified October 2026. The checkout
   guard will refuse if one is ever wrong again.
 - **`NEXT_PUBLIC_RESEARCH_CALL_URL`** — the Acuity link for the optional
@@ -175,7 +182,20 @@ Read `CLAUDE.md` first (it loads the rest), then this file. Then:
 git log --oneline origin/main..HEAD     # what is not yet in production
 ```
 
-The test suites live outside the repo, in the session scratchpad, and are not
-committed — logic tests for the focused path, feedback validation, Stripe price
-matching and the admin snapshot. Worth recreating as real test files if this
-project continues much further.
+```
+npm test            # 254 tests, no network, no database
+npm run build       # the real check — the suite does not catch type errors
+```
+
+**The tests are committed, in `tests/`.** They were twice written in the
+session scratchpad and twice lost with the container, which is the whole
+reason they are now real files. `tests/README.md` says what each one guards.
+They are deliberately logic-only: no network, no database, no browser, so
+they run in seconds and cannot fail for a reason unrelated to the change.
+
+Anything needing the live database lives in `tests/live/` and runs separately
+under `npm run test:live` — never as part of `npm test`.
+
+Lint has a standing baseline of **23 problems** (20 errors, 3 warnings), all
+`react/no-unescaped-entities` and unused variables that predate this work.
+Unchanged is the pass condition; it is not zero.
