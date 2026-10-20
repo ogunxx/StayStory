@@ -5,25 +5,36 @@
 > the design rules. What it does not know is everything decided while
 > building — which is what this file is for.
 >
-> Last updated: 17 October 2026, at commit `1afc506`.
+> Last updated: 20 October 2026, at commit `0ed264a`.
 
 ---
 
 ## The one thing to know first
 
-**Nothing below is live on staystory.co.** Production is `main`, last deployed
-4 September 2026. All of this sits on the branch `claude/staystory-hero-s1`,
-**32 commits ahead**, with no pull request open. That was deliberate —
-production stays untouched until explicitly approved.
+**This is live.** `claude/staystory-hero-s1` was merged to `main` and deployed
+to staystory.co on **20 October 2026** (`0ed264a`), ending six weeks on the
+4 September build. The merge came out byte-identical to the branch — main's
+one unmerged commit was already superseded — and was verified that way rather
+than assumed.
 
-Preview (stable, survives redeploys):
+Real people can now reach all of it. Treat changes accordingly: there is no
+longer a gap between "pushed" and "shipped".
+
+**Rollback**, if ever needed: Vercel → Deployments → the previous production
+deployment → Promote to Production. It does not undo accounts, Audits or
+research submitted in the meantime; those rows stay and are read again on
+roll-forward.
+
+The branch still exists at the same tree. Preview (stable, survives
+redeploys):
 
 ```
 https://staystory-git-claude-stayst-20f9fd-oguncananoglu-6236s-projects.vercel.app
 ```
 
-One exception: **database changes are live**, because schema is not branch
-scoped. Production code simply does not read the new tables.
+Database changes were always live, because schema is not branch scoped —
+this deploy needed no migration, production simply started reading tables it
+had been ignoring.
 
 ---
 
