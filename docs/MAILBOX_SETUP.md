@@ -104,15 +104,23 @@ served correctly over HTTPS — confirmed in a browser — and its contents were
 byte-identical to Zoho's, and Zoho still refused. Of the three causes Zoho
 lists, the path and the content were both eliminated, leaving the first:
 *"invalid or expired certificate … or allow your website to load in http
-mode."* Vercel redirects HTTP to HTTPS unconditionally and requires SNI, and
-Zoho's verification bot does not cope with that. Neither is configurable.
+mode."*
 
-The `CNAME` method is worse: it would need a CNAME on the apex, which cannot
-coexist with the A record serving the website.
+Zoho's own step 4 gives it away — it tells you to check
+`http://staystory.co/zohoverify/verifyforzoho.html`, over plain HTTP. Vercel
+answers HTTP with an unconditional 308 to HTTPS, and Java's
+`HttpURLConnection` will not follow a redirect that changes protocol. Not
+configurable at either end.
 
-So domain verification has to be the `TXT` record, which means it has to go
-through whatever is hosting DNS. The file is harmless and has been left in
-place; delete it whenever the domain is verified by other means.
+So verification has to be a DNS record. **Both remaining methods are
+viable** — an earlier note here claimed the `CNAME` method needed a record
+on the apex, where it would clash with the A record serving the website.
+That was an assumption and it was wrong: Zoho's CNAME method uses a
+subdomain host shaped like `zb<code>`, which conflicts with nothing. If one
+record type will not save, try the other.
+
+The verification file is harmless and has been left deployed; delete
+`public/zohoverify/` whenever the domain is verified another way.
 
 ### One trap worth knowing before you start
 
