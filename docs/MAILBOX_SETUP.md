@@ -92,6 +92,28 @@ because it looks for its own mode rather than the records. Cosmetic, as long
 as the values match what it asked for. Trust a delivered test message over
 that warning.
 
+### Zoho's HTML verification does not work here
+
+Zoho offers three ways to prove domain ownership: a `TXT` record, a `CNAME`,
+or an HTML file served from the domain. The file method is the appealing one,
+because `public/zohoverify/verifyforzoho.html` is a commit rather than a trip
+through someone's DNS editor.
+
+**It fails on a Vercel-hosted domain.** It was tried on 20 October: the file
+served correctly over HTTPS — confirmed in a browser — and its contents were
+byte-identical to Zoho's, and Zoho still refused. Of the three causes Zoho
+lists, the path and the content were both eliminated, leaving the first:
+*"invalid or expired certificate … or allow your website to load in http
+mode."* Vercel redirects HTTP to HTTPS unconditionally and requires SNI, and
+Zoho's verification bot does not cope with that. Neither is configurable.
+
+The `CNAME` method is worse: it would need a CNAME on the apex, which cannot
+coexist with the A record serving the website.
+
+So domain verification has to be the `TXT` record, which means it has to go
+through whatever is hosting DNS. The file is harmless and has been left in
+place; delete it whenever the domain is verified by other means.
+
 ### One trap worth knowing before you start
 
 If the provider asks for an **SPF `TXT` record on `@`** and a root SPF record
