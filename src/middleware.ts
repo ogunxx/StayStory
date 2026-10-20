@@ -45,5 +45,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/stripe/webhook).*)'],
+  // `zohoverify` is excluded because Zoho's verifier fetches that file to
+  // prove we own the domain, and it should get the bytes without a session
+  // lookup on the way.
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/stripe/webhook|zohoverify).*)'],
 }
