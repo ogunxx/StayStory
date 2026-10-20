@@ -134,6 +134,53 @@ before adding anything there.
 
 ---
 
+## The zone as it stood before any migration
+
+Read off the Namecheap Advanced DNS screen on 20 October 2026. Recorded
+because a DNS migration is only safe if you know what you are copying, and
+because Namecheap's editor had by then stopped saving records at all.
+
+**HOST RECORDS**
+
+| Type | Host | Value | TTL |
+|---|---|---|---|
+| A | `@` | `76.76.21.21` | Automatic |
+| CNAME | `www` | `cname.vercel-dns.com.` | Automatic |
+| TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBg…` **(truncated on screen)** | Automatic |
+| TXT | `semd` | `v=spf1 include:amazonses.com ~all` | Automatic |
+| TXT | `send` | `v=spf1 include:amazonses.com ~all` | Automatic |
+
+**MAIL SETTINGS** (Custom MX)
+
+| Type | Host | Value | Priority |
+|---|---|---|---|
+| MX | `send` | `feedback-smtp.us-east-1.amazonses.com` | 10 |
+
+Three things to know about that table:
+
+- **The DKIM value is truncated** and is the one record that cannot be
+  retyped from here. It does not need to be: the Resend dashboard shows
+  every record it requires, in full, at any time. That is the backup copy.
+- **`semd` is a typo of `send`** and is inert — nothing queries it. Do not
+  bother carrying it across.
+- The A record and the `www` CNAME are what serve the website. If either is
+  wrong after a migration, staystory.co goes down.
+
+### Why Namecheap had to be abandoned
+
+In one afternoon its DNS editor deleted the `send` MX record when the mail
+mode changed, then refused to save a valid `TXT` record four times —
+including once in an incognito window with no extensions running — with no
+message but *"Failed to save record. Please try again."* A duplicate row
+accounted for two of those attempts; removing it changed nothing.
+
+The records above are all valid and all still resolve. The editor simply
+stopped accepting writes. There is no way to run a mail setup through a DNS
+host that cannot be written to, and the MX records for a mailbox were still
+ahead.
+
+---
+
 ## Order of work
 
 ### 1. Read the Resend dashboard first — 2 minutes
