@@ -65,18 +65,42 @@ trying to fix. It is the single most important record on the domain.
 
 ---
 
-## The open question
+## The way through: stay in Custom MX and add rows
 
 Namecheap's MAIL SETTINGS dropdown is exclusive, and every `MX` record lives
-inside it. **It is not established whether a mailbox mode (Private Email,
-Gmail, Forwarding) allows an additional host-specific `MX` row for `send`
-alongside its own records on `@`.**
+inside it. The mailbox modes — Private Email, Gmail, Email Forwarding — each
+write their own records on `@` and take the table over, which is what
+destroyed the `send` row on 20 October.
 
-If it does, this is straightforward. If it does not, then at Namecheap a
-mailbox and Resend's `send` record cannot coexist, and the fix is to move DNS
-hosting (see the last section) rather than to keep fighting the dropdown.
+**So don't use them.** `Custom MX` is a table that accepts any number of rows
+with a different `Host` on each, which is how `send` existed in the first
+place. A mailbox and Resend coexist perfectly there:
 
-Find out before changing anything. Do not assume either answer.
+| Type | Host | Value | Priority |
+|---|---|---|---|
+| MX | `@` | the mailbox provider's first mail server | 10 |
+| MX | `@` | the mailbox provider's second mail server | 10 |
+| MX | `send` | `feedback-smtp.us-east-1.amazonses.com` | 10 |
+
+The rule that follows from this: **once a mailbox exists, never touch that
+dropdown again.** Every future change is adding or editing a row inside
+Custom MX. Buying Private Email will offer to configure DNS automatically —
+decline it, or it switches the mode and the `send` row goes with it.
+
+A mail provider's dashboard may then complain that DNS is "not configured",
+because it looks for its own mode rather than the records. Cosmetic, as long
+as the values match what it asked for. Trust a delivered test message over
+that warning.
+
+### One trap worth knowing before you start
+
+If the provider asks for an **SPF `TXT` record on `@`** and a root SPF record
+already exists, **do not add a second one.** Two SPF records on the same host
+is invalid and breaks mail for both. They have to be merged into a single
+record with both `include:` terms.
+
+Resend's SPF sits on `send`, not `@`, so it does not collide — but check `@`
+before adding anything there.
 
 ---
 
