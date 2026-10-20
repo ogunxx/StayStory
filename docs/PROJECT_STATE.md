@@ -125,25 +125,32 @@ fixed, and the fixes are the reason two test files exist.
   confirmation emails to `localhost`.
 - **Custom SMTP** is set up through Resend. Full detail in
   `docs/AUTH_EMAIL_SETUP.md`.
-- **DNS lives at Namecheap, not Vercel.** The nameservers are
-  `dns1/dns2.registrar-servers.com`. Vercel holds a zone for staystory.co
-  but it is *not authoritative* — reading records there tells you nothing,
-  which nearly caused a wrong diagnosis on 20 October. Vercel will suggest
-  moving nameservers to it; do not, or the mail configuration goes with
-  them.
-- **Nothing receives mail at staystory.co.** There is no MX record on the
-  root domain, so `info@staystory.co` bounces or vanishes — while sending
-  from that same address works perfectly, because a verified sending domain
-  needs no mailbox. Everything in the app now names `info@` and nothing
-  else; the address itself is what still has to be made real.
+- **DNS lives at Cloudflare**, as of 20 October 2026. Nameservers
+  `mitch.ns.cloudflare.com` / `perla.ns.cloudflare.com`, set at Namecheap,
+  which is still the registrar. Vercel also holds a zone for staystory.co
+  and it is *not authoritative* — reading records there tells you nothing,
+  which nearly caused a wrong diagnosis. Vercel will offer to take the
+  nameservers; don't.
 
-  ⚠️ Changing Namecheap's MAIL SETTINGS away from "Custom MX" **deletes the
-  `send` MX record**, which un-verifies the domain in Resend and can stop
-  signup emails and Stripe receipts entirely. This happened on 20 October.
+  **The A record and `www` CNAME must stay `DNS only`, not Proxied.**
+  Vercel terminates its own TLS; Cloudflare's proxy in front of it causes
+  certificate errors and redirect loops. Cloudflare nags about this. Ignore
+  the nag.
 
-  **Read `docs/MAILBOX_SETUP.md` before touching any DNS.** It has the order
-  of work, the record to restore, and the one question that has to be
-  answered first.
+  It moved because Namecheap's editor stopped accepting writes — it
+  refused a valid TXT record four times, having earlier deleted the `send`
+  MX record on its own. **`docs/MAILBOX_SETUP.md`** has the full account,
+  the zone as it was, and what each record is for.
+- **`info@staystory.co` receives through Zoho**, on the same Zoho account
+  as Valor Oak. The domain is verified and the MX, SPF and DKIM records are
+  in Cloudflare.
+
+  Sending from the address and receiving at it are **separate pieces of
+  DNS**, and the second was missing for months without a symptom: a
+  verified sending domain sends from any local-part, mailbox or not. So
+  Stripe receipts went out perfectly while every customer reply vanished.
+  If this address ever changes, check both halves, and test by actually
+  emailing it.
 - **Four Stripe price IDs** in Vercel, all verified October 2026. The checkout
   guard will refuse if one is ever wrong again.
 - **`NEXT_PUBLIC_RESEARCH_CALL_URL`** — the Acuity link for the optional
