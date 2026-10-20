@@ -141,9 +141,11 @@ fixed, and the fixes are the reason two test files exist.
   refused a valid TXT record four times, having earlier deleted the `send`
   MX record on its own. **`docs/MAILBOX_SETUP.md`** has the full account,
   the zone as it was, and what each record is for.
-- **`info@staystory.co` receives through Zoho**, on the same Zoho account
-  as Valor Oak. The domain is verified and the MX, SPF and DKIM records are
-  in Cloudflare.
+- **`info@staystory.co` is set up to receive through Zoho**, as an alias on
+  the same account and user as Valor Oak. The domain is verified and the
+  MX, SPF and DKIM records are in Cloudflare. **The round trip was never
+  tested** — send to it, reply, and confirm the reply leaves as
+  `info@staystory.co` before trusting it.
 
   Sending from the address and receiving at it are **separate pieces of
   DNS**, and the second was missing for months without a symptom: a

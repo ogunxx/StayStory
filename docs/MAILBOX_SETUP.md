@@ -1,5 +1,43 @@
 # Making `info@staystory.co` work — both directions
 
+## Where this ended up — 20 October 2026
+
+Everything is configured. **The round trip was not confirmed in the session
+that built it**, so treat the last line below as untested rather than
+working.
+
+| Piece | State |
+|---|---|
+| DNS host | Cloudflare — `mitch` / `perla.ns.cloudflare.com` |
+| Domain ownership | Verified with Zoho |
+| Mailbox | Zoho, same account and user as Valor Oak |
+| `info@staystory.co` | An **alias** on the existing user — free, no second licence |
+| Sending as that address | Zoho, display name `StayStory` |
+| Transactional mail | Still Resend, unchanged, still verified |
+| **Receive and reply, tested end to end** | **Not confirmed** |
+
+The records added to Cloudflare for Zoho, alongside the Resend ones that
+were already there:
+
+| Type | Name | Value | Priority |
+|---|---|---|---|
+| MX | `@` | `mx.zoho.com` | 10 |
+| MX | `@` | `mx2.zoho.com` | 20 |
+| MX | `@` | `mx3.zoho.com` | 50 |
+| TXT | `@` | `v=spf1 include:zohomail.com ~all` | — |
+| TXT | `zmail._domainkey` | Zoho's DKIM key | — |
+
+Resend's records are on the `send` subdomain and Zoho's are on the apex, so
+they do not collide. There is now exactly one SPF record on `@` and one on
+`send`; **never add a second SPF record to either name** — two on one host
+is invalid and breaks mail for both senders. Merge instead.
+
+To finish: send a message to the address from somewhere unrelated, confirm
+it arrives, reply, and confirm the reply leaves as `info@staystory.co`. A
+green tick in any dashboard is not that test.
+
+---
+
 Outbound mail (confirmations, receipts) has always worked. Inbound has never
 worked at all. Those are two separate pieces of DNS, and the second was
 never set up. This file records what is true, what is still unknown, and the
