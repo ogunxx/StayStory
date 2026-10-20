@@ -114,6 +114,29 @@ rather than charging the wrong amount.
   confirmation emails to `localhost`.
 - **Custom SMTP** is set up through Resend. Full detail in
   `docs/AUTH_EMAIL_SETUP.md`.
+- **DNS lives at Namecheap, not Vercel.** The nameservers are
+  `dns1/dns2.registrar-servers.com`. Vercel holds a zone for staystory.co
+  but it is *not authoritative* — reading records there tells you nothing,
+  which nearly caused a wrong diagnosis on 20 October. Vercel will suggest
+  moving nameservers to it; do not, or the mail configuration goes with
+  them.
+- **Nothing receives mail at staystory.co.** There is no MX record on the
+  root domain, so `info@` and `hello@` both bounce or vanish. The only MX
+  is on the `send` subdomain pointing at `feedback-smtp.us-east-1.amazonses.com`
+  — that is Resend's bounce handling for *outbound* mail and has nothing to
+  do with receiving.
+
+  This matters because the legal pages tell people to write in about
+  refunds, privacy and deletion, and the Stripe receipts say to reply to
+  `hello@`. Both addresses are currently dead ends. Either point
+  `CONTACT_EMAIL` in `src/lib/legal.ts` at an address that works, or add
+  real MX records and a mailbox.
+
+  ⚠️ Changing Namecheap's MAIL SETTINGS away from "Custom MX" **deletes the
+  `send` MX record**, which un-verifies the domain in Resend and can stop
+  outbound mail entirely. This happened once. If it goes missing, re-add it:
+  type MX, host `send`, value `feedback-smtp.us-east-1.amazonses.com`,
+  priority 10.
 - **Four Stripe price IDs** in Vercel, all verified October 2026. The checkout
   guard will refuse if one is ever wrong again.
 - **`NEXT_PUBLIC_RESEARCH_CALL_URL`** — the Acuity link for the optional
