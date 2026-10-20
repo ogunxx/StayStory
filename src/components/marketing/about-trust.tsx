@@ -85,9 +85,9 @@ export function AboutTrust({
   return (
     <section className="px-6 py-16 lg:py-20">
       <div className="mx-auto w-full max-w-7xl">
-        <p className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+        <h2 className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
           {label}
-        </p>
+        </h2>
 
         <div className="flex items-center gap-8">
           <div className="grid min-w-0 flex-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
@@ -117,7 +117,7 @@ export function AboutTrust({
           <Seal />
         </div>
 
-        <p className="mt-8 text-[0.8rem] leading-relaxed text-muted-foreground/80">
+        <p className="mt-8 text-[0.8rem] leading-relaxed text-muted-foreground">
           The one number we can show you is our own: {rating}★ across {reviews}{' '}
           guest reviews at Laurel &amp; Lore, the property where this system was built.
         </p>

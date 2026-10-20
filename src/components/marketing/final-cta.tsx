@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ctaOnDarkPrimary, ctaOnDarkSecondary, REASSURANCE } from './cta-styles'
 
 /**
  * Section 6 — the closing call to action.
@@ -9,6 +10,7 @@ import Link from 'next/link'
  *   • headline / supporting copy   → `headline`, `supporting`
  *   • primary CTA                  → `primaryLabel`, `primaryHref`
  *   • secondary CTA                → `secondaryLabel`, `secondaryHref`
+ *     (secondaryLabel="" leaves the primary as the only choice)
  *   • reassurance points           → `reassurance` (each item independent)
  *
  * On the supporting line: the mockup reads "Join thousands of hosts…", which
@@ -124,7 +126,7 @@ export function FinalCta({
   primaryHref = '/signup',
   secondaryLabel = 'See the Platform',
   secondaryHref = '/platform',
-  reassurance = ['No credit card', 'Setup in minutes', 'Cancel anytime'],
+  reassurance = REASSURANCE,
   rating = '4.99',
   reviews = '136',
   layout = 'split',
@@ -172,16 +174,15 @@ export function FinalCta({
             <div className="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
               <Link
                 href={primaryHref}
-                className="inline-flex h-11 items-center justify-center rounded-lg bg-background px-6 text-sm font-medium text-foreground transition-opacity hover:opacity-90"
+                className={ctaOnDarkPrimary}
               >
                 {primaryLabel}
               </Link>
-              <Link
-                href={secondaryHref}
-                className="inline-flex h-11 items-center justify-center rounded-lg border border-background/35 px-6 text-sm font-medium text-background transition-colors hover:bg-background/10"
-              >
-                {secondaryLabel}
-              </Link>
+              {secondaryLabel && (
+                <Link href={secondaryHref} className={ctaOnDarkSecondary}>
+                  {secondaryLabel}
+                </Link>
+              )}
             </div>
 
             {/* Mobile keeps the brief's order: CTAs, then reassurance. */}
@@ -210,18 +211,20 @@ export function FinalCta({
           <div className="flex flex-col items-start gap-5 lg:items-center">
             <Link
               href={primaryHref}
-              className="inline-flex h-12 items-center justify-center rounded-full bg-background px-8 text-base font-medium text-foreground transition-opacity hover:opacity-90"
+              className={`${ctaOnDarkPrimary} h-12 px-8 text-base`}
             >
               {primaryLabel}
               <span aria-hidden className="ml-2">→</span>
             </Link>
 
-            <a
-              href={secondaryHref}
-              className="text-sm font-medium text-background/80 underline underline-offset-4 transition-colors hover:text-background"
-            >
-              {secondaryLabel}
-            </a>
+            {secondaryLabel && (
+              <a
+                href={secondaryHref}
+                className="text-sm font-medium text-background/80 underline underline-offset-4 transition-colors hover:text-background"
+              >
+                {secondaryLabel}
+              </a>
+            )}
 
             <ul className="mt-1 flex flex-wrap items-center gap-x-5 gap-y-2 lg:justify-center">
               {reassurance.map((item) => (

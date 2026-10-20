@@ -11,11 +11,20 @@ import { AboutInfluences } from '@/components/marketing/about-influences'
 import { AboutWhyNow } from '@/components/marketing/about-why-now'
 import { AboutTrust } from '@/components/marketing/about-trust'
 import { FinalCta } from '@/components/marketing/final-cta'
+import { JsonLd, webPageSchema } from '@/lib/seo'
+
+const DESCRIPTION =
+  'StayStory was built inside our own property, Laurel & Lore. Why we exist, and the hospitality thinking behind designing stays guests remember.'
 
 export const metadata: Metadata = {
-  title: 'Our Story — StayStory',
-  description:
-    'StayStory was built inside our own property. We’re here to help you design stays that stay with your guests.',
+  title: { absolute: 'About StayStory — Guest Experience Design for Hosts' },
+  description: DESCRIPTION,
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About StayStory — Guest Experience Design for Hosts',
+    description: DESCRIPTION,
+    url: '/about',
+  },
 }
 
 /** The live guest figures, so every page states the same numbers. */
@@ -41,6 +50,16 @@ export default async function AboutPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      {/* AboutPage rather than WebPage — this page genuinely is the account
+          of what StayStory is, why it was created and what it believes. */}
+      <JsonLd
+        data={webPageSchema({
+          path: '/about',
+          name: 'About StayStory — Our Story',
+          description: DESCRIPTION,
+          type: 'AboutPage',
+        })}
+      />
       <SiteNav active="/about" />
       <main className="flex-1">
         <AboutHero />

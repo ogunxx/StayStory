@@ -9,7 +9,14 @@
 
 type ModuleState = 'done' | 'active' | 'upcoming'
 
-const MODULES: { label: string; state: ModuleState }[] = [
+export type PreviewModule = { label: string; state: ModuleState }
+
+/**
+ * The full platform's modules. The hero passes a different list on the
+ * focused homepage, where the preview should show the journey a visitor can
+ * actually start rather than the whole architecture.
+ */
+export const PLATFORM_MODULES: PreviewModule[] = [
   { label: 'Compass', state: 'done' },
   { label: 'Audit', state: 'done' },
   { label: 'Blueprint', state: 'done' },
@@ -48,11 +55,16 @@ function Check() {
   )
 }
 
-export function ProductPreview() {
-  const activeIndex = Math.max(0, MODULES.findIndex((m) => m.state === 'active'))
+export function ProductPreview({ modules = PLATFORM_MODULES }: { modules?: PreviewModule[] } = {}) {
+  const activeIndex = Math.max(0, modules.findIndex((m) => m.state === 'active'))
 
+  // overflow-x-clip, not overflow-hidden: the ambient wash below bleeds 32px
+  // past each side, which is the intent on a wide screen and pushed the page
+  // sideways on a 320px one. Clipping only the horizontal axis keeps the
+  // vertical bleed and never creates a scroll container, which
+  // overflow-hidden would.
   return (
-    <div className="relative">
+    <div className="relative overflow-x-clip">
       {/* Soft ambient wash so the panel lifts off the cream background. */}
       <div
         aria-hidden
@@ -100,7 +112,7 @@ export function ProductPreview() {
                   Your journey
                 </p>
                 <div className="flex items-center">
-                  {MODULES.map((m, i) => (
+                  {modules.map((m, i) => (
                     <div key={m.label} className="flex min-w-0 flex-1 items-center">
                       <div className="flex min-w-0 flex-col items-center gap-1.5">
                         <span
@@ -124,10 +136,10 @@ export function ProductPreview() {
                           {m.label}
                         </span>
                       </div>
-                      {i < MODULES.length - 1 && (
+                      {i < modules.length - 1 && (
                         <span
                           className={`-mt-4 h-px flex-1 ${
-                            MODULES[i + 1].state === 'upcoming' ? 'bg-border' : 'bg-primary/25'
+                            modules[i + 1].state === 'upcoming' ? 'bg-border' : 'bg-primary/25'
                           }`}
                         />
                       )}
@@ -135,8 +147,8 @@ export function ProductPreview() {
                   ))}
                 </div>
                 <p className="mt-2.5 text-center text-[0.65rem] text-muted-foreground sm:hidden">
-                  Step {activeIndex + 1} of {MODULES.length} ·{' '}
-                  <span className="font-semibold text-foreground">{MODULES[activeIndex].label}</span>
+                  Step {activeIndex + 1} of {modules.length} ·{' '}
+                  <span className="font-semibold text-foreground">{modules[activeIndex].label}</span>
                 </p>
               </div>
 

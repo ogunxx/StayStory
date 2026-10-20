@@ -223,12 +223,88 @@ function CreatePreview() {
   )
 }
 
+
+/* ── Focused mode · the Compass on its own ───────────────────────────── */
+
+/**
+ * The same Compass panel as JourneyPreview, without the Blueprint beside it.
+ * On the focused homepage the Compass is the whole of that step, so pairing it
+ * with a tool a visitor cannot use yet would be the thing we are removing.
+ */
+function CompassPreview() {
+  return (
+    <Panel>
+      <PanelHead title="Experience Compass" badge="Confirmed" />
+      <div className="grid grid-cols-2 gap-4 p-5">
+        {COMPASS_FIELDS.map((f) => (
+          <div key={f.label}>
+            <Eyebrow>{f.label}</Eyebrow>
+            <p className="mt-1 text-[0.75rem] leading-snug text-foreground">{f.value}</p>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  )
+}
+
+/* ── Focused mode · the three opportunities ──────────────────────────── */
+
+/**
+ * Shaped like the real Stage 3 card — what was noticed, then the opportunity —
+ * because that is the format a host actually receives. Illustrative content,
+ * same as every other preview in this file.
+ */
+const OPPORTUNITIES = [
+  {
+    noticed: 'Your Audit describes mornings in detail and says little about evenings.',
+    opportunity: 'Let the evening arrive on purpose',
+  },
+  {
+    noticed: 'You mentioned, unprompted, that guests always ask about the bird feeder.',
+    opportunity: 'The bird feeder is already the story',
+  },
+  {
+    noticed: 'You named the Murphy bed as friction, against a promise of ease.',
+    opportunity: 'Take the puzzle out of the first night',
+  },
+]
+
+function OpportunitiesPreview() {
+  return (
+    <Panel>
+      <PanelHead title="Three opportunities" badge="For your stay" />
+      <div className="flex flex-col divide-y divide-border/60">
+        {OPPORTUNITIES.map((o, i) => (
+          <div key={o.opportunity} className="flex gap-3 p-4">
+            <span className="mt-0.5 text-[0.6rem] font-semibold tabular-nums text-primary">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div className="min-w-0">
+              <Eyebrow>What we noticed</Eyebrow>
+              <p className="mt-0.5 text-[0.68rem] leading-snug text-muted-foreground">
+                {o.noticed}
+              </p>
+              <p className="mt-1.5 font-serif text-[0.82rem] font-semibold leading-snug text-foreground">
+                {o.opportunity}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  )
+}
+
 /* ── Resolver ─────────────────────────────────────────────────────────── */
 
 export const PREVIEWS = {
   audit: AuditPreview,
   journey: JourneyPreview,
   create: CreatePreview,
+  // Focused homepage only. The three above are unchanged and still used by
+  // the full homepage.
+  compass: CompassPreview,
+  opportunities: OpportunitiesPreview,
 } as const
 
 export type PreviewKey = keyof typeof PREVIEWS

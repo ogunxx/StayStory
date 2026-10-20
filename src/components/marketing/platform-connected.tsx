@@ -1,3 +1,5 @@
+import { COMMERCIAL_LINK, ctaTextLink } from './cta-styles'
+
 /**
  * Platform page — Section 9, Everything Stays Connected.
  *
@@ -65,6 +67,16 @@ export function PlatformConnected() {
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-[0.92rem] leading-relaxed text-muted-foreground">
           {CONNECTED.supporting}
+        </p>
+        {/* The two natural next questions from this page: how the thinking
+            works, and what it costs. */}
+        <p className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium">
+          <a href="/method" className={ctaTextLink}>
+            See how the StayStory Method works
+          </a>
+          <a href={COMMERCIAL_LINK.href} className={ctaTextLink}>
+            {COMMERCIAL_LINK.label}
+          </a>
         </p>
 
         <ul className="mt-12 grid gap-8 text-left sm:grid-cols-2 lg:mt-14 lg:grid-cols-4 lg:gap-6">

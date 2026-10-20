@@ -73,7 +73,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
             <p className="text-sm font-semibold">Your free preview is complete</p>
             <p className="text-xs text-primary-foreground/70 mt-0.5">Here's an example of what Story Builder produces — for every guest you host.</p>
           </div>
-          <Link href="/pricing" className="bg-primary-foreground text-primary px-4 py-2 rounded-lg text-xs font-semibold shrink-0 hover:bg-primary-foreground/90 transition-colors">
+          <Link href="/upgrade" className="bg-primary-foreground text-primary px-4 py-2 rounded-lg text-xs font-semibold shrink-0 hover:bg-primary-foreground/90 transition-colors">
             Upgrade to Legendary →
           </Link>
         </div>
@@ -118,7 +118,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
               <p className="text-lg font-serif font-semibold text-foreground mb-1">Pre-arrival message + what future guests feel — locked</p>
               <p className="text-sm text-muted-foreground max-w-sm">Upgrade to Legendary to generate every section for every guest you host — unlimited.</p>
             </div>
-            <Link href="/pricing" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
+            <Link href="/upgrade" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
               Unlock Story Builder — {LEGENDARY_PRICE} →
             </Link>
           </div>
@@ -130,7 +130,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
           <p className="text-primary-foreground/80 text-sm max-w-sm leading-relaxed">
             Guest narrative, host perspective, a moment worth sharing, pre-arrival message, and what future guests feel before they book — all from a 5-field form. Unlimited, for every guest.
           </p>
-          <Link href="/pricing" className="bg-primary-foreground text-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/90 transition-colors">
+          <Link href="/upgrade" className="bg-primary-foreground text-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/90 transition-colors">
             Become Legendary →
           </Link>
         </div>
@@ -146,7 +146,7 @@ export default function StoryClient({ isTrial = false, isPreview = false }: { is
             <p className="text-sm font-semibold text-foreground">Free preview — 1 use only</p>
             <p className="text-xs text-muted-foreground mt-0.5">You have one free session on Story Builder. Upgrade to Legendary to keep full access.</p>
           </div>
-          <Link href="/pricing" className="text-xs font-medium text-primary underline underline-offset-2 shrink-0">Upgrade →</Link>
+          <Link href="/upgrade" className="text-xs font-medium text-primary underline underline-offset-2 shrink-0">Upgrade →</Link>
         </div>
       )}
       <div>

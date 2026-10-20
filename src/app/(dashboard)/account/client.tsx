@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { SuggestionContent } from '@/types'
+import { auditHeadline, auditSummary } from '@/lib/audit-questions'
 
 const TIER_LABELS: Record<string, string> = {
   free: 'Free',
@@ -55,10 +56,8 @@ interface AuditRecord {
   id: string
   created_at: string
   score: number
-  responses?: {
-    pain_points?: string | null
-    one_thing?: string | null
-  } | null
+  /** Free-form jsonb: the old Audit's fields or the current eight-step shape. */
+  responses?: Record<string, unknown> | null
 }
 
 interface JourneySession {
@@ -125,7 +124,26 @@ function EmptyState({ href }: { href: string }) {
   )
 }
 
-export default function AccountClient({ email, profile, suggestions, stories, audits, journeys, playbooks }: Props) {
+export default function AccountClient({
+  email,
+  profile,
+  suggestions,
+  stories,
+  audits,
+  journeys,
+  playbooks,
+  focused = false,
+}: Props & {
+  /**
+   * A focused-launch host: free, and with no work in the deeper tools.
+   * Plan and upgrade detail is hidden from them — there is nothing to buy
+   * during this launch, and a tier they never chose is only confusing.
+   *
+   * Never true for anyone paying, so a subscriber can always reach their
+   * billing portal. See launch-mode.ts.
+   */
+  focused?: boolean
+}) {
   const tier = profile.tier ?? 'free'
   const isPaid = tier !== 'free'
 
@@ -150,7 +168,11 @@ export default function AccountClient({ email, profile, suggestions, stories, au
         <p className="text-muted-foreground text-sm">{email}</p>
       </div>
 
-      {/* Plan card */}
+      {/* Plan card.
+          Hidden for a focused host: every line of it is tier information,
+          and the only action on it leads somewhere nothing is for sale. A
+          paying host is never 'focused', so billing stays reachable. */}
+      {!focused && (
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="p-6 flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
@@ -180,12 +202,12 @@ export default function AccountClient({ email, profile, suggestions, stories, au
 
         <div className="border-t border-border px-6 py-4 flex flex-wrap gap-3">
           {!isPaid && (
-            <Link href="/pricing" className={cn(buttonVariants({ size: 'sm' }))}>
+            <Link href="/upgrade" className={cn(buttonVariants({ size: 'sm' }))}>
               Upgrade plan →
             </Link>
           )}
           {isPaid && tier !== 'legendary' && (
-            <Link href="/pricing" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
+            <Link href="/upgrade" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
               Upgrade plan
             </Link>
           )}
@@ -201,6 +223,7 @@ export default function AccountClient({ email, profile, suggestions, stories, au
           )}
         </div>
       </div>
+      )}
 
       {/* 5-tool stats */}
       <div className="grid grid-cols-5 gap-2">
@@ -238,9 +261,9 @@ export default function AccountClient({ email, profile, suggestions, stories, au
                         <span className="text-sm text-foreground">
                           Score: <strong>{a.score}/100</strong>
                         </span>
-                        {a.responses?.pain_points && (
+                        {auditHeadline(a.responses as Record<string, unknown> | null) && (
                           <span className="text-xs text-muted-foreground truncate hidden sm:block">
-                            {a.responses.pain_points.slice(0, 60)}
+                            {auditHeadline(a.responses as Record<string, unknown> | null)!.slice(0, 60)}
                           </span>
                         )}
                       </div>
@@ -258,18 +281,14 @@ export default function AccountClient({ email, profile, suggestions, stories, au
                             <p className="text-xs text-muted-foreground">out of 100</p>
                           </div>
                         </div>
-                        {a.responses?.pain_points && (
-                          <div className="bg-secondary rounded-lg p-3">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Biggest friction point</p>
-                            <p className="text-sm text-foreground">{a.responses.pain_points}</p>
+                        {/* Same helper as the History page, so an audit from
+                            either Audit version reads back correctly. */}
+                        {auditSummary(a.responses as Record<string, unknown> | null).map((row) => (
+                          <div key={row.label} className="bg-secondary rounded-lg p-3">
+                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">{row.label}</p>
+                            <p className="text-sm text-foreground">{row.value}</p>
                           </div>
-                        )}
-                        {a.responses?.one_thing && (
-                          <div className="bg-primary/10 rounded-lg p-3">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Your one thing</p>
-                            <p className="text-sm text-foreground italic">"{a.responses.one_thing}"</p>
-                          </div>
-                        )}
+                        ))}
                         <Link href="/audit" className="text-xs text-primary hover:underline underline-offset-2 w-fit">
                           Run another audit →
                         </Link>
@@ -286,7 +305,14 @@ export default function AccountClient({ email, profile, suggestions, stories, au
             {suggestions.length === 0 ? <EmptyState href="/generator" /> : (
               <ul className="flex flex-col">
                 {suggestions.map((s) => {
-                  const preview = s.content?.touchpoint_focus
+                  // A focused-path row stores three recommendations rather
+                  // than one guest moment, so it gets its own preview line.
+                  const focused = s.content?.kind === 'focused_recommendations'
+                    ? (s.content as unknown as { recommendations?: { title: string }[] }).recommendations
+                    : null
+                  const preview = focused?.length
+                    ? `${focused.length} recommendations · ${focused.map((r) => r.title).join(' · ')}`
+                    : s.content?.touchpoint_focus
                     ?? s.content?.gestures?.zero
                     ?? 'Hospitality moment'
                   return (

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { PropertySwitcher } from './property-switcher'
+import { useNavItems } from './dashboard-nav'
 import type { Property } from '@/lib/properties'
 
 const NAV_ITEMS = [
@@ -11,25 +12,43 @@ const NAV_ITEMS = [
   { href: '/properties', label: 'Properties' },
   { href: '/compass', label: 'Experience Compass' },
   { href: '/audit', label: 'Experience Audit' },
-  { href: '/generator', label: 'Experience Generator' },
+  { href: '/generator', label: 'Generator' },
   { href: '/journey', label: 'Experience Blueprint' },
   { href: '/story', label: 'Story Builder' },
   { href: '/legend', label: 'Guest Journey Playbook' },
   { href: '/history', label: 'History' },
-  { href: '/pricing', label: 'Upgrade' },
+  { href: '/upgrade', label: 'Upgrade' },
 ]
 
 export function MobileNav({
   properties = [],
   activePropertyId = null,
   isAdmin = false,
+  items,
 }: {
   properties?: Property[]
   activePropertyId?: string | null
   isAdmin?: boolean
+  /**
+   * The list the layout already decided on, narrowed for a focused host.
+   * Passed in rather than rebuilt here so the two menus cannot drift —
+   * NAV_ITEMS below remains the fallback for any caller that omits it.
+   */
+  items?: { href: string; label: string }[]
 }) {
   const [open, setOpen] = useState(false)
-  const navItems = isAdmin ? [...NAV_ITEMS, { href: '/admin', label: 'Members' }] : NAV_ITEMS
+  const full =
+    items ??
+    (isAdmin
+      ? [
+          ...NAV_ITEMS,
+          { href: '/admin', label: 'Admin' },
+          { href: '/admin/feedback', label: 'Feedback' },
+        ]
+      : NAV_ITEMS)
+  // Same focused/full decision as the desktop header, from the same helper, so
+  // the two menus can never show different things.
+  const navItems = useNavItems(full)
 
   return (
     <div className="sm:hidden">

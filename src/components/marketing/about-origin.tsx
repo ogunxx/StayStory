@@ -39,7 +39,8 @@ export function AboutOrigin({
       <div className="mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
         <div className="overflow-hidden rounded-2xl bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={image} alt={imageAlt} className="block h-64 w-full object-cover sm:h-80 lg:h-[26rem]" />
+          <img src={image} alt={imageAlt} loading="lazy"
+            className="block h-64 w-full object-cover sm:h-80 lg:h-[26rem]" />
         </div>
 
         <div className="min-w-0">

@@ -22,11 +22,18 @@ export default function PropertiesClient({
   membersByProperty: initialMembers,
   limit,
   teamEnabled,
+  focused = false,
 }: {
   properties: Property[]
   membersByProperty: Record<string, PropertyMember[]>
   limit: number
   teamEnabled: boolean
+  /**
+   * A host in the focused launch, who has not been offered a plan anywhere
+   * else. They still see what their limit is — that is a fact they need —
+   * but not a tier name or a route to checkout. See launch-mode.ts.
+   */
+  focused?: boolean
 }) {
   const [properties, setProperties] = useState<Property[]>(initialProperties)
   const [members, setMembers] = useState<Record<string, PropertyMember[]>>(initialMembers)
@@ -71,10 +78,12 @@ export default function PropertiesClient({
         <h1 className="text-3xl font-serif font-semibold text-foreground mb-3">Properties</h1>
         <p className="text-muted-foreground leading-relaxed">
           Every place you host gets its own blueprint and playbook.{' '}
-          {limit === 1 ? (
+          {limit === 1 && focused ? (
+            <>You&apos;re set up for one place right now.</>
+          ) : limit === 1 ? (
             <>
               Your plan includes one property.{' '}
-              <Link href="/pricing" className="text-primary underline underline-offset-2">
+              <Link href="/upgrade" className="text-primary underline underline-offset-2">
                 Upgrade to Portfolio
               </Link>{' '}
               to run up to five and invite your co-hosts.
@@ -110,10 +119,17 @@ export default function PropertiesClient({
         {atLimit ? (
           <div className="bg-primary/10 border border-primary/20 rounded-xl px-5 py-4">
             <p className="text-sm font-semibold text-foreground">
-              You&apos;ve reached your plan&apos;s property limit
+              {focused
+                ? 'You’re set up for one place right now'
+                : 'You’ve reached your plan’s property limit'}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {limit === 1 ? (
+              {focused ? (
+                <>
+                  Early access covers one place, which keeps the journey about the one
+                  you&apos;re designing.
+                </>
+              ) : limit === 1 ? (
                 <>
                   Upgrade to Portfolio to run up to five places, each with its own blueprint and team.
                 </>
@@ -121,9 +137,9 @@ export default function PropertiesClient({
                 <>Your plan includes up to {limit} properties.</>
               )}
             </p>
-            {limit === 1 && (
+            {limit === 1 && !focused && (
               <Link
-                href="/pricing"
+                href="/upgrade"
                 className="inline-block mt-3 text-xs font-medium text-primary underline underline-offset-2"
               >
                 Scale with Portfolio →

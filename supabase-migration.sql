@@ -321,3 +321,240 @@ insert into site_config (key, value) values
   ('airbnb_rating', '4.99'),
   ('airbnb_review_count', '136')
 on conflict (key) do nothing;
+
+-- ── EXPERIENCE AUDIT: IN-PROGRESS DRAFTS ────────────────────────────────────
+-- The Audit is now eight guided steps rather than one form, so a host needs to
+-- be able to leave and come back. `audits` still stores completed runs; this
+-- holds the one unfinished draft per property while it's being worked on, and
+-- is deleted when the Audit is submitted.
+--
+-- Same shape as experience_compass: one row per property, plus one per user
+-- for the "no property yet" case.
+
+create table if not exists audit_drafts (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users on delete cascade not null,
+  property_id uuid references properties on delete cascade,
+  step_index int not null default 0,
+  answers jsonb not null default '{}'::jsonb,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+create unique index if not exists audit_drafts_property_uidx
+  on audit_drafts (property_id) where property_id is not null;
+create unique index if not exists audit_drafts_user_unassigned_uidx
+  on audit_drafts (user_id) where property_id is null;
+create index if not exists audit_drafts_user_id_idx on audit_drafts (user_id);
+
+alter table audit_drafts enable row level security;
+
+do $$ begin
+  create policy "Owners manage own audit drafts"
+    on audit_drafts for all
+    using (auth.uid() = user_id)
+    with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+-- ── SIGNUP IP GUARD ─────────────────────────────────────────────────────────
+-- One free account per connection. The table was created directly against the
+-- project before this file tracked it, so it is written down here now — the
+-- live table already matches this definition, which is why every statement is
+-- idempotent.
+--
+-- Written and read only by /api/auth/record-signup and /api/auth/check-signup,
+-- both of which use the service-role key. Service role bypasses RLS entirely,
+-- so RLS with no policies at all is the tightest correct setting: the guard
+-- keeps working, and the table is unreachable through the user-scoped client.
+--
+-- The grants matter as much as the RLS. TRUNCATE is never subject to row level
+-- security — it is governed by table privileges alone — so leaving anon with
+-- its default grants would have let anyone empty the table and defeat the
+-- guard without ever reading a row. Hence the revoke.
+--
+-- See src/lib/signup-guard.ts for when the guard applies (production only).
+
+create table if not exists signup_ips (
+  id uuid primary key default gen_random_uuid(),
+  ip text not null,
+  created_at timestamptz default now()
+);
+
+create index if not exists idx_signup_ips_ip on signup_ips (ip);
+
+alter table signup_ips enable row level security;
+
+revoke all on signup_ips from anon, authenticated;
+
+-- ── NEW USER → PROFILE ROW ──────────────────────────────────────────────────
+-- What actually creates a profiles row when someone signs up. Like signup_ips,
+-- it was created directly against the project before this file tracked it, so
+-- it is written down here now; the live objects already match.
+--
+-- search_path is pinned to empty and the body fully qualifies public.profiles.
+-- A SECURITY DEFINER function runs as its owner, so any unqualified name it
+-- resolved at run time could be shadowed by an object planted earlier in the
+-- caller's search_path. Nothing in profiles depends on a mutable search_path
+-- (its only defaults are now(), a literal and false), so pinning it changes
+-- nothing about how this runs.
+--
+-- The grants are the other half. PUBLIC held EXECUTE, which exposed the
+-- function at /rest/v1/rpc/handle_new_user to anyone holding the anon key.
+-- EXECUTE on a trigger function is checked when the trigger is created, not
+-- each time it fires, so revoking does not stop on_auth_user_created — that
+-- was verified against the database rather than assumed. The grant to
+-- supabase_auth_admin is explicit insurance: the auth service owns auth.users
+-- and is what makes the trigger fire.
+
+create or replace function public.handle_new_user()
+  returns trigger
+  language plpgsql
+  security definer
+  set search_path = ''
+as $function$
+begin
+  insert into public.profiles (id, email, full_name)
+  values (new.id, new.email, new.raw_user_meta_data->>'full_name');
+  return new;
+end;
+$function$;
+
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+grant execute on function public.handle_new_user() to postgres, supabase_auth_admin;
+
+-- Needs ownership of auth.users, so this runs as postgres (the SQL editor
+-- does). Guarded so re-running the file is a no-op.
+do $$ begin
+  create trigger on_auth_user_created
+    after insert on auth.users
+    for each row execute function public.handle_new_user();
+exception when duplicate_object then null; end $$;
+
+-- ── FOCUSED JOURNEY: OPTIONAL CLOSING FEEDBACK ──────────────────────────────
+-- Feedback on the StayStory experience itself, offered after the Starter
+-- Playbook. Not a product stage — the journey is four steps and ends there.
+--
+-- A dedicated table rather than another `kind` inside `suggestions`: three
+-- queries already special-case the focused kinds in that table, admin needs to
+-- filter and sort by review status (awkward through jsonb), and this is
+-- feedback about StayStory rather than a suggestion for a property.
+
+create table if not exists focused_feedback (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users on delete cascade not null,
+  -- Null is legitimate: the focused journey works before a property exists.
+  property_id uuid references properties on delete set null,
+  usefulness smallint not null check (usefulness between 1 and 5),
+  most_valuable text check (most_valuable in ('audit','compass','opportunities','starter_playbook','whole_journey','something_else')),
+  most_valuable_other text check (most_valuable_other is null or char_length(most_valuable_other) <= 500),
+  improvement_feedback text check (improvement_feedback is null or char_length(improvement_feedback) <= 4000),
+  additional_feedback text check (additional_feedback is null or char_length(additional_feedback) <= 4000),
+  open_to_followup boolean not null default false,
+  -- Internal workflow only. The column grants below are what stop a host
+  -- setting this themselves.
+  review_status text not null default 'new' check (review_status in ('new','reviewed','follow_up')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- One row per host per property: this is what makes a returning host update
+-- their answers instead of leaving a trail of duplicates. On (user_id,
+-- property_id) rather than property alone, because a property can have
+-- co-hosts and each is entitled to their own answer.
+create unique index if not exists focused_feedback_user_property_uidx
+  on focused_feedback (user_id, property_id) where property_id is not null;
+create unique index if not exists focused_feedback_user_unassigned_uidx
+  on focused_feedback (user_id) where property_id is null;
+
+create index if not exists focused_feedback_created_at_idx on focused_feedback (created_at desc);
+create index if not exists focused_feedback_review_status_idx on focused_feedback (review_status);
+
+alter table focused_feedback enable row level security;
+
+-- Read, create and update their own. No delete policy on purpose: a host
+-- withdrawing feedback should be a conversation, not a row quietly vanishing.
+do $$ begin
+  create policy "Owners read own feedback" on focused_feedback
+    for select using (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Owners create own feedback" on focused_feedback
+    for insert with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create policy "Owners update own feedback" on focused_feedback
+    for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+exception when duplicate_object then null; end $$;
+
+-- RLS decides which ROWS a host may touch; it cannot restrict COLUMNS. Column
+-- grants can, and that is what stops a host setting their own review_status by
+-- calling the REST API directly with their own token.
+revoke all on focused_feedback from anon;
+revoke update on focused_feedback from authenticated;
+grant update (usefulness, most_valuable, most_valuable_other, improvement_feedback,
+              additional_feedback, open_to_followup, updated_at)
+  on focused_feedback to authenticated;
+
+-- ── HOST RESEARCH: WHAT HOSTS NEED, ASKED ON THE PUBLIC HOMEPAGE ────────────
+-- Deliberately NOT focused_feedback. That table answers "did StayStory help?"
+-- and belongs to a signed-in host who finished the Starter Playbook. This one
+-- answers "what do hospitality hosts need?" and comes from an anonymous
+-- visitor who may never have used the product. Two questions, two moments,
+-- two datasets, kept apart on purpose.
+
+create table if not exists host_research (
+  id uuid primary key default gen_random_uuid(),
+
+  -- Their answers.
+  property_type text not null check (property_type in (
+    'vacation_rental', 'cabin_tiny_home', 'boutique',
+    'bed_and_breakfast', 'other', 'preparing')),
+  property_type_other text,
+  biggest_challenge text not null check (length(biggest_challenge) between 1 and 4000),
+  desired_support text check (length(desired_support) <= 4000),
+  testing_interest text not null check (testing_interest in ('yes', 'maybe', 'not_right_now')),
+  name text,
+  email text not null,
+
+  -- Permission to reply about this research. NOT a marketing subscription,
+  -- and there is no subscriber table for it to feed.
+  contact_permission boolean not null default true,
+
+  -- Where the submission came from, so a second entry point later is
+  -- distinguishable without guessing from timestamps.
+  submission_source text not null default 'homepage',
+
+  -- One form interaction, one key. A double click, a retry or a flaky
+  -- network replays the same key and the unique index below turns the second
+  -- insert into a no-op rather than a duplicate row. Email is deliberately
+  -- NOT unique: the same host may legitimately answer again months later.
+  idempotency_key text not null,
+
+  -- Ours, never theirs. See the grants at the bottom.
+  admin_status text not null default 'new' check (admin_status in ('new', 'reviewed', 'follow_up')),
+
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create unique index if not exists host_research_idempotency_key_idx
+  on host_research (idempotency_key);
+create index if not exists host_research_created_at_idx on host_research (created_at desc);
+create index if not exists host_research_admin_status_idx on host_research (admin_status);
+-- Finding people willing to test is the main reason this form exists.
+create index if not exists host_research_testing_interest_idx on host_research (testing_interest);
+
+alter table host_research enable row level security;
+
+-- No policies, on purpose.
+--
+-- RLS with zero policies denies everything to anon and authenticated, which
+-- is exactly right here: there is no row a signed-in host should read, and
+-- nothing a visitor should read back. Inserts come from the server through
+-- the service-role client, which bypasses RLS, after server-side validation
+-- that builds the row field by field. So the browser never needs INSERT, and
+-- never gets it.
+revoke all on host_research from anon;
+revoke all on host_research from authenticated;

@@ -2,15 +2,15 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { PLAN_PRICING } from '@/lib/config'
+import { PLANS as DEFAULT_PLANS, type Plan } from '@/lib/plans'
 
 /**
  * Pricing — Section 2. The plans.
  *
- * Prices are not written here. They come from PLAN_PRICING in src/lib/config,
- * which is the single source of truth kept in sync with Stripe — so the page
- * can never drift from what a host is actually charged. Everything else on a
- * card (name, promise, what's included, the button) is one entry in PLANS.
+ * Nothing about a plan is written here. Every card comes from PLANS in
+ * src/lib/plans, which takes its prices from PLAN_PRICING in src/lib/config —
+ * the single source of truth kept in sync with Stripe. The in-app upgrade
+ * screen reads the same data, so the two can never disagree.
  *
  * Annual is billed once for the year; the figure shown for annual billing is
  * that amount divided by twelve.
@@ -18,72 +18,13 @@ import { PLAN_PRICING } from '@/lib/config'
 
 type Interval = 'monthly' | 'annual'
 
-export type Plan = {
-  id: string
-  name: string
-  promise: string
-  /** Whole dollars per month, billed monthly. */
-  monthly: number
-  /** Whole dollars billed once a year. 0 means the plan is free. */
-  annual: number
-  includes: string[]
-  ctaLabel: string
-  ctaHref: string
-  /** One plan carries the badge and the emphasised frame. */
-  featured?: boolean
-  badge?: string
-}
-
-export const PLANS: Plan[] = [
-  {
-    id: 'free',
-    name: 'Free',
-    promise: 'Start seeing your stay the way your guests do.',
-    monthly: 0,
-    annual: 0,
-    includes: [
-      'One property',
-      'Build and edit your Experience Blueprint',
-      'Run an Experience Audit',
-      'A first taste of the Generator',
-    ],
-    ctaLabel: 'Get started',
-    ctaHref: '/signup',
-  },
-  {
-    id: 'legendary',
-    name: 'Legendary',
-    promise: 'The whole system, unlimited — for the place you pour yourself into.',
-    monthly: PLAN_PRICING.legendary.monthly,
-    annual: PLAN_PRICING.legendary.annual,
-    includes: [
-      'Everything in Free, without limits',
-      'Unlimited moments, audits and stories',
-      'Saved blueprint variations',
-      'Your full Guest Journey Playbook',
-      'Priority support',
-    ],
-    ctaLabel: 'Start Free',
-    ctaHref: '/signup',
-    featured: true,
-    badge: 'Most loved',
-  },
-  {
-    id: 'portfolio',
-    name: 'Portfolio',
-    promise: 'Everything in Legendary — across every place you host.',
-    monthly: PLAN_PRICING.portfolio.monthly,
-    annual: PLAN_PRICING.portfolio.annual,
-    includes: [
-      'Everything in Legendary',
-      'Up to five properties, each with its own blueprint',
-      'Co-host and team access',
-      'Priority support and onboarding',
-    ],
-    ctaLabel: 'Scale with Portfolio',
-    ctaHref: '/signup',
-  },
-]
+/**
+ * Plan data moved to src/lib/plans.ts so the in-app upgrade screen and this
+ * page describe the same plans. Re-exported here because this module was the
+ * public home of PLANS.
+ */
+export type { Plan } from '@/lib/plans'
+export { PLANS } from '@/lib/plans'
 
 function Check() {
   return (
@@ -143,11 +84,13 @@ function PlanCard({ plan, interval }: { plan: Plan; interval: Interval }) {
 
       <Link
         href={plan.ctaHref}
-        className={`mt-7 inline-flex h-11 items-center justify-center rounded-lg px-6 text-sm font-medium transition-opacity ${
-          plan.featured
-            ? 'bg-primary text-primary-foreground hover:opacity-90'
-            : 'border border-border text-foreground hover:border-primary hover:text-primary'
-        }`}
+        /* Every plan's button is filled.
+           A faint outlined button beside a filled one reads as disabled
+           rather than as the quieter of two choices — on a phone, "Choose
+           Portfolio" did not look clickable at all. Which plan is featured
+           is already said by the card's frame and its badge, so it does not
+           also need to be said by making the others look unavailable. */
+        className="mt-7 inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium whitespace-nowrap text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
         {plan.ctaLabel}
       </Link>
@@ -160,7 +103,7 @@ export function PricingPlans({
   headline = 'Simple, flexible pricing.',
   supporting = 'Get full access to the StayStory platform with everything you need to design, refine and deliver an unforgettable guest experience.',
   savingNote = 'Two months free with annual billing',
-  plans = PLANS,
+  plans = DEFAULT_PLANS,
 }: {
   eyebrow?: string
   headline?: string

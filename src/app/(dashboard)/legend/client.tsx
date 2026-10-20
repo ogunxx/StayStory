@@ -104,7 +104,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
             <p className="text-sm font-semibold">Your free preview is complete</p>
             <p className="text-xs text-primary-foreground/70 mt-0.5">Below is a sample of the full playbook Legendary generates for your specific property.</p>
           </div>
-          <Link href="/pricing" className="bg-primary-foreground text-primary px-4 py-2 rounded-lg text-xs font-semibold shrink-0 hover:bg-primary-foreground/90 transition-colors">
+          <Link href="/upgrade" className="bg-primary-foreground text-primary px-4 py-2 rounded-lg text-xs font-semibold shrink-0 hover:bg-primary-foreground/90 transition-colors">
             Upgrade to Legendary →
           </Link>
         </div>
@@ -169,7 +169,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
               <p className="text-lg font-serif font-semibold text-foreground mb-2">3 more sections — locked</p>
               <p className="text-sm text-muted-foreground max-w-sm">Your full archetype set, monthly hosting rhythm, and Your One Thing — all generated for your specific property.</p>
             </div>
-            <Link href="/pricing" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
+            <Link href="/upgrade" className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary/90 transition-colors">
               Unlock your full playbook — {LEGENDARY_PRICE} →
             </Link>
           </div>
@@ -181,7 +181,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
           <p className="text-primary-foreground/80 text-sm max-w-sm leading-relaxed">
             Custom-built for your specific property — executive summary, property positioning, guest archetypes, touchpoint priorities, monthly rhythm, and your one signature moment.
           </p>
-          <Link href="/pricing" className="bg-primary-foreground text-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/90 transition-colors">
+          <Link href="/upgrade" className="bg-primary-foreground text-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/90 transition-colors">
             Become Legendary →
           </Link>
         </div>
@@ -197,7 +197,7 @@ export default function LegendClient({ isTrial = false, isPreview = false, userE
             <p className="text-sm font-semibold text-foreground">Free preview — 1 use only</p>
             <p className="text-xs text-muted-foreground mt-0.5">You have one free session on Guest Journey Playbook. Upgrade to Legendary to keep full access.</p>
           </div>
-          <Link href="/pricing" className="text-xs font-medium text-primary underline underline-offset-2 shrink-0">Upgrade →</Link>
+          <Link href="/upgrade" className="text-xs font-medium text-primary underline underline-offset-2 shrink-0">Upgrade →</Link>
         </div>
       )}
 

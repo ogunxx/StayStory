@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import AccountClient from './client'
+import { getUserTier } from '@/lib/get-tier'
+import { getLaunchAudience } from '@/lib/launch-mode'
 
 export default async function AccountPage() {
   const supabase = await createClient()
@@ -50,8 +52,11 @@ export default async function AccountPage() {
       .limit(20),
   ])
 
+  const focused = (await getLaunchAudience(user!.id, await getUserTier())) === 'focused'
+
   return (
     <AccountClient
+      focused={focused}
       email={user!.email ?? ''}
       profile={profileResult.data ?? { tier: 'free', stripe_customer_id: null, created_at: null }}
       suggestions={suggestionsResult.data ?? []}

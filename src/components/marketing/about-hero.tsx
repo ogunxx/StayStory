@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { LAUREL_IMAGES } from './laurel-images'
+import { ctaHeroPrimary, ctaHeroSecondary } from './cta-styles'
 
 /**
  * About — Section 1. Hero.
@@ -41,7 +42,7 @@ export function AboutHero({
     <section className="grid items-stretch lg:grid-cols-[1fr_1.05fr]">
       {/* Copy. Right-aligned inside its half so it lines up with the site
           container on wide screens without hard-coding a viewport calculation. */}
-      <div className="flex items-center px-6 py-14 lg:py-24">
+      <div className="flex items-center px-6 py-16 lg:py-24">
         <div className="w-full max-w-[34rem] lg:ml-auto lg:pr-12">
           <p className="mb-5 text-xs font-medium uppercase tracking-[0.18em] text-primary">
             {eyebrow}
@@ -56,13 +57,13 @@ export function AboutHero({
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href={primaryHref}
-              className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+              className={ctaHeroPrimary}
             >
               {primaryLabel}
             </Link>
             <Link
               href={secondaryHref}
-              className="inline-flex h-11 items-center justify-center rounded-lg border border-border bg-card px-6 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+              className={ctaHeroSecondary}
             >
               {secondaryLabel}
             </Link>

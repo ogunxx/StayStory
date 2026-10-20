@@ -3,6 +3,7 @@ import { generateHospitalityMoment } from '@/lib/anthropic'
 import { getUserTier, hasAccess } from '@/lib/get-tier'
 import { resolveActivePropertyId } from '@/lib/active-property'
 import { buildCompassContext, getOrCreateCompass } from '@/lib/compass'
+import { countGeneratorUsageSince } from '@/lib/focused-recommendations'
 import { NextResponse } from 'next/server'
 import type { GeneratorFormData } from '@/types'
 
@@ -23,13 +24,12 @@ export async function POST(request: Request) {
     startOfMonth.setDate(1)
     startOfMonth.setHours(0, 0, 0, 0)
 
-    const { count } = await supabase
-      .from('suggestions')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .gte('created_at', startOfMonth.toISOString())
+    // Focused recommendation sets are excluded — they live in this table but
+    // are not Generator work, so walking the focused path must not spend a
+    // free host's monthly credit.
+    const count = await countGeneratorUsageSince(user.id, startOfMonth.toISOString())
 
-    if ((count ?? 0) >= FREE_MONTHLY_LIMIT) {
+    if (count >= FREE_MONTHLY_LIMIT) {
       return NextResponse.json(
         { error: 'limit_reached', usedCount: count, limit: FREE_MONTHLY_LIMIT },
         { status: 429 }

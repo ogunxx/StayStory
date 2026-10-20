@@ -238,7 +238,7 @@ export default function GeneratorPage() {
             <p className="text-sm text-muted-foreground leading-relaxed">
               Upgrade to Legendary for unlimited generation and every tool — {LEGENDARY_PRICE}.
             </p>
-            <Link href="/pricing" className={cn(buttonVariants({ size: 'sm' }), 'w-fit')}>
+            <Link href="/upgrade" className={cn(buttonVariants({ size: 'sm' }), 'w-fit')}>
               Upgrade to Legendary →
             </Link>
           </div>

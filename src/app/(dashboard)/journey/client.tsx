@@ -261,7 +261,7 @@ export default function JourneyClient({
             </p>
           </div>
           <Link
-            href="/pricing"
+            href="/upgrade"
             className="text-xs font-medium text-primary underline underline-offset-2 shrink-0"
           >
             Become Legendary →
@@ -349,7 +349,7 @@ export default function JourneyClient({
 
                     {genLocked ? (
                       <Link
-                        href="/pricing"
+                        href="/upgrade"
                         className="text-sm font-medium text-primary underline underline-offset-2 w-fit"
                       >
                         Free idea generations used — unlock unlimited with Legendary →

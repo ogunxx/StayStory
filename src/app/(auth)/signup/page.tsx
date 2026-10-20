@@ -1,18 +1,26 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { isDisposableEmail } from '@/lib/disposable-domains'
+import { checkPwnedPassword } from '@/lib/pwned-password'
+import { ResendConfirmation } from '@/components/auth/resend-confirmation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { LEGENDARY_PRICE } from '@/lib/config'
+import { FOCUSED_FREE_LAUNCH } from '@/lib/config'
+import { isPaidPlanId, planById } from '@/lib/plans'
 
 function SignupForm() {
   const searchParams = useSearchParams()
-  const isLegendary = searchParams.get('plan') === 'legendary'
+  // Either paid plan can be chosen before the account exists. The plan rides
+  // through confirmation on the callback URL so it survives the email round
+  // trip and the host lands back on it.
+  const requestedPlan = searchParams.get('plan')
+  const paidPlan = isPaidPlanId(requestedPlan) ? requestedPlan : null
+  const plan = paidPlan ? planById(paidPlan) : undefined
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -20,6 +28,7 @@ function SignupForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
+  const router = useRouter()
   const supabase = createClient()
 
   async function handleSignup(e: React.FormEvent) {
@@ -29,6 +38,18 @@ function SignupForm() {
 
     if (isDisposableEmail(email)) {
       setError('Please use a permanent email address. Disposable email addresses are not allowed.')
+      setLoading(false)
+      return
+    }
+
+    // Only blocks on a positive match. If the check can't complete, it reports
+    // checked: false and we carry on — see pwned-password.ts on why this fails
+    // open rather than standing between a host and their account.
+    const breached = await checkPwnedPassword(password)
+    if (breached.pwned) {
+      setError(
+        'This password has appeared in a known data breach, which means it is already on the lists attackers try first. Please choose a different one — nothing about your account is at risk.'
+      )
       setLoading(false)
       return
     }
@@ -45,11 +66,11 @@ function SignupForm() {
       // If check fails, allow signup to proceed
     }
 
-    const callbackUrl = isLegendary
-      ? `${window.location.origin}/api/auth/callback?plan=legendary`
+    const callbackUrl = paidPlan
+      ? `${window.location.origin}/api/auth/callback?plan=${paidPlan}`
       : `${window.location.origin}/api/auth/callback`
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -65,6 +86,17 @@ function SignupForm() {
     }
 
     fetch('/api/auth/record-signup', { method: 'POST' }).catch(() => {})
+
+    // When the project doesn't require email confirmation, signUp hands back a
+    // live session — the account already works, so telling someone to check
+    // their inbox would leave them waiting for an email that never comes. Go
+    // where the confirmation link would have taken them instead.
+    if (data.session) {
+      router.push(paidPlan ? `/upgrade?plan=${paidPlan}` : '/dashboard')
+      router.refresh()
+      return
+    }
+
     setDone(true)
   }
 
@@ -78,11 +110,30 @@ function SignupForm() {
         <p className="text-muted-foreground max-w-sm">
           We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account.
         </p>
-        {isLegendary && (
+        {plan && (
           <p className="text-sm text-primary mt-4 max-w-sm">
-            After verifying, you'll be taken straight to checkout to complete your Legendary subscription.
+            After verifying, we&apos;ll take you straight to checkout to complete your {plan.name}{' '}
+            subscription.
           </p>
         )}
+
+        {/* Confirmation emails land in spam often enough that leaving someone
+            to work it out alone is a real way to lose them before they start.
+            Said here rather than in a support reply, and left-aligned because
+            it is something to read and act on, not a headline.
+
+            Same panel treatment as the notices on /login, so the two halves of
+            this flow look like one thing. It is also the readable choice: on
+            sage, muted-foreground measures 4.27:1, which is under AA. */}
+        <div className="mt-8 w-full max-w-sm rounded-xl border border-primary/20 bg-primary/[0.06] px-4 py-3 text-left">
+          <p className="text-sm font-semibold text-foreground">Not in your inbox?</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            Give it a minute, then check your spam or junk folder &mdash; confirmation
+            emails sometimes end up there. Marking it &ldquo;not spam&rdquo; will help the
+            rest of your StayStory emails arrive where they should.
+          </p>
+          <ResendConfirmation email={email} />
+        </div>
       </div>
     )
   }
@@ -95,16 +146,20 @@ function SignupForm() {
       <div className="w-full max-w-sm">
         <h1 className="text-2xl font-serif font-semibold mb-1 text-foreground">Create your account</h1>
 
-        {isLegendary ? (
+        {plan ? (
           <div className="mt-2 mb-6 bg-primary/10 border border-primary/20 rounded-xl px-4 py-3">
-            <p className="text-sm font-semibold text-foreground">Starting with Legendary — {LEGENDARY_PRICE}</p>
+            <p className="text-sm font-semibold text-foreground">
+              Starting with {plan.name} — ${plan.monthly}/month
+            </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Create your account, verify your email, then complete payment. The whole system, unlimited.
+              Create your account, verify your email, then complete payment. {plan.promise}
             </p>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground mb-8">
-            Free to start, no card needed — begin becoming the host your guests never forget.
+          <p className="text-sm leading-relaxed text-muted-foreground mb-8">
+            Start with your Experience Audit. From there, StayStory will help you shape your
+            Experience Compass, uncover three personalized opportunities, and turn those insights
+            into a Starter Playbook. Free to start, no card needed.
           </p>
         )}
 
@@ -145,11 +200,20 @@ function SignupForm() {
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Creating account…' : isLegendary ? 'Create account & continue to payment →' : 'Create free account'}
+            {loading
+              ? 'Creating account…'
+              : paidPlan
+                ? 'Create account & continue to payment →'
+                : 'Create account & start my Audit →'}
           </Button>
         </form>
 
-        {!isLegendary && (
+        {/* The only link in the app that led to the paid signup screen. While
+            the focused journey is the free starting point, offering checkout
+            to someone who has not yet run an Audit contradicts the page they
+            arrived from. The route still exists and still works — see
+            FOCUSED_FREE_LAUNCH. */}
+        {!paidPlan && !FOCUSED_FREE_LAUNCH && (
           <p className="text-xs text-muted-foreground text-center mt-4">
             Want Legendary from the start?{' '}
             <Link href="/signup?plan=legendary" className="text-primary hover:underline">

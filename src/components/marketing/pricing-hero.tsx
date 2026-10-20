@@ -85,7 +85,7 @@ export function PricingHero({
   note?: string[]
 }) {
   return (
-    <section className="px-6 py-14 lg:py-20">
+    <section className="px-6 py-16 lg:py-20">
       <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         <div className="min-w-0">
           <p className="mb-5 text-xs font-medium uppercase tracking-[0.18em] text-primary">

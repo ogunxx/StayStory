@@ -1,3 +1,5 @@
+import type { FocusedKind } from '@/lib/focused-kinds'
+
 export type SubscriptionTier = 'free' | 'host' | 'signature' | 'legend' | 'legendary' | 'portfolio'
 
 export interface Profile {
@@ -98,6 +100,18 @@ export interface Suggestion {
 }
 
 export interface SuggestionContent {
+  /**
+   * Present only on rows written by the focused path, which store their own
+   * shapes in this same jsonb column instead of one guest moment. Absent on
+   * every Generator row, so `content.kind` is what tells them apart.
+   *
+   * Taken from the registry rather than spelled out here. It was written as
+   * the recommendations kind alone, and stayed that way when the Starter
+   * Playbook added a second — so a Playbook row's kind was a value its own
+   * type did not admit. Deriving it means adding a kind to focused-kinds.ts
+   * is still the only edit needed.
+   */
+  kind?: FocusedKind
   principle: string
   why_it_matters: string
   gestures: {
