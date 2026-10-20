@@ -134,6 +134,36 @@ before adding anything there.
 
 ---
 
+## Where DNS lives now
+
+**Cloudflare**, as of 20 October 2026. The domain is still *registered* at
+Namecheap and the site is still hosted on Vercel — only the record list
+moved.
+
+Nameservers set at Namecheap (Domain tab → NAMESERVERS → Custom DNS):
+
+```
+mitch.ns.cloudflare.com
+perla.ns.cloudflare.com
+```
+
+Two things about the Cloudflare zone that must stay true:
+
+- **The A record and the `www` CNAME are `DNS only`, not Proxied** — grey
+  cloud, not orange. Vercel terminates TLS and serves its own CDN; putting
+  Cloudflare's proxy in front produces certificate errors and redirect
+  loops. Cloudflare shows a "your domain is not fully protected" dialog
+  about this. It is not a warning worth acting on here; dismiss it with
+  "I'll do this later".
+- **Bot Preference Sync is off.** It prepends Cloudflare's own directives to
+  `robots.txt`, and this app generates its own at `/robots.txt`. One file,
+  one source.
+
+Namecheap's Advanced DNS records were left in place rather than deleted.
+They are simply no longer consulted.
+
+---
+
 ## The zone as it stood before any migration
 
 Read off the Namecheap Advanced DNS screen on 20 October 2026. Recorded
