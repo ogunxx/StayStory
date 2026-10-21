@@ -21,8 +21,8 @@ with the approved set.
 ## How these were prepared
 
 Resized so the longest side is at most 1600px and saved as progressive JPEG at
-quality 82. The band they appear in is never larger than 782×208 CSS pixels, so
-1600px still leaves headroom on a 2× screen. Nothing was cropped — `fit: inside`
+quality 82. The frame they appear in is never larger than 782×326 CSS pixels,
+so 1600px still just covers a 2× screen. Nothing was cropped — `fit: inside`
 only shrinks, so the approved framing is intact. The two PNGs became JPEGs
 because neither needs transparency.
 
@@ -31,17 +31,34 @@ version is ever wanted.
 
 ## Framing
 
-The band is wide and short, so a photograph is cropped by `object-cover`. Where
-the middle is not the part worth keeping, set `position` on that entry in
-`src/lib/audit-images.ts` — `arrival.jpg` is the one that needs it, being the
-only portrait shot in the set.
+Two settings per picture, both in `src/lib/audit-images.ts`, both optional.
+
+**`fit`** — `cover` (the default) fills the frame and crops what will not fit.
+`contain` shrinks the whole picture until all of it shows, leaving neutral
+ground either side. Neither ever distorts. Choose `contain` when the
+composition *is* the point and a crop would remove the thing the step asks
+about; `arrival.jpg` is the one that needs it, being the only portrait shot
+against a landscape frame.
+
+**`position`** — which slice survives a `cover` crop, when the middle is not
+the part worth keeping. `kitchen.jpg` uses it: its subject sits low in the
+frame and a centred crop clips the board. It does almost nothing under
+`contain`, since nothing is being cropped.
+
+The frame itself is one ratio for all eight steps — `AUDIT_IMAGE_FRAME`, in
+the same file. It is a ratio rather than a fixed height on purpose: a fixed
+height with a fluid width meant the frame was about 2.1:1 on a phone and
+3.8:1 on a desktop, so the same photograph was cropped mildly on one and
+brutally on the other. Most of this set is 3:2, so the phone frame now crops
+them not at all.
 
 ## alternates/
 
 `light-senses-alternate.jpg` came with the pack as an option for step 4. It is
-portrait, so it crops harder in this band than the landscape primary; the
-primary is in use. To switch, point `light.src` at
-`/images/audit/alternates/light-senses-alternate.jpg` and give it a `position`.
+portrait, so against this frame it either crops hard or shows small; the
+landscape primary is in use. To switch, point `light.src` at
+`/images/audit/alternates/light-senses-alternate.jpg` and give it either a
+`position` or `fit: 'contain'`, the same choice `arrival.jpg` faced.
 
 ## A rule worth keeping
 

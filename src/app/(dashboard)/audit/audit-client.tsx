@@ -6,7 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-import { auditImage, type AuditImage } from '@/lib/audit-images'
+import {
+  auditImage,
+  auditImageFitClass,
+  AUDIT_IMAGE_FRAME,
+  type AuditImage,
+} from '@/lib/audit-images'
 import {
   AUDIT_STEPS,
   otherKey,
@@ -137,11 +142,14 @@ function InsightCard({ children }: { children: React.ReactNode }) {
 /* ── The step's photograph ────────────────────────────────────────────────── */
 
 /**
- * Tries the local file first and falls back to the CDN only if it isn't
- * there, so the Audit stops depending on someone else's uptime the moment the
- * files land in /public — with no code change. If both fail the figure removes
- * itself, because a broken-image icon in the middle of a step is worse than no
- * picture at all.
+ * Renders whatever `audit-images.ts` says about this step — the file, how it
+ * should meet the frame, and where it should sit inside it. Every decision
+ * about a picture belongs in that file, not here. If the file cannot be
+ * loaded the figure removes itself, because a broken-image icon in the middle
+ * of a step is worse than no picture at all.
+ *
+ * (This used to describe a CDN fallback it no longer has; the approved set is
+ * served from /public and there is nothing to fall back to.)
  */
 function StepImage({ image }: { image: AuditImage }) {
   // The approved set is served from /public, so there is nothing to fall back
@@ -164,10 +172,12 @@ function StepImage({ image }: { image: AuditImage }) {
 
   return (
     <figure className="mt-6">
-      <div className="overflow-hidden rounded-xl bg-muted">
-        {/* Fixed heights rather than an intrinsic ratio, so every step's image
-            occupies the same band and the Audit keeps one rhythm whatever each
-            photograph's proportions are. */}
+      {/* One frame shape for every step, so the Audit keeps a single rhythm
+          whatever proportions each photograph has. `bg-muted` is what shows
+          beside a contained picture that does not fill it — neutral ground,
+          not a gap. Both fits preserve the original aspect ratio; nothing
+          here ever stretches an image. */}
+      <div className={`overflow-hidden rounded-xl bg-muted ${AUDIT_IMAGE_FRAME}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={ref}
@@ -177,7 +187,7 @@ function StepImage({ image }: { image: AuditImage }) {
           decoding="async"
           onError={() => setFailed(true)}
           style={image.position ? { objectPosition: image.position } : undefined}
-          className="block h-40 w-full object-cover sm:h-52"
+          className={`block size-full ${auditImageFitClass(image)}`}
         />
       </div>
       {/* Never let a photograph of a real place pass as the host's own. */}
