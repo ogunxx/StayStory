@@ -8,22 +8,37 @@
  * show: it's ours.
  */
 
+/**
+ * ┌─ LOCAL FILES BEAT HOT-LINKS ───────────────────────────────────────────┐
+ * │ The three photographs the About page shows are served from /public.    │
+ * │ The rest are still hot-linked from Squarespace and from Airbnb's image │
+ * │ CDN, which is a standing risk: either can start refusing requests at   │
+ * │ any time, and the picture disappears from a live page with no deploy   │
+ * │ on our side and nothing in our logs. That already happened once to the │
+ * │ Audit images, which is why those were moved into the repository.       │
+ * │                                                                        │
+ * │ Move the rest the same way when there is reason to touch them. Files   │
+ * │ belong in public/images/about, resized so the longest side is at most  │
+ * │ 1600px and saved as progressive JPEG at quality 82 — the same recipe   │
+ * │ as the Audit set.                                                      │
+ * └────────────────────────────────────────────────────────────────────────┘
+ */
 export const LAUREL_IMAGES = {
-  /** Wide exterior — the property at dusk. */
+  /** Wide exterior — the property at dusk. Still hot-linked. */
   exterior:
     'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/c82788f2-21c5-482e-91ae-4c1a4267ff59/20241026_083649%7E2.jpg?format=2500w',
-  /** Deck and outdoor seating. */
+  /** Deck and outdoor seating. Still hot-linked; nothing uses it today. */
   deck: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/d6a3add4-6041-4731-ad96-76aaf6e87b61/WhatsApp+Image+2025-11-23+at+3.32.46+PM.jpeg?format=1500w',
-  /** Interior — evening. */
+  /** Interior — evening. Still hot-linked. */
   interior:
     'https://a0.muscache.com/im/pictures/hosting/Hosting-775430494188891274/original/e927b3f7-5a56-4502-860b-48c62c139429.png?im_w=1200',
-  /** Outdoor shower. */
-  outdoorShower:
-    'https://a0.muscache.com/im/pictures/hosting/Hosting-1602145313140364507/original/ab43fe51-ba2a-44e8-b214-f86e288e85c2.png?im_w=1200',
-  /** Wellness corner. */
-  wellness:
-    'https://a0.muscache.com/im/pictures/hosting/Hosting-1602145313140364507/original/e5e36dce-a806-4a55-af47-4176f609851f.png?im_w=1200',
-  /** Movie night on the deck. */
+  /** The guest RV in its clearing — fire pit, picnic table, oaks. 969x633. */
+  rv: '/images/about/rv.jpg',
+  /** Outdoor shower on the deck, beside the cabin. Portrait, 1067x1600. */
+  outdoorShower: '/images/about/outdoor-shower.jpg',
+  /** The soaking tub, laid for a bath. 1448x1086. */
+  wellness: '/images/about/wellness.jpg',
+  /** Movie night on the deck. Still hot-linked. */
   movieNight:
     'https://a0.muscache.com/im/pictures/hosting/Hosting-775430494188891274/original/e927b3f7-5a56-4502-860b-48c62c139429.png?im_w=1200',
 } as const

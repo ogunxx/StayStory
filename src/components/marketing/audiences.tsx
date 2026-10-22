@@ -92,6 +92,19 @@ export const AUDIENCES: Audience[] = [
     ctaLabel: 'See how independent hosts use StayStory',
     ctaHref: '/signup',
     panel: 'score',
+    // The wide shot: the cabin, the oak it sits under, the lawn. The place a
+    // guest arrives to, rather than a detail of it.
+    image: '/images/home/arrival.jpg',
+    imageAlt:
+      'Laurel & Lore: a dark timber cabin with a deck, under a large oak, with an open lawn in front',
+    // Prepared at 1.43 against a 1.45 frame, so it very nearly fills it and
+    // barely crops. No focal value needed, and that is the point of having
+    // prepared it: the original is square, with a lot of empty sky above the
+    // oak and a lot of empty grass below the deck, and the buildings in a
+    // thin band between. Cropped square into this frame it read as canopy and
+    // lawn with a property somewhere in it — so the file was cropped to the
+    // band that holds the oak, the buildings and enough grass to be a place.
+    // See public/images/home/README.md.
   },
   {
     id: 'boutique',

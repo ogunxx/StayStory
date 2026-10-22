@@ -143,6 +143,50 @@ problem. Worth doing before you need it, not during an outage.
 - **Check a sweep actually swept.** A test that walks a directory and finds
   nothing passes vacuously. Assert the file count too.
 
+## Images
+
+### EXIF orientation silently rotates every crop
+
+A photograph from a phone can carry an orientation tag: the pixels are stored
+sideways and the viewer is expected to rotate them. Most image libraries do
+**not** apply it unless told. `sharp` does not.
+
+So the file opens correctly everywhere a human looks at it, while every crop,
+resize and composite lands in the wrong part of a sideways picture.
+
+```js
+sharp(input).rotate()   // no argument: applies the EXIF tag, then strips it
+```
+
+**A square source hides it completely.** The usual tell is width and height
+looking swapped; with a square photograph there is nothing to notice, and the
+mistake only appears once the result is on screen. One was cropped three
+times on this project before anyone rendered it.
+
+Check before trusting a crop: `sharp(f).metadata()` → `orientation`. Anything
+other than `1` or undefined means the pixels are not oriented the way they
+look.
+
+### Look at the render, not the numbers
+
+Crop arithmetic tells you how much of a photograph survives. It does not tell
+you whether what survives is the subject. Both of this project's image passes
+found real problems only at the point of screenshotting the actual markup at
+the actual widths — a frame cropping a desktop twice as hard as a phone, a
+subject sitting behind an overlay, a property reading as lawn.
+
+### An overlay beats any amount of framing
+
+If something is positioned on top of an image, no `object-fit` or
+`object-position` moves the subject out from under it. Work out which part of
+the frame is actually visible first, then choose the photograph.
+
+### `object-position` does nothing on the axis with no slack
+
+`cover` crops exactly one axis — whichever one has surplus. On the other
+there is nothing to slide. A horizontal value on a photograph taller than its
+frame is a no-op that reads like a decision, and will be copied as one.
+
 ## Working method
 
 - **Say which kind of verified you mean**: verified in code, verified with
