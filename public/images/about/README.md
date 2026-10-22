@@ -12,6 +12,19 @@ only two places to change one.
 | `outdoor-shower.jpg` | The outdoor shower on the deck, cabin left, pergola right | 1067×1600 | 0.67 **portrait** |
 | `wellness.jpg` | The soaking tub laid for a bath — candle, flowers, salts, tea | 1448×1086 | 1.33 landscape |
 
+`origin-property.jpg` is the large photograph in the section above the row —
+"Built from real stays" — and is configured separately, as
+`LAUREL_IMAGES.exterior`. It is the whole place in one frame: the cabin and
+its deck, the oak, the guest RV, the lawn.
+
+It was **cropped before import**, from a square 2992×2992 original down to
+7:5 — which is the exact shape of the frame it sits in, so nothing is
+cropped again at render time and the whole photograph shows at every
+width. The crop took the empty blue sky above and about half the empty lawn
+below, and trimmed the far-right trees; it did not touch the property. If
+it is ever replaced with a picture of different proportions, pass an
+`imagePosition` to `AboutOrigin` to choose which part survives.
+
 ## How these were prepared
 
 Resized so the longest side is at most 1600px and saved as progressive JPEG

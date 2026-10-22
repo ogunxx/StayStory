@@ -24,9 +24,13 @@
  * └────────────────────────────────────────────────────────────────────────┘
  */
 export const LAUREL_IMAGES = {
-  /** Wide exterior — the property at dusk. Still hot-linked. */
-  exterior:
-    'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/c82788f2-21c5-482e-91ae-4c1a4267ff59/20241026_083649%7E2.jpg?format=2500w',
+  /**
+   * Wide exterior — the whole place in one frame: the cabin and its deck, the
+   * oak, the guest RV, the lawn. Cropped before import from a square original
+   * to 7:5, the shape of the frame it sits in, so nothing is cropped again at
+   * render time. See public/images/about/README.md.
+   */
+  exterior: '/images/about/origin-property.jpg',
   /** Deck and outdoor seating. Still hot-linked; nothing uses it today. */
   deck: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/d6a3add4-6041-4731-ad96-76aaf6e87b61/WhatsApp+Image+2025-11-23+at+3.32.46+PM.jpeg?format=1500w',
   /** Interior — evening. Still hot-linked. */

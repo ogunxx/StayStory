@@ -29,10 +29,30 @@ describe('the three photographs are real local files', () => {
     }
   })
 
-  test('the three keys the row uses are local, whatever else is not', () => {
-    for (const key of ['rv', 'outdoorShower', 'wellness'] as const) {
+  test('the keys the About page renders are local, whatever else is not', () => {
+    // `exterior` is the large photograph in the origin section above the row.
+    for (const key of ['rv', 'outdoorShower', 'wellness', 'exterior'] as const) {
       assert.ok(LAUREL_IMAGES[key].startsWith('/images/'), `${key}: ${LAUREL_IMAGES[key]}`)
+      assert.ok(
+        existsSync(new URL(`../public${LAUREL_IMAGES[key]}`, import.meta.url)),
+        `missing file: ${LAUREL_IMAGES[key]}`
+      )
     }
+  })
+
+  test('the origin photograph matches its frame, so nothing is cropped', () => {
+    // Prepared at 7:5 against an aspect-[7/5] frame. If either moves without
+    // the other, the whole-photograph property quietly stops being true.
+    const src = read('src/components/marketing/about-origin.tsx')
+    assert.match(src, /aspect-\[7\/5\]/)
+    assert.doesNotMatch(src, /(^|\s)h-64/, 'a fixed height makes the frame shape move with the viewport')
+  })
+
+  test('the origin section takes a fit and a focal position', () => {
+    const src = read('src/components/marketing/about-origin.tsx')
+    assert.match(src, /imageFit === 'contain'/)
+    assert.match(src, /objectPosition: imagePosition/)
+    assert.doesNotMatch(src, /object-fill|object-none/)
   })
 
   test('nothing is baked into the layout as a background', () => {
