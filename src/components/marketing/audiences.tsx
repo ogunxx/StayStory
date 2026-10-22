@@ -10,6 +10,7 @@ import { FOCUSED_LAUNCH_MODE } from '@/lib/config'
  *   • edit the supporting copy → `description`
  *   • edit the CTA             → `ctaLabel` and `ctaHref`
  *   • replace the image        → set `image` (and `imageAlt`)
+ *   • reframe the image        → set `imageFit` and `imagePosition`
  *   • reorder or add or remove → move, add or delete an entry
  *
  * The grid follows the number of entries, so three is not baked in.
@@ -18,6 +19,17 @@ import { FOCUSED_LAUNCH_MODE } from '@/lib/config'
  * Until `image` is set, a card shows a warm branded placeholder rather than
  * a broken frame. Stock photography of people who are not StayStory hosts
  * would imply customers that don't exist, so nothing is filled in by default.
+ *
+ * Swapping one is a one-line edit to `image` on that entry — the photographs
+ * are ordinary files under /public and nothing is baked into the layout.
+ *
+ * ┌─ THE PANEL SITS ON TOP OF THE PHOTOGRAPH ──────────────────────────────┐
+ * │ A product panel is overlaid on the right of every card's image, up to  │
+ * │ 200px wide. Whatever is behind it is hidden, however well the picture  │
+ * │ is framed — so when choosing or reframing a photograph, the subject    │
+ * │ wants to be left of centre. `imagePosition` moves the picture; it      │
+ * │ cannot move the panel.                                                 │
+ * └────────────────────────────────────────────────────────────────────────┘
  */
 
 export type PanelKey = 'score' | 'story' | 'team' | 'compass'
@@ -34,6 +46,13 @@ const AUDIENCE_COLS: Record<number, string> = {
   3: 'lg:grid-cols-3',
 }
 
+/**
+ * How a photograph meets its frame. `cover` fills and crops; `contain`
+ * shrinks until all of it shows and leaves neutral ground beside it. Neither
+ * distorts — both keep the original aspect ratio.
+ */
+export type ImageFit = 'cover' | 'contain'
+
 export type Audience = {
   id: string
   /** Shown as the card heading. */
@@ -43,8 +62,26 @@ export type Audience = {
   ctaHref: string
   /** The small product panel shown beside the photograph. */
   panel: PanelKey
+  /**
+   * Served from /public. This one line is the whole swap: point it at a
+   * different file and the card takes the new photograph, with no other edit.
+   */
   image?: string
   imageAlt?: string
+  /** Defaults to `cover`. Use `contain` when a crop would cost the subject. */
+  imageFit?: ImageFit
+  /**
+   * CSS object-position, when the middle of a photograph is not the part
+   * worth keeping. Under `cover` it chooses which slice survives; under
+   * `contain` it slides the whole picture along whichever axis has slack.
+   *
+   * Worth knowing before setting one: the frame is 16/11, so a photograph
+   * *wider* than that is cropped left and right and only the horizontal
+   * value does anything, while a *taller* one is cropped top and bottom and
+   * only the vertical value does. Setting the axis with no slack is a no-op
+   * that reads like a decision.
+   */
+  imagePosition?: string
 }
 
 export const AUDIENCES: Audience[] = [
@@ -63,6 +100,15 @@ export const AUDIENCES: Audience[] = [
     ctaLabel: 'See how boutique stays use StayStory',
     ctaHref: '/signup',
     panel: 'story',
+    // The close detail: a welcome tray — owl card, cut flowers, a chalked
+    // "Welcome". The small, deliberate gesture this whole section is about.
+    image: '/images/home/welcome-vignette.jpg',
+    imageAlt:
+      'A welcome tray at Laurel & Lore: a hand-illustrated owl card, wild flowers in a glass bottle, and a small chalkboard reading Welcome',
+    // 1338x1176 (1.14) in a 1.45 frame, so it is cropped top and bottom and
+    // not at all left to right. Lifted a little above centre: the flowers
+    // run off the top edge while the bottom of the frame is only counter.
+    imagePosition: '50% 38%',
   },
   {
     id: 'teams',
@@ -170,11 +216,28 @@ const PANELS: Record<PanelKey, () => React.ReactElement> = {
 
 /* ── Image slot ───────────────────────────────────────────────────────── */
 
-function ImageSlot({ src, alt }: { src?: string; alt?: string }) {
+function ImageSlot({
+  src,
+  alt,
+  fit = 'cover',
+  position,
+}: {
+  src?: string
+  alt?: string
+  fit?: ImageFit
+  position?: string
+}) {
   if (src) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={alt ?? ''} className="size-full object-cover" />
+      <img
+        src={src}
+        alt={alt ?? ''}
+        loading="lazy"
+        decoding="async"
+        style={position ? { objectPosition: position } : undefined}
+        className={`size-full ${fit === 'contain' ? 'object-contain' : 'object-cover'}`}
+      />
     )
   }
   return (
@@ -273,8 +336,13 @@ export function Audiences({
                 {/* Photograph, with the product panel overlaid on it.
                     The panel sits in its own container so it can be moved or
                     replaced without touching the photograph. */}
-                <div className="relative m-2 aspect-[16/11] overflow-hidden rounded-xl">
-                  <ImageSlot src={a.image} alt={a.imageAlt} />
+                <div className="relative m-2 aspect-[16/11] overflow-hidden rounded-xl bg-muted">
+                  <ImageSlot
+                    src={a.image}
+                    alt={a.imageAlt}
+                    fit={a.imageFit}
+                    position={a.imagePosition}
+                  />
                   <div className="absolute inset-y-3 right-3 flex w-[48%] max-w-[200px] items-center">
                     <div className="w-full shadow-[0_12px_36px_-14px_rgba(60,40,25,0.5)]">
                       <Panel />
