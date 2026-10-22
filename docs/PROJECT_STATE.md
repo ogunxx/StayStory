@@ -38,6 +38,53 @@ had been ignoring.
 
 ---
 
+## Open items, most pressing first
+
+Written down because sessions start cold and the owner is often away from a
+computer when these come up. Nothing here is on fire.
+
+1. **Rotate `SUPABASE_SERVICE_ROLE_KEY`.** Railway disclosed a breach of the
+   systems that store customer environment variables on 21 October 2026, and
+   the Railway integration on this Vercel team held
+   `read-write:project-env-vars` across **all** projects, this one included.
+   No integration ever *wrote* a variable here — every one was created by the
+   owner's own account — and StayStory was never linked to a Railway service,
+   so the likely path for the values to reach Railway did not exist. But
+   reads leave no trace, and this key bypasses RLS on every table. Cheap
+   insurance.
+   **Order matters:** create the new key, set it in Vercel, redeploy, *then*
+   revoke the old one. Reverse that and production breaks.
+   `STRIPE_SECRET_KEY` is the same argument one notch down. The rest
+   (`STRIPE_WEBHOOK_SECRET`, `RESEND_API_KEY`, `ANTHROPIC_API_KEY`) are
+   judgement calls.
+2. **Remove the Railway integration** from the Vercel team. Vercel disabled
+   it platform-wide, but the configuration is still installed. Nothing on
+   this project uses it.
+3. **`info@staystory.co` has never been tested end to end.** The alias, MX,
+   SPF and DKIM are all in place and the domain is verified, but nobody has
+   sent a message to it, watched it arrive, and replied. Until that round
+   trip happens it is configured, not working.
+4. **Domain auto-renew is off.** `staystory.co` expires 1 May 2027. Two
+   toggles on Namecheap's Domain tab — the domain and the privacy
+   protection. Losing it takes the site and the email with it.
+5. **Nobody has walked signup on production.** Account → confirmation email
+   → Audit, as a real person, on staystory.co.
+6. **Stripe statement descriptors** are unset at the Product level, so card
+   statements will not say what the charge was for. Subscriptions take the
+   descriptor from the Product, not the payment.
+7. **Next 16 reports the `middleware` file convention as deprecated** in
+   favour of `proxy`. Pre-existing and harmless, but it is the auth gate, so
+   it wants a quiet day.
+8. **Two bits of litter.** An environment variable whose *name* is a Stripe
+   price ID (`price_1Tzx…`), and a DNS `TXT` record on `semd` — a typo of
+   `send` — that came across to Cloudflare. Both inert.
+9. **The "Welcome" sign on the Boutique Stays card** is behind the product
+   panel on mobile and half behind it on desktop. Not fixable by framing;
+   it needs either a different photograph or a change to the overlay. The
+   reasoning is in `public/images/home/README.md`.
+
+---
+
 ## The product, as it now stands
 
 The public promise is a four-step journey. Feedback is a fifth stage in the
