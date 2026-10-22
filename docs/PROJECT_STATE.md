@@ -132,6 +132,19 @@ fixed, and the fixes are the reason two test files exist.
   which nearly caused a wrong diagnosis. Vercel will offer to take the
   nameservers; don't.
 
+  **`www.staystory.co` redirects to the apex, 308.** It is a *project domain
+  in Vercel* with a redirect — not just a DNS record. Both halves are
+  needed and they fail in different ways. DNS resolved `www` to Vercel from
+  the start, but `www` was never added to the Vercel project, so Vercel had
+  no certificate for that hostname and the TLS handshake failed: every
+  visitor got a browser security warning, with no error anywhere on our
+  side. It went unnoticed until the Instagram bio used the `www` form on
+  launch day, 22 October 2026. Added, verified, redirecting that day.
+
+  The lesson generalises: **a hostname that resolves but is not registered
+  to the project is worse than one that does not resolve**, because it
+  fails with a security warning rather than a plain "can't find this site".
+
   **The A record and `www` CNAME must stay `DNS only`, not Proxied.**
   Vercel terminates its own TLS; Cloudflare's proxy in front of it causes
   certificate errors and redirect loops. Cloudflare nags about this. Ignore
