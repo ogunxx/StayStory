@@ -21,8 +21,11 @@ export function AboutHero({
   primaryHref = '/platform',
   secondaryLabel = 'The StayStory Method',
   secondaryHref = '/method',
-  image = LAUREL_IMAGES.interior,
-  imageAlt = 'Inside Laurel & Lore, the property where the StayStory system was built',
+  image = LAUREL_IMAGES.exterior,
+  imageAlt =
+    'Laurel & Lore, the property where the StayStory system was built: the cabin and its deck, the oak, and the guest RV across the lawn',
+  imageFit = 'cover',
+  imagePosition,
   quote = 'This host had thought of everything.',
   quoteAuthor = 'Jo, Airbnb guest',
 }: {
@@ -33,8 +36,20 @@ export function AboutHero({
   primaryHref?: string
   secondaryLabel?: string
   secondaryHref?: string
+  /** Swap the photograph by pointing this at another file. */
   image?: string
   imageAlt?: string
+  /** `contain` when a crop would cost the subject. Neither fit distorts. */
+  imageFit?: 'cover' | 'contain'
+  /**
+   * CSS object-position. Omit for centre.
+   *
+   * Worth knowing when choosing one: the guest quote is overlaid on the
+   * TOP LEFT of this photograph, about 300px wide. Whatever is behind it is
+   * hidden, so a picture here wants its subject low or right. The present
+   * one has sky and canopy up there, which is why it needs no value.
+   */
+  imagePosition?: string
   quote?: string
   quoteAuthor?: string
 }) {
@@ -74,7 +89,14 @@ export function AboutHero({
       {/* Photograph with the framed guest quote, as in the mockup. */}
       <div className="relative min-h-[20rem] bg-muted lg:min-h-[32rem]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={image} alt={imageAlt} className="absolute inset-0 size-full object-cover" />
+        <img
+          src={image}
+          alt={imageAlt}
+          style={imagePosition ? { objectPosition: imagePosition } : undefined}
+          className={`absolute inset-0 size-full ${
+            imageFit === 'contain' ? 'object-contain' : 'object-cover'
+          }`}
+        />
 
         <figure className="absolute left-6 top-6 max-w-[16rem] rounded-xl border border-accent/60 bg-background/95 p-5 shadow-[0_20px_50px_-28px_rgba(60,40,25,0.6)] backdrop-blur-sm sm:left-10 sm:top-10">
           <blockquote className="font-serif text-[1.05rem] leading-snug text-foreground">

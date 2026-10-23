@@ -29,9 +29,25 @@ describe('the three photographs are real local files', () => {
     }
   })
 
+  test('no component renders a hot-linked image', () => {
+    // On 23 October 2026 Airbnb's CDN started refusing the hero photograph
+    // and it rendered as a broken image on the live About page, with nothing
+    // in our logs — the request never reached us. Any remote image is one
+    // outage away from that, so the rule is: if a component renders it, it
+    // lives in /public.
+    const rendered = ['about-hero', 'about-origin', 'about-laurel']
+      .flatMap((f) => [...read(`src/components/marketing/${f}.tsx`).matchAll(/LAUREL_IMAGES\.(\w+)/g)])
+      .map((m) => m[1])
+    assert.ok(rendered.length >= 5, 'expected to find the image references')
+    for (const key of new Set(rendered)) {
+      const url = LAUREL_IMAGES[key as keyof typeof LAUREL_IMAGES]
+      assert.doesNotMatch(url, /^https?:/, `${key} is hot-linked and rendered: ${url}`)
+    }
+  })
+
   test('the keys the About page renders are local, whatever else is not', () => {
-    // `exterior` is the large photograph in the origin section above the row.
-    for (const key of ['rv', 'outdoorShower', 'wellness', 'exterior'] as const) {
+    // `exterior` is the hero; `interior` is the origin section beneath it.
+    for (const key of ['rv', 'outdoorShower', 'wellness', 'exterior', 'interior'] as const) {
       assert.ok(LAUREL_IMAGES[key].startsWith('/images/'), `${key}: ${LAUREL_IMAGES[key]}`)
       assert.ok(
         existsSync(new URL(`../public${LAUREL_IMAGES[key]}`, import.meta.url)),

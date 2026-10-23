@@ -23,8 +23,11 @@ export function AboutOrigin({
   headline = ['Built from real stays.', 'Designed for better ones.'],
   paragraphs = ORIGIN_PARAGRAPHS,
   closing = 'So we built the system we wished we had.',
-  image = LAUREL_IMAGES.exterior,
-  imageAlt = 'Laurel & Lore: the cabin and its deck, the oak, and the guest RV across the lawn',
+  // An interior, because the copy beside it begins "StayStory began inside
+  // Laurel & Lore". The wide exterior moved to the hero, where the whole
+  // property reads better at that size and under the guest quote.
+  image = LAUREL_IMAGES.interior,
+  imageAlt = 'Inside Laurel & Lore: warm afternoon light across the living space',
   imageFit = 'cover',
   imagePosition,
 }: {

@@ -12,10 +12,24 @@ only two places to change one.
 | `outdoor-shower.jpg` | The outdoor shower on the deck, cabin left, pergola right | 1067×1600 | 0.67 **portrait** |
 | `wellness.jpg` | The soaking tub laid for a bath — candle, flowers, salts, tea | 1448×1086 | 1.33 landscape |
 
-`origin-property.jpg` is the large photograph in the section above the row —
-"Built from real stays" — and is configured separately, as
-`LAUREL_IMAGES.exterior`. It is the whole place in one frame: the cabin and
-its deck, the oak, the guest RV, the lawn.
+Two more are configured separately, one per section above the row:
+
+| File | Section | Config key |
+| --- | --- | --- |
+| `origin-property.jpg` | The hero, under the guest quote | `LAUREL_IMAGES.exterior` |
+| `interior.jpg` | "Built from real stays" | `LAUREL_IMAGES.interior` |
+
+`interior.jpg` is a copy of the Audit set's `light.jpg` rather than a
+reference to it, deliberately: swapping an Audit photograph should never
+silently change the About page.
+
+The hero's photograph carries the guest quote overlaid on its **top left**,
+about 300px wide. Whatever is behind that card is hidden, so a picture for
+the hero wants its subject low or right. The present one has sky and canopy
+up there, which is why it needs no focal value.
+
+`origin-property.jpg` is the whole place in one frame: the cabin and its
+deck, the oak, the guest RV, the lawn.
 
 It was **cropped before import**, from a square 2992×2992 original down to
 7:5 — which is the exact shape of the frame it sits in, so nothing is

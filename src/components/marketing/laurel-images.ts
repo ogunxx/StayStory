@@ -33,9 +33,16 @@ export const LAUREL_IMAGES = {
   exterior: '/images/about/origin-property.jpg',
   /** Deck and outdoor seating. Still hot-linked; nothing uses it today. */
   deck: 'https://images.squarespace-cdn.com/content/v1/6831b00b1fc03a3e45b32250/d6a3add4-6041-4731-ad96-76aaf6e87b61/WhatsApp+Image+2025-11-23+at+3.32.46+PM.jpeg?format=1500w',
-  /** Interior — evening. Still hot-linked. */
-  interior:
-    'https://a0.muscache.com/im/pictures/hosting/Hosting-775430494188891274/original/e927b3f7-5a56-4502-860b-48c62c139429.png?im_w=1200',
+  /**
+   * Interior — warm light across the room.
+   *
+   * Was hot-linked from Airbnb's image CDN until 23 October 2026, when that
+   * CDN started refusing the request and the About hero rendered as a broken
+   * image on the live site, with nothing in our logs. Exactly the failure
+   * this file had been warning about. Now local, like everything else the
+   * About page renders.
+   */
+  interior: '/images/about/interior.jpg',
   /** The guest RV in its clearing — fire pit, picnic table, oaks. 969x633. */
   rv: '/images/about/rv.jpg',
   /** Outdoor shower on the deck, beside the cabin. Portrait, 1067x1600. */
