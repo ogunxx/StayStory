@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { AdminNav } from '../../admin-nav'
 import AccountControls from './account-controls'
+import RefundControl from './refund-control'
+import { getBillingSummary } from '@/lib/billing-summary'
 
 export const metadata: Metadata = { title: 'User — StayStory Admin' }
 
@@ -136,12 +138,19 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
   // /legend bug is that journey-state counts playbooks per user despite the
   // table having property_id, so that helper is deliberately not used here.
   const admin = getAdminClient()
-  const [blueprints, moments, stories, fullPlaybooks] = await Promise.all([
+  const [blueprints, moments, stories, fullPlaybooks, billingRow] = await Promise.all([
     admin.from('experience_blueprint').select('property_id').eq('user_id', profile.id),
     admin.from('suggestions').select('property_id, kind:content->>kind').eq('user_id', profile.id),
     admin.from('guest_stories').select('property_id').eq('user_id', profile.id),
     admin.from('playbooks').select('property_id').eq('user_id', profile.id),
+    // Not part of the shared admin snapshot: only this page needs it, and it
+    // is the key to a Stripe lookup rather than something to list in a table.
+    admin.from('profiles').select('stripe_customer_id').eq('id', profile.id).single(),
   ])
+
+  // Read from Stripe, not from our own tier column. On the one screen that
+  // decides whether to give money back, the payment processor is the truth.
+  const billing = await getBillingSummary(billingRow.data?.stripe_customer_id)
 
   const generatorCount = ((moments.data ?? []) as { kind: string | null }[]).filter(
     (m) => m.kind === null
@@ -210,6 +219,8 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
         suspended={Boolean(profile.suspended_at)}
         isSelf={profile.id === user.id}
       />
+
+      <RefundControl userId={profile.id} email={profile.email} billing={billing} />
 
       <section className="flex flex-col gap-3">
         <h2 className="font-serif text-xl font-semibold text-foreground">

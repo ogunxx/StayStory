@@ -255,7 +255,10 @@ create table if not exists admin_actions (
   id uuid primary key default gen_random_uuid(),
   admin_user_id uuid references auth.users on delete set null,
   target_user_id uuid references auth.users on delete set null,
-  action text not null check (action in ('tier_change', 'suspend', 'reactivate')),
+  -- 'refund' added October 2026, when the admin screen gained a refund
+  -- button. It is the only one of these that moves money and cannot be
+  -- undone, which is why it is audited alongside the reversible ones.
+  action text not null check (action in ('tier_change', 'suspend', 'reactivate', 'refund')),
   previous_value text,
   new_value text,
   created_at timestamptz default now() not null

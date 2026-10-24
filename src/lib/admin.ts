@@ -25,7 +25,12 @@ export function getAdminClient() {
 export async function logAdminAction(input: {
   adminUserId: string
   targetUserId: string
-  action: 'tier_change' | 'suspend' | 'reactivate'
+  /**
+   * `refund` is the only one of these that moves money and cannot be undone,
+   * which is exactly why it is audited like the rest. The database has a
+   * matching CHECK constraint — adding a value here means adding it there.
+   */
+  action: 'tier_change' | 'suspend' | 'reactivate' | 'refund'
   previousValue?: string | null
   newValue?: string | null
 }): Promise<void> {
