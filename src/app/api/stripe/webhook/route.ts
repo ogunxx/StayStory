@@ -4,7 +4,15 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-function getTierFromPriceId(priceId: string): string {
+/**
+ * Which tier a price buys, or null when we do not recognise the price.
+ *
+ * Null rather than 'free' deliberately. An unrecognised price means our
+ * environment variables and Stripe's catalogue have drifted — it does not
+ * mean this person stopped paying — and the caller must not treat the two
+ * the same. See the subscription.updated handler.
+ */
+function getTierFromPriceId(priceId: string): string | null {
   const map: Record<string, string> = {
     // Legacy price IDs — treated as legendary for access purposes
     price_1TSJDMIOCUJyk0u8w3b6nCa1: 'host',
@@ -25,7 +33,7 @@ function getTierFromPriceId(priceId: string): string {
   }
   // Normalize legacy tier values to 'legendary'
   const legacy = map[priceId]
-  return legacy ? 'legendary' : 'free'
+  return legacy ? 'legendary' : null
 }
 
 export async function POST(request: Request) {
@@ -113,14 +121,32 @@ export async function POST(request: Request) {
     const priceId = sub.items.data[0]?.price.id
     const tier = getTierFromPriceId(priceId)
 
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('id')
-      .eq('stripe_subscription_id', sub.id)
-      .single()
+    // This event fires for far more than a plan change: a card update, a
+    // scheduled cancellation, a collected cancellation reason. Writing an
+    // unrecognised price down as 'free' would end the access someone had
+    // already paid for, mid-period, on an event that says nothing about
+    // whether they are still paying — and it would contradict the Refunds
+    // page, which promises access to the end of the period.
+    //
+    // So a price we cannot place changes nothing. It is loud in the logs
+    // instead, because the cause is ours to fix: a price replaced in Stripe
+    // without updating STRIPE_*_PRICE_ID. Downgrading is the job of
+    // customer.subscription.deleted alone.
+    if (!tier) {
+      console.error(
+        `[stripe] subscription.updated for unrecognised price ${priceId} — ` +
+          'tier left unchanged. Check the STRIPE_*_PRICE_ID variables against Stripe.'
+      )
+    } else {
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('stripe_subscription_id', sub.id)
+        .single()
 
-    if (profile) {
-      await supabaseAdmin.from('profiles').update({ tier }).eq('id', profile.id)
+      if (profile) {
+        await supabaseAdmin.from('profiles').update({ tier }).eq('id', profile.id)
+      }
     }
   }
 
@@ -146,18 +172,26 @@ export async function POST(request: Request) {
           from: EMAIL_FROM,
           to: customerEmail,
           replyTo: CONTACT_EMAIL,
-          subject: 'Your Legendary subscription has been cancelled.',
+          // Plan-neutral, and in the past tense. This event fires when the
+          // subscription actually ENDS — at the close of a cancelled period,
+          // or straight away after an immediate cancellation or a refund —
+          // and the handler above has just moved the account to Free. The
+          // earlier wording promised access "until the end of your current
+          // billing period", which was untrue at the moment it was sent and
+          // contradicted the Refunds page. It also said "Legendary" to
+          // Portfolio subscribers.
+          subject: 'Your StayStory subscription has ended.',
           html: `
             <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:40px 24px;color:#1a1a1a">
               <p style="font-size:20px;font-weight:600;margin:0 0 24px">We're sorry to see you go.</p>
               <p style="font-size:15px;line-height:1.7;margin:0 0 16px">
-                Your Legendary subscription has been cancelled. Your access continues until the end of your current billing period — after that your account will move to the free plan.
+                Your subscription has ended and your account is now on the free plan. You won't be charged again.
               </p>
               <p style="font-size:15px;line-height:1.7;margin:0 0 32px">
-                If you cancelled by mistake or change your mind, you can resubscribe anytime from your account page. Everything you've built — your audits, stories, and playbooks — will still be there waiting for you.
+                Everything you've built is still here — your Experience Audit, your Experience Compass, your stories and your Playbooks. Nothing has been deleted. Subscribe again whenever you like and you'll pick up where you left off.
               </p>
-              <a href="https://staystory.co/pricing" style="background:#1a1a1a;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;display:inline-block">
-                Resubscribe →
+              <a href="https://staystory.co/upgrade" style="background:#1a1a1a;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;display:inline-block">
+                Subscribe again →
               </a>
               <p style="font-size:13px;color:#666;margin:40px 0 0;line-height:1.6">
                 Have feedback or need help? Reply to this email or reach us at <a href="mailto:${CONTACT_EMAIL}" style="color:#1a1a1a">${CONTACT_EMAIL}</a>.

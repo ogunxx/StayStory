@@ -2,8 +2,19 @@ import { createClient } from '@/lib/supabase/server'
 import AccountClient from './client'
 import { getUserTier } from '@/lib/get-tier'
 import { getLaunchAudience } from '@/lib/launch-mode'
+import { isPortalNotice, PORTAL_NOTICES } from '@/lib/billing-portal'
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ billing?: string }>
+}) {
+  const { billing } = await searchParams
+  // Set by the portal route when it could not send someone to Stripe. Read
+  // through isPortalNotice so only our own keys can reach the page — a query
+  // string is not a place to take display text from.
+  const billingNotice = isPortalNotice(billing) ? PORTAL_NOTICES[billing] : null
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -57,6 +68,7 @@ export default async function AccountPage() {
   return (
     <AccountClient
       focused={focused}
+      billingNotice={billingNotice}
       email={user!.email ?? ''}
       profile={profileResult.data ?? { tier: 'free', stripe_customer_id: null, created_at: null }}
       suggestions={suggestionsResult.data ?? []}

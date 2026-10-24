@@ -6,6 +6,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { SuggestionContent } from '@/types'
 import { auditHeadline, auditSummary } from '@/lib/audit-questions'
+import { CONTACT_EMAIL } from '@/lib/legal'
 
 const TIER_LABELS: Record<string, string> = {
   free: 'Free',
@@ -133,7 +134,15 @@ export default function AccountClient({
   journeys,
   playbooks,
   focused = false,
+  billingNotice = null,
 }: Props & {
+  /**
+   * Shown when the billing portal could not be opened. Rendered above
+   * everything else and outside the `focused` gate: someone who cannot reach
+   * Stripe needs to be told why wherever they are standing, and the one thing
+   * they must not be left with is a silent button.
+   */
+  billingNotice?: string | null
   /**
    * A focused-launch host: free, and with no work in the deeper tools.
    * Plan and upgrade detail is hidden from them — there is nothing to buy
@@ -160,6 +169,25 @@ export default function AccountClient({
 
   return (
     <div className="flex flex-col gap-10 max-w-2xl">
+
+      {/* Billing notice. First thing on the page, because it is the answer to
+          something the host just tried to do. */}
+      {billingNotice && (
+        <div
+          role="status"
+          className="rounded-2xl border border-primary/25 bg-primary/[0.06] px-5 py-4"
+        >
+          <p className="text-sm leading-relaxed text-foreground">
+            {billingNotice}{' '}
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="text-primary underline underline-offset-4"
+            >
+              {CONTACT_EMAIL}
+            </a>
+          </p>
+        </div>
+      )}
 
       {/* Header */}
       <div>
