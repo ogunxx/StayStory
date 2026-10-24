@@ -13,7 +13,10 @@ import { ResendConfirmation } from '@/components/auth/resend-confirmation'
  * What a confirmation link that didn't work should say. The callback route
  * sends only the key, so the wording lives here rather than in a URL.
  */
-const NOTICES: Record<string, { title: string; body: string }> = {
+const NOTICES: Record<
+  string,
+  { title: string; body: string; action?: { href: string; label: string } }
+> = {
   link_expired: {
     title: 'That confirmation link has expired',
     body: 'Links are only good for a short while. If your account is already active you can sign in below — otherwise create it again and we’ll send a fresh link.',
@@ -21,6 +24,22 @@ const NOTICES: Record<string, { title: string; body: string }> = {
   link_invalid: {
     title: 'We couldn’t confirm that link',
     body: 'Confirmation links only work in the same browser you signed up in. Try opening it there, or sign up again for a new one.',
+  },
+  /**
+   * The two above are about confirming a new account, and their advice —
+   * sign up again — is actively wrong for someone who already has an account
+   * and is trying to get back into it. A reset that fails gets its own
+   * wording and its own way forward.
+   */
+  reset_expired: {
+    title: 'That reset link has run out',
+    body: 'For your security, password reset links are only good for a short while. Ask for a fresh one and it will work.',
+    action: { href: '/forgot-password', label: 'Send me a new reset link' },
+  },
+  reset_invalid: {
+    title: 'That reset link didn’t work',
+    body: 'Reset links only work in the browser that asked for them, so one opened on a different device won’t go through. Ask for a new link and open it on this device.',
+    action: { href: '/forgot-password', label: 'Send me a new reset link' },
   },
 }
 
@@ -94,9 +113,20 @@ function LoginForm() {
         <p className="text-sm text-muted-foreground mb-8">Sign in to your account</p>
 
         {notice && (
-          <div className="mb-8 rounded-xl border border-primary/20 bg-primary/[0.06] px-4 py-3">
+          <div
+            role="status"
+            className="mb-8 rounded-xl border border-primary/20 bg-primary/[0.06] px-4 py-3"
+          >
             <p className="text-sm font-semibold text-foreground">{notice.title}</p>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{notice.body}</p>
+            {notice.action && (
+              <Link
+                href={notice.action.href}
+                className="mt-2 inline-block text-xs font-medium text-primary underline underline-offset-4"
+              >
+                {notice.action.label} →
+              </Link>
+            )}
           </div>
         )}
 

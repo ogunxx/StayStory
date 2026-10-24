@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { buildCallbackUrl, RECOVERY_KEY } from '@/lib/auth-redirects'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -33,7 +34,7 @@ export default function ForgotPasswordPage() {
     // the page where the new password is set. `next` is a short key, never a
     // path, so nothing in the URL can redirect anyone somewhere unexpected.
     await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/api/auth/callback?next=reset`,
+      redirectTo: buildCallbackUrl(window.location.origin, { next: RECOVERY_KEY }),
     })
 
     // Whatever came back, say the same thing. An error here is usually "no
@@ -93,6 +94,7 @@ export default function ForgotPasswordPage() {
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"

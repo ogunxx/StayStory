@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { failureFromParams } from '@/lib/auth-redirects'
 import { checkPwnedPassword } from '@/lib/pwned-password'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -36,13 +37,43 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const router = useRouter()
+  const headingRef = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      setStatus(data.user ? 'ready' : 'no_session')
+    let cancelled = false
+
+    async function resolveStatus(): Promise<Status> {
+      // Supabase reports a dead link in the URL fragment on some paths, and
+      // a fragment never reaches the server — so the callback could not have
+      // seen it, and this is the only place it can be read.
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''))
+      const fromHash = failureFromParams({
+        error: hash.get('error'),
+        errorCode: hash.get('error_code'),
+      })
+      if (fromHash) return 'no_session'
+
+      const { data } = await createClient().auth.getUser()
+      return data.user ? 'ready' : 'no_session'
+    }
+
+    // One write, from a callback, after everything is known — rather than
+    // setting state part-way through and rendering a state nobody is in.
+    resolveStatus().then((next) => {
+      if (!cancelled) setStatus(next)
     })
+
+    return () => {
+      cancelled = true
+    }
   }, [])
+
+  // Move focus to the heading whenever the page changes what it is saying, so
+  // a screen reader announces the new state instead of leaving someone on a
+  // button that has gone.
+  useEffect(() => {
+    if (status === 'no_session' || status === 'done') headingRef.current?.focus()
+  }, [status])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -69,7 +100,17 @@ export default function ResetPasswordPage() {
     const { error: updateError } = await supabase.auth.updateUser({ password })
 
     if (updateError) {
-      setError(updateError.message)
+      // Supabase's own wording goes to the console, not onto the page. Some
+      // of it names internals, and none of it tells the person what to do.
+      console.error('Password update failed:', updateError.message)
+      // A session that has gone between loading this page and submitting it
+      // is the one case worth a different answer, because the form cannot
+      // succeed however many times it is tried.
+      if (/session|jwt|token/i.test(updateError.message)) {
+        setStatus('no_session')
+        return
+      }
+      setError('We could not save that password. Please try again in a moment.')
       setSaving(false)
       return
     }
@@ -92,7 +133,11 @@ export default function ResetPasswordPage() {
         <Link href="/" className="text-xl font-serif font-semibold mb-10 text-foreground">
           StayStory
         </Link>
-        <h1 className="text-2xl font-serif font-semibold mb-3 text-foreground">
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          className="text-2xl font-serif font-semibold mb-3 text-foreground outline-none"
+        >
           That link has run out
         </h1>
         <p className="text-muted-foreground max-w-sm leading-relaxed">
@@ -115,7 +160,11 @@ export default function ResetPasswordPage() {
         <Link href="/" className="text-xl font-serif font-semibold mb-10 text-foreground">
           StayStory
         </Link>
-        <h1 className="text-2xl font-serif font-semibold mb-3 text-foreground">
+        <h1
+          ref={headingRef}
+          tabIndex={-1}
+          className="text-2xl font-serif font-semibold mb-3 text-foreground outline-none"
+        >
           Your new password is saved
         </h1>
         <p className="text-muted-foreground max-w-sm">
@@ -151,6 +200,7 @@ export default function ResetPasswordPage() {
             <Input
               id="password"
               type="password"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 8 characters"
@@ -163,6 +213,7 @@ export default function ResetPasswordPage() {
             <Input
               id="confirm"
               type="password"
+              autoComplete="new-password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               placeholder="Type it once more"
@@ -170,7 +221,11 @@ export default function ResetPasswordPage() {
               required
             />
           </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && (
+            <p role="alert" className="text-sm text-destructive">
+              {error}
+            </p>
+          )}
           <Button type="submit" disabled={saving} className="w-full">
             {saving ? 'Saving…' : 'Save new password'}
           </Button>

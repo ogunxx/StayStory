@@ -4,6 +4,7 @@ import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { buildCallbackUrl } from '@/lib/auth-redirects'
 import { isDisposableEmail } from '@/lib/disposable-domains'
 import { checkPwnedPassword } from '@/lib/pwned-password'
 import { ResendConfirmation } from '@/components/auth/resend-confirmation'
@@ -66,9 +67,11 @@ function SignupForm() {
       // If check fails, allow signup to proceed
     }
 
-    const callbackUrl = paidPlan
-      ? `${window.location.origin}/api/auth/callback?plan=${paidPlan}`
-      : `${window.location.origin}/api/auth/callback`
+    // Same builder the reset link uses, so the two cannot drift apart. The
+    // URL it produces is byte-for-byte what was here before.
+    const callbackUrl = buildCallbackUrl(window.location.origin, {
+      plan: paidPlan || undefined,
+    })
 
     const { data, error } = await supabase.auth.signUp({
       email,
