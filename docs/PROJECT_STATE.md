@@ -43,6 +43,29 @@ had been ignoring.
 Written down because sessions start cold and the owner is often away from a
 computer when these come up. Nothing here is on fire.
 
+0. **Confirm Stripe's customer portal is live-mode ready — before the first
+   subscriber, not after.** The portal is the only way a host cancels. Two
+   things about it live in the Stripe dashboard rather than in this repo, so
+   no amount of code or tests can establish them:
+
+   - **Is it activated in live mode?** Live mode is configured separately
+     from a sandbox at Billing → Customer portal, so it can work in testing
+     and fail on the first real subscriber. The route now catches that and
+     shows a notice with an address to write to, instead of crashing — but a
+     notice is a fallback, not a working cancel button.
+   - **Is cancellation set to take effect at period end, not immediately?**
+     Stripe's defaults are right (cancellation on, at period end), so the
+     likely answer is yes. It matters because `/refunds` promises access to
+     the end of the period already paid for. Set to cancel immediately, the
+     product would quietly contradict the published policy.
+
+   Related and unverifiable from here: `profiles_with_stripe_customer` is
+   **0**. Checkout → portal → cancel → webhook → downgrade is verified in
+   code and in tests, and has never run against a real card. The one paid
+   account in the database is `legendary` with no `stripe_customer_id` — a
+   plan granted by hand — which is exactly the case the new
+   `no_subscription` notice was written for.
+
 1. **Rotate `SUPABASE_SERVICE_ROLE_KEY`.** Railway disclosed a breach of the
    systems that store customer environment variables on 21 October 2026, and
    the Railway integration on this Vercel team held
@@ -82,6 +105,20 @@ computer when these come up. Nothing here is on fire.
    panel on mobile and half behind it on desktop. Not fixable by framing;
    it needs either a different photograph or a change to the overlay. The
    reasoning is in `public/images/home/README.md`.
+10. **The auto-renew opt-out is built but unreachable.** `/api/stripe/checkout`
+    accepts `autoRenew: false` and the webhook turns it into Stripe's
+    `cancel_at_period_end`, so a host could buy one period without a standing
+    charge. Nothing in the UI ever sends it — `UpgradeButton` posts only
+    `tier` and `interval` — so every subscription renews, which is what the
+    Terms say. Either wire it up or delete it; leaving working code that
+    nothing calls is how a future session concludes the feature exists.
+11. **The admin refund button is more generous than the published policy.**
+    `/refunds` promises a full refund within `REFUND_WINDOW_DAYS` of a *first*
+    payment. The button refunds the *latest* payment, at any age, and says so
+    plainly before you press it. Deliberate — the page also promises to "deal
+    with it properly" when something goes wrong later — but it means the
+    window is shown, never enforced. Each one past the window is a judgement,
+    not a rail.
 
 ---
 
