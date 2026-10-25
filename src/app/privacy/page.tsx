@@ -165,8 +165,31 @@ export default function PrivacyPage() {
       <LegalSection title="Cookies">
         <p>
           We use cookies to keep you signed in and to remember which property you are working on.
-          There are no advertising or tracking cookies. Blocking the sign-in cookie will stop you
-          being able to log in.
+          Blocking the sign-in cookie will stop you being able to log in.
+        </p>
+        <p>
+          We also use Microsoft Clarity to understand how the site is used, and it sets two cookies
+          of its own to tell one visit apart from the next. There are no advertising cookies, and we
+          do not sell or share anything with advertisers.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Session recordings">
+        <p>
+          Microsoft Clarity plays visits back as recordings, so we can see where a page confuses
+          people rather than guessing. We use it to find dead ends, not to watch individuals.
+        </p>
+        <p>
+          <strong>Everything you type is hidden from those recordings.</strong> Every page you see
+          once signed in is masked — your Audit and Compass answers, your stories and Playbooks,
+          your property names, your email — along with every sign-in, sign-up and password screen,
+          and the Help Shape StayStory form. The words are replaced before they leave your browser,
+          so they never reach Microsoft. Passwords are never captured.
+        </p>
+        <p>
+          We do not send your name, email address, account identifier, property names or any billing
+          detail to Microsoft. What we get back is behaviour — which pages are visited, where people
+          click and scroll, and where they give up.
         </p>
       </LegalSection>
 

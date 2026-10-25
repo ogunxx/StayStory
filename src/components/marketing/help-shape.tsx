@@ -3,6 +3,7 @@
 import { useId, useRef, useState } from 'react'
 import { ctaHeroPrimary, ctaSecondary } from './cta-styles'
 import { cn } from '@/lib/utils'
+import { CLARITY_MASK } from '@/lib/analytics'
 import {
   PROPERTY_TYPES,
   PROPERTY_TYPE_OTHER,
@@ -268,6 +269,11 @@ export function HelpShape({ callUrl }: { callUrl?: string | null }) {
             id={id('form')}
             onSubmit={submit}
             noValidate
+            // The only public form that collects a person's name, address and
+            // free text. Masked so recordings show how the form is used —
+            // which questions stall people, where they abandon it — without
+            // showing what any individual wrote. See src/lib/analytics.ts.
+            data-clarity-mask={CLARITY_MASK}
             className="relative mt-9 flex flex-col gap-8 rounded-2xl border border-border bg-card p-5 sm:p-7"
           >
             {/* 1 — what they host */}

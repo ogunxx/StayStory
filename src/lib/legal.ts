@@ -78,7 +78,7 @@ export const EMAIL_FROM = `${SITE.name} <${CONTACT_EMAIL}>`
  * changes — not for a typo, and not automatically, because a date that
  * shifts on every deploy tells a reader nothing.
  */
-export const LAST_UPDATED = '20 October 2026'
+export const LAST_UPDATED = '25 October 2026'
 
 /**
  * Full refund if asked within this many days of a first payment; after that,
@@ -127,5 +127,11 @@ export const PROCESSORS = [
     purpose: 'Hosting',
     detail:
       'Runs the website and the application, and keeps short-lived technical logs of requests.',
+  },
+  {
+    name: 'Microsoft',
+    purpose: 'Understanding how the site is used',
+    detail:
+      'Microsoft Clarity records which pages are visited, where people click and scroll, and plays sessions back as anonymous recordings so we can see where StayStory is confusing. Everything you type is hidden from those recordings — every page you see once signed in, every sign-in and password screen, and the Help Shape StayStory form are masked, so the words are replaced before they leave your browser. We do not send your name, email, account id or property names to Microsoft.',
   },
 ] as const

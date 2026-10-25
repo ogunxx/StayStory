@@ -11,6 +11,7 @@ import { PropertySwitcher } from './property-switcher'
 import { DashboardNav } from './dashboard-nav'
 import { DeeperToolNotice } from './deeper-tool-notice'
 import { FOCUSED_NAV } from '@/lib/focused-nav'
+import { CLARITY_MASK } from '@/lib/analytics'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -64,7 +65,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const navItems = audience === 'focused' ? [...FOCUSED_NAV, ...adminItems] : fullNavItems
 
   return (
-    <div className="min-h-screen flex flex-col">
+    // data-clarity-mask hides the text of every signed-in page from session
+    // recordings — the Audit and Compass answers, Story and Playbook drafts,
+    // property names, the account email, usage. Hosts write about their guests
+    // in here, so the whole shell is masked rather than field by field, and in
+    // code rather than by a dashboard setting that could be toggled back.
+    // Clicks, scroll depth, rage and dead clicks still record, so we keep the
+    // behaviour and lose only the words. See src/lib/analytics.ts.
+    <div data-clarity-mask={CLARITY_MASK} className="min-h-screen flex flex-col">
       <header className="relative border-b border-border bg-card px-6 py-4 flex items-center justify-between">
         <Link href="/dashboard" className="font-serif font-semibold text-lg text-foreground">
           StayStory

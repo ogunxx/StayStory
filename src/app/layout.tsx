@@ -8,6 +8,7 @@ import {
   organizationSchema,
   websiteSchema,
 } from "@/lib/seo";
+import { Clarity } from "@/components/analytics/clarity";
 import "./globals.css";
 
 // Body copy and UI.
@@ -70,6 +71,8 @@ export default function RootLayout({
         {/* Who StayStory is and what this site is — stated once, site-wide. */}
         <JsonLd data={organizationSchema()} />
         <JsonLd data={websiteSchema()} />
+        {/* Analytics for the whole site, loaded once here and nowhere else. */}
+        <Clarity />
         {children}
       </body>
     </html>
