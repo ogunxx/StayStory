@@ -119,6 +119,14 @@ computer when these come up. Nothing here is on fire.
     with it properly" when something goes wrong later — but it means the
     window is shown, never enforced. Each one past the window is a judgement,
     not a rail.
+12. **No cookie consent, and Clarity records on page load.** The Privacy page
+    now discloses Clarity, its two cookies, the recordings and exactly what is
+    masked — so nothing published is untrue. What does not exist is a consent
+    mechanism. Whether one is needed depends on where the hosts are: UK/EU
+    visitors plus session recording is the case where one is normally
+    expected. Clarity has a `consent` API if the answer turns out to be yes.
+    This is a decision about audience, not a bug, and it was deliberately left
+    open rather than guessed at.
 
 ---
 
@@ -202,6 +210,38 @@ fixed, and the fixes are the reason two test files exist.
 ---
 
 ## Outside the repo, and easy to lose
+
+- **Microsoft Clarity** is the site's only analytics, project `z38zp21q3g`,
+  added 25 October 2026 and verified live on 28 October. The ID and the
+  "should this run" decision are both in `src/lib/analytics.ts`; the script
+  loads once from the root layout via `src/components/analytics/clarity.tsx`
+  and nowhere else.
+
+  **Production only, gated on `VERCEL_ENV`, not `NODE_ENV`.** That is the
+  whole reason `shouldLoadClarity` exists as a function rather than an inline
+  check: a Vercel *preview* build also reports `NODE_ENV` as `production`, so
+  the obvious test would have filed every preview deploy and every automated
+  run into the same project as real host sessions, with no way to separate
+  them afterwards.
+
+  **Masking is in code, not in the Clarity dashboard**, in three places —
+  `src/app/(auth)/layout.tsx`, `src/app/(dashboard)/layout.tsx` and the Help
+  Shape form in `help-shape.tsx`. Microsoft documents `data-clarity-mask` as
+  *overriding* the dashboard setting, which is the point: a well-meant toggle
+  months from now must not be able to start recording a password. Masking
+  replaces text only, so clicks, scroll depth, rage and dead clicks still
+  record. Confirmed by typing a throwaway string into the login password
+  field and reading the recording back — it came through masked.
+
+  The `(auth)` layout exists *for this and nothing else*. It wraps the four
+  auth pages without editing them, because each has several return branches
+  and some display the address just typed in.
+
+  **Nothing identifies a host.** No `clarity('identify')`, no `set`, no
+  custom tags — no email, name, account id, property name or billing detail.
+  `tests/analytics.test.ts` fails if any of that appears, if the project ID
+  turns up in a second file, if a second copy of the script is rendered, or
+  if `data-clarity-unmask` is ever added.
 
 - **Supabase Auth → URL Configuration** must list `staystory.co/**`, the Vercel
   preview wildcard and `localhost:3000/**`. Supabase silently replaces
